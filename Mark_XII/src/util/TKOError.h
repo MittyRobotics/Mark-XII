@@ -13,11 +13,12 @@
 class TKOError : public exception
 {
 	public:
-		TKOError(string errorMessage);
+		TKOError(string errorMessage, int id);
 		virtual ~TKOError();
 		string getErrorMessage();
 	private:
 		string errorMessage;
+		int problematicID;
 };
 
 #endif /* SRC_TKOERROR_H_ */

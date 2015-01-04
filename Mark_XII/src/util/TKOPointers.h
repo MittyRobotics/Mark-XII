@@ -22,8 +22,8 @@ class TKOPointers
 
 	private:
 		static TKOPointers* _instance;
-		CANJaguar *drive1, *drive2, *drive3, *drive4;
-		Joystick *stick1, *stick2, *stick3, *stick4;
+		CANJaguar *drive[];
+		Joystick *stick[];
 };
 
 #endif /* SRC_TKOPOINTERS_H_ */

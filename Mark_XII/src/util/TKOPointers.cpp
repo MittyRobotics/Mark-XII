@@ -11,14 +11,6 @@ TKOPointers* TKOPointers::_instance = 0;
 
 TKOPointers::TKOPointers()
 {
-	drive1 = 0;
-	drive2 = 0;
-	drive3 = 0;
-	drive4 = 0;
-	stick1 = 0;
-	stick2 = 0;
-	stick3 = 0;
-	stick4 = 0;
 }
 
 TKOPointers::~TKOPointers()
@@ -37,101 +29,46 @@ TKOPointers* TKOPointers::inst()
 
 Joystick * TKOPointers::joystickPointer(int numberOfStick) //TODO remember to catch this
 {
-	switch (numberOfStick)
-	{
-		case 1:
-			if (!stick1)
-				throw new TKOError("Joystick 1 pointer is null");
-			return stick1;
-			break;
-		case 2:
-			if (!stick1)
-				throw new TKOError("Joystick 2 pointer is null");
-			return stick2;
-			break;
-		case 3:
-			if (!stick1)
-				throw new TKOError("Joystick 3 pointer is null");
-			return stick3;
-			break;
-		case 4:
-			if (!stick1)
-				throw new TKOError("Joystick 4 pointer is null");
-			return stick4;
-			break;
-		default:
-			return 0;
-	}
+	if (stick[numberOfStick])
+		return stick[numberOfStick];
+	else
+		throw new TKOError("Joystick pointer is null.", numberOfStick);
 }
 
 CANJaguar* TKOPointers::driveJagPointer(int numberOfJag) //TODO remember to catch this
 {
-	switch (numberOfJag)
-	{
-		case 1:
-			if (!stick1)
-				throw new TKOError("Drive 1 pointer is null");
-			return drive1;
-			break;
-		case 2:
-			if (!stick1)
-				throw new TKOError("Drive 2 pointer is null");
-			return drive2;
-			break;
-		case 3:
-			if (!stick1)
-				throw new TKOError("Drive 3 pointer is null");
-			return drive3;
-			break;
-		case 4:
-			if (!stick1)
-				throw new TKOError("Drive 4 pointer is null");
-			return drive4;
-			break;
-		default:
-			return 0;
-	}
+	if (drive[numberOfJag])
+			return drive[numberOfJag];
+	else
+		throw new TKOError("Drive pointer is null.", numberOfJag);
 }
 
 void TKOPointers::initPointers()
 {
-	if (!stick1)
-		stick1 = new Joystick(JOYSTICK_1_ID);
-	if (!stick2)
-		stick2 = new Joystick(JOYSTICK_2_ID);
-	if (!stick3)
-		stick3 = new Joystick(JOYSTICK_3_ID);
-	if (!stick4)
-		stick4 = new Joystick(JOYSTICK_4_ID);
-
-	if (!drive1)
-		drive1 = new CANJaguar(DRIVE_1_JAG_ID);
-	if (!drive2)
-		drive2 = new CANJaguar(DRIVE_2_JAG_ID);
-	if (!drive3)
-		drive3 = new CANJaguar(DRIVE_3_JAG_ID);
-	if (!drive4)
-		drive4 = new CANJaguar(DRIVE_4_JAG_ID);
-
-	drive1->SetPercentMode();
-	drive2->SetPercentMode();
-	drive3->SetPercentMode();
-	drive4->SetPercentMode();
-
-	drive1->EnableControl();
-	drive2->EnableControl();
-	drive3->EnableControl();
-	drive4->EnableControl();
+	for (int i = 1; i <= NUM_JOYSTICKS; i++)
+	{
+		if (!stick[i])
+			stick[i] = new Joystick(JOYSTICK_ID[i]);
+	}
+	for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
+	{
+		if (!drive[i])
+			drive[i] = new CANJaguar(DRIVE_JAG_ID[i]);
+		drive[i]->SetPercentMode();
+		drive[i]->EnableControl();
+	}
 }
 
 void TKOPointers::destroyPointers()
 {
-	if (drive1)
-		delete drive1;
-	if (drive2)
-		delete drive2;
-	if (drive3)
-		delete drive3;
-	if (drive4)
-		delete drive4;
+	for (int i = 1; i <= NUM_JOYSTICKS; i++)
+	{
+		if (stick[i])
+			delete stick[i];
+	}
+	for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
+	{
+		if (drive[i])
+			delete drive[i];
+	}
 }

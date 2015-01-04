@@ -37,6 +37,12 @@ using namespace std;
 #include "stdlib.h"
 #include <cstring>
 
+const int NUM_JOYSTICKS = 4;
+const int NUM_DRIVE_JAGS = 4;
+
+const int JOYSTICK_ID[4] = {1, 2, 3, 4};
+const int DRIVE_JAG_ID[4] = {1, 2, 3, 4};
+
 const int DRIVE_1_JAG_ID = 1;
 const int DRIVE_2_JAG_ID = 2;
 const int DRIVE_3_JAG_ID = 3;

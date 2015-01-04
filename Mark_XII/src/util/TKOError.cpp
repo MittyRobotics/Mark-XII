@@ -7,9 +7,10 @@
 
 #include "TKOError.h"
 
-TKOError::TKOError(string errorMessage)
+TKOError::TKOError(string errorMessage, int id)
 {
 	this->errorMessage = errorMessage;
+	this->problematicID = id;
 }
 
 TKOError::~TKOError()

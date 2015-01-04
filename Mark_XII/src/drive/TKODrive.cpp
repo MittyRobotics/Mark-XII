@@ -76,5 +76,23 @@ void TKODrive::driveRunner()
 
 void TKODrive::Drive()
 {
+	_instance->tankDrive();
+}
 
+void TKODrive::tankDrive()
+{
+	try
+	{
+		CANJaguar** driveJags = TKOPointers::inst()->getDriveJags();
+		Joystick** joysticks = TKOPointers::inst()->getJoysticks();
+		for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
+		{
+			driveJags[i]->Set(joysticks[i]->GetY());
+		}
+	} catch (TKOError* e)
+	{
+		printf("ERROR IN TANK DRIVE CAUGHT! %s\n", e->getErrorMessage().c_str());
+		TKOLogger::inst()->addMessage("ERROR IN TANK DRIVE CAUGHT! %s\n", e->getErrorMessage().c_str());
+		_instance->Stop();
+	}
 }

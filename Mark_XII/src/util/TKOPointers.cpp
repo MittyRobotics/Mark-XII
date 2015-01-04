@@ -37,6 +37,11 @@ TKOPointers* TKOPointers::inst()
 
 Joystick * TKOPointers::joystickPointer(int numberOfStick) //TODO remember to catch this
 {
+	if (numberOfStick > NUM_JOYSTICKS)
+	{
+		throw new TKOError("Joystick pointer requested out of bounds", -1);
+		return 0;
+	}
 	if (stick[numberOfStick])
 		return stick[numberOfStick];
 	else
@@ -45,6 +50,11 @@ Joystick * TKOPointers::joystickPointer(int numberOfStick) //TODO remember to ca
 
 CANJaguar* TKOPointers::driveJagPointer(int numberOfJag) //TODO remember to catch this
 {
+	if (numberOfJag > NUM_DRIVE_JAGS)
+	{
+		throw new TKOError("Drive pointer requested out of bounds", -1);
+		return 0;
+	}
 	if (drive[numberOfJag])
 			return drive[numberOfJag];
 	else
@@ -79,4 +89,14 @@ void TKOPointers::destroyPointers()
 		if (drive[i])
 			delete drive[i];
 	}
+}
+
+CANJaguar** TKOPointers::getDriveJags()
+{
+	return drive;
+}
+
+Joystick** TKOPointers::getJoysticks()
+{
+	return stick;
 }

@@ -1,4 +1,4 @@
-#include "WPILib.h"
+#include "Definitions.h"
 
 /**
  * This is a demo program showing the use of the RobotDrive class.
@@ -14,7 +14,7 @@ class MarkXII: public SampleRobot
 {
 		RobotDrive myRobot; // robot drive system
 		Joystick stick; // only joystick
-		CANJaguar jag;
+		//CANJaguar jag;
 
 	public:
 		MarkXII() :

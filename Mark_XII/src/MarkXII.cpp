@@ -13,13 +13,10 @@
 class MarkXII: public SampleRobot
 {
 		RobotDrive myRobot; // robot drive system
-		Joystick stick; // only joystick
-		//CANJaguar jag;
 
 	public:
 		MarkXII() :
-				myRobot(0, 1),	// these must be initialized in the same order
-				stick(0)		// as they are declared above.
+				myRobot(0, 1)
 		{
 			myRobot.SetExpiration(0.1);
 		}
@@ -43,7 +40,7 @@ class MarkXII: public SampleRobot
 			myRobot.SetSafetyEnabled(true);
 			while (IsOperatorControl() && IsEnabled())
 			{
-				myRobot.ArcadeDrive(stick); // drive with arcade style (use right stick)
+				//myRobot.ArcadeDrive(stick); // drive with arcade style (use right stick)
 				Wait(0.005);				// wait for a motor update time
 			}
 		}

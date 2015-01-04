@@ -8,7 +8,7 @@
 #ifndef SRC_TKOERROR_H_
 #define SRC_TKOERROR_H_
 
-#include "Definitions.h"
+#include "../Definitions.h"
 
 class TKOError : public exception
 {

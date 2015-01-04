@@ -4,7 +4,7 @@
  *  Created on: Jan 3, 2015
  *      Author: Vadim
  */
-#include "Definitions.h"
+#include "../Definitions.h"
 
 #ifndef SRC_TKOPOINTERS_H_
 #define SRC_TKOPOINTERS_H_

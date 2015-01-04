@@ -18,6 +18,24 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include "string.h"
+#include "Base.h"
+#include "SensorBase.h"
+#include <fstream>
+#include <Task.h>
+#include <queue>
+#include <sstream>
+#include <iostream>
+#include <ostream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include "Vision/RGBImage.h"
+#include "Vision/BinaryImage.h"
+#include <iostream>
+#include <stdarg.h>
+#include "math.h"
+#include "stdlib.h"
+#include <cstring>
 
 const int DRIVE_1_JAG_ID = 1;
 const int DRIVE_2_JAG_ID = 2;

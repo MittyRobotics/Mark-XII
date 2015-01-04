@@ -15,6 +15,15 @@ class TKODrive
 	public:
 		TKODrive();
 		virtual ~TKODrive();
+		static TKODrive* getInst();
+		void Start();
+		void Stop();
+
+	private:
+		static TKODrive* _instance;
+		Task *_driveTask;
+		static void driveRunner();
+
 };
 
 #endif /* SRC_DRIVE_TKODRIVE_H_ */

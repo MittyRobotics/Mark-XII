@@ -26,7 +26,7 @@ TKOPointers::~TKOPointers()
 
 }
 
-TKOPointers* TKOPointers::getInst()
+TKOPointers* TKOPointers::inst()
 {
 	if (!TKOPointers::_instance)
 	{

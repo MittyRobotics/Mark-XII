@@ -15,11 +15,12 @@ class TKODrive
 	public:
 		TKODrive();
 		virtual ~TKODrive();
-		static TKODrive* getInst();
+		static TKODrive* inst();
 		void Start();
 		void Stop();
 
 	private:
+		void Drive();
 		static TKODrive* _instance;
 		Task *_driveTask;
 		static void driveRunner();

@@ -13,7 +13,7 @@ class TKOPointers
 {
 	public:
 		TKOPointers();
-		static TKOPointers* getInst();
+		static TKOPointers* inst();
 		void initPointers();
 		void destroyPointers();
 		virtual ~TKOPointers();

@@ -11,7 +11,7 @@ TKODrive* TKODrive::_instance = 0;
 
 TKODrive::TKODrive()
 {
-	_driveTask = NULL;
+	_driveTask = 0;
 	//TODO make sure to use the TKOPointers and to catch the TKOError(s)
 }
 

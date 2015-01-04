@@ -11,8 +11,6 @@
 using namespace std;
 
 #include "WPILib.h"
-#include "util/TKOPointers.h"
-#include "util/TKOError.h"
 #include <exception>
 #include <cstring>
 #include <string>

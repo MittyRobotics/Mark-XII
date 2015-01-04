@@ -11,6 +11,14 @@ TKOPointers* TKOPointers::_instance = 0;
 
 TKOPointers::TKOPointers()
 {
+	for (int i = 1; i <= NUM_JOYSTICKS; i++)
+	{
+		stick[i] = 0;
+	}
+	for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
+	{
+		drive[i] = 0;
+	}
 }
 
 TKOPointers::~TKOPointers()

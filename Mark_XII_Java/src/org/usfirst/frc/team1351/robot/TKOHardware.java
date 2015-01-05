@@ -49,18 +49,27 @@ public class TKOHardware
 		}
 	}
 	
-	public static CANTalon getDriveTalon(int num)
+	public static CANTalon getDriveTalon(int num) throws Exception
+	{
+		if (num > Definitions.NUM_DRIVE_JAGS)
+		{
+			throw new Exception("Drive talon requested out of bounds");
+		}
+		if (drive[num] != null)
+			return drive[num];
+		else
+			throw new Exception("Drive talon " + num + " is null");
+	}
+	
+	public static Joystick getJoystick(int num) throws Exception
 	{
 		if (num > Definitions.NUM_JOYSTICKS)
 		{
-			return null;
+			throw new Exception("Joystick requested out of bounds");
 		}
-		if (stick[num])
-		return null;
-	}
-	
-	public static Joystick getJoystick(int num)
-	{
-		return null;
+		if (stick[num] != null)
+			return stick[num];
+		else
+			throw new Exception("Joystick " + num + " is null");
 	}
 }

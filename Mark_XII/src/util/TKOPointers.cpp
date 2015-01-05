@@ -56,7 +56,7 @@ CANJaguar* TKOPointers::driveJagPointer(int numberOfJag) //TODO remember to catc
 		return 0;
 	}
 	if (drive[numberOfJag])
-			return drive[numberOfJag];
+		return drive[numberOfJag];
 	else
 		throw new TKOError("Drive pointer is null.", numberOfJag);
 }
@@ -89,14 +89,4 @@ void TKOPointers::destroyPointers()
 		if (drive[i])
 			delete drive[i];
 	}
-}
-
-CANJaguar** TKOPointers::getDriveJags()
-{
-	return drive;
-}
-
-Joystick** TKOPointers::getJoysticks()
-{
-	return stick;
 }

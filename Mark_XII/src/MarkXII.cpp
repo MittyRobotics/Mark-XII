@@ -1,4 +1,6 @@
 #include "Definitions.h"
+#include <util/TKOPointers.h>
+#include <drive/TKODrive.h>
 
 /**
  * This is a demo program showing the use of the RobotDrive class.
@@ -12,13 +14,11 @@
  */
 class MarkXII: public SampleRobot
 {
-		RobotDrive myRobot; // robot drive system
 
 	public:
-		MarkXII() :
-				myRobot(0, 1)
+		MarkXII()
 		{
-			myRobot.SetExpiration(0.1);
+			TKOPointers::inst()->initPointers();
 		}
 
 		/**
@@ -26,10 +26,8 @@ class MarkXII: public SampleRobot
 		 */
 		void Autonomous()
 		{
-			myRobot.SetSafetyEnabled(false);
-			myRobot.Drive(-0.5, 0.0); 	// drive forwards half speed
-			Wait(2.0); 				//    for 2 seconds
-			myRobot.Drive(0.0, 0.0); 	// stop robot
+			CANJaguar *test = NULL;
+			test->Disable();
 		}
 
 		/**
@@ -37,12 +35,13 @@ class MarkXII: public SampleRobot
 		 */
 		void OperatorControl()
 		{
-			myRobot.SetSafetyEnabled(true);
+			TKODrive::inst()->Start();
 			while (IsOperatorControl() && IsEnabled())
 			{
 				//myRobot.ArcadeDrive(stick); // drive with arcade style (use right stick)
 				Wait(0.005);				// wait for a motor update time
 			}
+			TKODrive::inst()->Stop();
 		}
 
 		/**

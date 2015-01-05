@@ -1,5 +1,8 @@
 package org.usfirst.frc.team1351.drive;
 
+import org.usfirst.frc.team1351.logger.TKOLogger;
+import org.usfirst.frc.team1351.robot.Definitions;
+import org.usfirst.frc.team1351.util.TKOHardware;
 import org.usfirst.frc.team1351.util.TKOThread;
 
 public class TKODrive implements Runnable
@@ -41,7 +44,18 @@ public class TKODrive implements Runnable
 
 	public static void tankDrive()
 	{
-
+		for (int i = 1; i <= Definitions.NUM_DRIVE_JAGS; i++)
+		{
+			try
+			{
+				TKOHardware.getDriveTalon(i).set(TKOHardware.getJoystick(i).getY());
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				TKOLogger.addMessage("ERROR IN TANK DRIVE CAUGHT! " + e.getMessage());
+				stop();
+			}
+		}
 	}
 
 	@Override
@@ -52,9 +66,10 @@ public class TKODrive implements Runnable
 			while (driveThread.isThreadRunning())
 			{
 				System.out.println("THREAD RAN!");
+				tankDrive();
 				synchronized (driveThread)
 				{
-					driveThread.wait(100);
+					driveThread.wait(5);
 				}
 			}
 		} catch (InterruptedException e)

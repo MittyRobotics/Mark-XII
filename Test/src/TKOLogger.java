@@ -1,4 +1,3 @@
-package org.usfirst.frc.team1351.robot;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

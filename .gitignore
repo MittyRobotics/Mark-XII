@@ -36,3 +36,4 @@ PPC603gnu/
 *.xml
 *.*.xml
 *.settings
+*.class

@@ -2,13 +2,13 @@ package org.usfirst.team1351.robot.statemachineex.states;
 
 import org.usfirst.team1351.robot.statemachineex.InstanceData;
 import org.usfirst.team1351.robot.statemachineex.StateEnum;
-import org.usfirst.team1351.robot.statemachineex.StateFunction;
+import org.usfirst.team1351.robot.statemachineex.IStateFunction;
 import org.usfirst.team1351.robot.statemachineex.StateMachine;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-public class PistonRetract implements StateFunction {
+public class PistonRetract implements IStateFunction {
 
 	/*
 	 * #define DONE_FIRING 2	// PE

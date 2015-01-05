@@ -2,12 +2,12 @@ package org.usfirst.team1351.robot.statemachineex.states;
 
 import org.usfirst.team1351.robot.statemachineex.InstanceData;
 import org.usfirst.team1351.robot.statemachineex.StateEnum;
-import org.usfirst.team1351.robot.statemachineex.StateFunction;
+import org.usfirst.team1351.robot.statemachineex.IStateFunction;
 import org.usfirst.team1351.robot.statemachineex.StateMachine;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-public class PistonExtend implements StateFunction {
+public class PistonExtend implements IStateFunction {
 
 	@Override
 	public StateEnum doState(InstanceData data) {

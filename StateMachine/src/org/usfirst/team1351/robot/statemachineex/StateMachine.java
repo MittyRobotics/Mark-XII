@@ -69,7 +69,7 @@ const int ARM_OPTICAL_SWITCH = 11;
 	private InstanceData data = new InstanceData();
 	
 	
-	static StateFunction states[] = new StateFunction[StateEnum.NUM_STATES.getValue()+1];
+	static IStateFunction states[] = new IStateFunction[StateEnum.NUM_STATES.getValue()+1];
 	
 	public StateMachine(Joystick trigger) {
 		m_triggerJoystick = trigger;

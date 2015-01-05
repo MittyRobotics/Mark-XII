@@ -2,10 +2,10 @@ package org.usfirst.team1351.robot.statemachineex.states;
 
 import org.usfirst.team1351.robot.statemachineex.InstanceData;
 import org.usfirst.team1351.robot.statemachineex.StateEnum;
-import org.usfirst.team1351.robot.statemachineex.StateFunction;
+import org.usfirst.team1351.robot.statemachineex.IStateFunction;
 import org.usfirst.team1351.robot.statemachineex.StateMachine;
 
-public class ReadyToFire implements StateFunction {
+public class ReadyToFire implements IStateFunction {
 
 	@Override
 	public StateEnum doState(InstanceData data) {

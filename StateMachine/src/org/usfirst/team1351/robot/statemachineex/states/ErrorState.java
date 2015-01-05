@@ -2,9 +2,9 @@ package org.usfirst.team1351.robot.statemachineex.states;
 
 import org.usfirst.team1351.robot.statemachineex.InstanceData;
 import org.usfirst.team1351.robot.statemachineex.StateEnum;
-import org.usfirst.team1351.robot.statemachineex.StateFunction;
+import org.usfirst.team1351.robot.statemachineex.IStateFunction;
 
-public class ErrorState implements StateFunction {
+public class ErrorState implements IStateFunction {
 
 	@Override
 	public StateEnum doState(InstanceData data) {

@@ -1,4 +1,6 @@
-package org.usfirst.frc.team1351.robot;
+package org.usfirst.frc.team1351.util;
+
+import org.usfirst.frc.team1351.robot.Definitions;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;

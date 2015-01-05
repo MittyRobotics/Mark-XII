@@ -10,10 +10,10 @@ public class ErrorState implements IStateFunction {
 	public StateEnum doState(InstanceData data) {
 //		TKOLEDArduino::inst()->setMode(6);
 //		if (GetTime() - lastSensorStringPrint > 1.)
-		{
+//		{
 //			printf("%s\n",state_to_string(data).c_str());
 //			TKOLogger::inst()->addMessage("STATE ERROR: %s ERROR!!! SENSORS: %d", state_to_string(data).c_str(), createIntFromBoolArray(data));
-		}
+//		}
 //		sensors_to_string(data);
 	    return StateEnum.STATE_ERR;
 	}

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1351.robot;
+package org.usfirst.frc.team1351.util;
 
 public class TKOThread extends Thread
 {
@@ -7,6 +7,7 @@ public class TKOThread extends Thread
 	public TKOThread(Runnable r)
 	{
 		super(r);
+		super.setName(r.toString());
 	}
 
 	public synchronized void setThreadRunning(boolean status)

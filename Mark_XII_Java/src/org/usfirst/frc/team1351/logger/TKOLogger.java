@@ -1,9 +1,11 @@
-package org.usfirst.frc.team1351.robot;
+package org.usfirst.frc.team1351.logger;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
+
+import org.usfirst.frc.team1351.util.TKOThread;
 
 public class TKOLogger implements Runnable
 {
@@ -34,21 +36,27 @@ public class TKOLogger implements Runnable
 		{
 			e.printStackTrace();
 		}
-		loggerThread.setThreadRunning(true);
-		loggerThread.start();
+		if (!loggerThread.isThreadRunning())
+		{
+			loggerThread.setThreadRunning(true);
+			loggerThread.start();
+		}
 		System.out.println("Started logger task");
 	}
 
 	public static void stop()
 	{
 		System.out.println("Stopping logger task");
-		loggerThread.setThreadRunning(false);
-		try
+		if (loggerThread.isThreadRunning())
 		{
-			loggerThread.join();
-		} catch (InterruptedException e1)
-		{
-			e1.printStackTrace();
+			loggerThread.setThreadRunning(false);
+			try
+			{
+				loggerThread.join();
+			} catch (InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
 		}
 		while (m_MessageBuffer.size() > 0)
 		{

@@ -34,3 +34,5 @@ PPC603gnu/
 *.depend
 *.layout
 *.xml
+*.*.xml
+*.settings

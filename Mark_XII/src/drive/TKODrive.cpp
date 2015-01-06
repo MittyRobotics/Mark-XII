@@ -84,11 +84,9 @@ void TKODrive::tankDrive()
 	try
 	{
 		//TODO maybe it is a bad idea to keep calling this over and over, maybe its better to save the pointer here somewhere
-		CANJaguar** driveJags = TKOPointers::inst()->getDriveJags();
-		Joystick** joysticks = TKOPointers::inst()->getJoysticks();
 		for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
 		{
-			driveJags[i]->Set(joysticks[i]->GetY());
+			TKOPointers::inst()->driveJagPointer(i)->Set(TKOPointers::inst()->joystickPointer(i)->GetY());
 		}
 	} catch (TKOError* e)
 	{

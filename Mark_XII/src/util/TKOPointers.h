@@ -20,8 +20,6 @@ class TKOPointers
 		virtual ~TKOPointers();
 		CANJaguar* driveJagPointer(int numberOfJag);
 		Joystick* joystickPointer(int numberOfStick);
-		CANJaguar** getDriveJags();
-		Joystick** getJoysticks();
 
 	private:
 		static TKOPointers* _instance;

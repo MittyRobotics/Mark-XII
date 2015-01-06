@@ -13,11 +13,11 @@ TKOPointers::TKOPointers()
 {
 	for (int i = 1; i <= NUM_JOYSTICKS; i++)
 	{
-		stick[i] = 0;
+		stick[i] = NULL;
 	}
 	for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
 	{
-		drive[i] = 0;
+		drive[i] = NULL;
 	}
 }
 
@@ -56,7 +56,7 @@ CANJaguar* TKOPointers::driveJagPointer(int numberOfJag) //TODO remember to catc
 		return 0;
 	}
 	if (drive[numberOfJag])
-			return drive[numberOfJag];
+		return drive[numberOfJag];
 	else
 		throw new TKOError("Drive pointer is null.", numberOfJag);
 }
@@ -65,12 +65,12 @@ void TKOPointers::initPointers()
 {
 	for (int i = 1; i <= NUM_JOYSTICKS; i++)
 	{
-		if (!stick[i])
+		if (stick[i] == NULL)
 			stick[i] = new Joystick(JOYSTICK_ID[i]);
 	}
 	for (int i = 1; i <= NUM_DRIVE_JAGS; i++)
 	{
-		if (!drive[i])
+		if (drive[i] == NULL)
 			drive[i] = new CANJaguar(DRIVE_JAG_ID[i]);
 		drive[i]->SetPercentMode();
 		drive[i]->EnableControl();
@@ -89,14 +89,4 @@ void TKOPointers::destroyPointers()
 		if (drive[i])
 			delete drive[i];
 	}
-}
-
-CANJaguar** TKOPointers::getDriveJags()
-{
-	return drive;
-}
-
-Joystick** TKOPointers::getJoysticks()
-{
-	return stick;
 }

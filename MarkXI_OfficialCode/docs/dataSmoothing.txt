@@ -1,0 +1,37 @@
+//works in CodeBlocks
+
+#include <iostream>
+#include <queue>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include <cstdio>
+
+using namespace std;
+float workingAverage = 0.; //NEED THIS
+
+float getPotatoRandom()
+{
+    return rand() % 100 + 0;
+}
+int main()
+{
+    srand (time(NULL));
+
+    long counter = 0;
+    double sum = 0;
+    while (counter < 10000)
+    {
+        float smoothingFactor = 0.01;
+        float newValue = getPotatoRandom();
+        workingAverage = (newValue*smoothingFactor) + (workingAverage * ( 1.0 - smoothingFactor));
+        sum += workingAverage;
+        cout << workingAverage << "\t\tCURR_VAL: " << newValue << endl;
+        counter++;
+    }
+    cout << "Average: " << sum/counter << endl;
+
+    std::getchar();
+    return 0;
+    
+}

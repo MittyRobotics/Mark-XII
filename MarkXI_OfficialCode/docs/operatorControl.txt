@@ -1,0 +1,58 @@
+//Last edited by Ben Kim
+//on 04/02/14
+
+Driver Controls:
+* Tank Drive: Stick 1 and 2 *
+Stick 1
+- trigger: half speed (0.4)
+- button 2: quarter speed (0.2)
+- button 4: full power (1.0)
+- button 11: reset gyro
+Stick 2
+- trigger: fire shooter
+- button 2: manually shift to low gear
+- button 3: manually shift to high gear
+- button 4: set ramping to 0
+- button 5: set ramping to 12
+- button 11: forward calibration
+
+Operator Controls:
+Stick 3
+- button 4: roller intake
+- button 5: roller outtake
+- trigger: (if auto shooting in teleop using ultrasonic and drive motor speed) must be held to fire
+Stick 4
+- button 2: move arm to middle
+- button 4: move arm to back
+- button 5: move arm to front
+- button 6: move arm one increment backwards
+- button 7: move arm one increment forwards
+- button 8: reset encoder (current arm pos will be new 0)
+- button 10: vision - write image to file
+- button 11: reset state machine (NOTE: use as last resort)
+
+Digital Inputs:
+- 1: clear log file
+- 2: run compressor
+- 3: start shooter
+- 4: start arm
+- 5: arm override
+- 6: log the drive data
+- 7: shoot wait
+- 8: toggle for firing in auton
+
+Digital Outputs:
+- 1: 
+- 2: 
+- 3: 
+- 4: shooter cocked
+- 5: latch locked
+- 6: piston extended
+- 7: piston retracted
+- 8: arm limit switch
+
+Analog Inputs:
+- 1: roller spin before firing
+- 2:
+- 3: 
+- 4: set arm position

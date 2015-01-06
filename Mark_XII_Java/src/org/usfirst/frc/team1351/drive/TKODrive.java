@@ -38,6 +38,7 @@ public class TKODrive implements Runnable
 		{
 			try
 			{
+				//TODO multiplier negative positive for each motor
 				TKOHardware.getDriveJaguar(i).set(TKOHardware.getJoystick(i).getY());
 			} catch (Exception e)
 			{

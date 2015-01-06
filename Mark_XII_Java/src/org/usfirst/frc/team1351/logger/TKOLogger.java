@@ -16,6 +16,7 @@ public class TKOLogger implements Runnable
 	protected TKOLogger()
 	{
 		System.out.println("Contstructing logger");
+		//TODO check if file exists, rename file to something
 		System.out.println("Done constructing logger");
 	}
 

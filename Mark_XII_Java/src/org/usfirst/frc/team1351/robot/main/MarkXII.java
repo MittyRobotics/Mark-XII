@@ -1,8 +1,8 @@
-package org.usfirst.frc.team1351.robot;
+package org.usfirst.frc.team1351.robot.main;
 
-import org.usfirst.frc.team1351.drive.TKODrive;
-import org.usfirst.frc.team1351.logger.TKOLogger;
-import org.usfirst.frc.team1351.util.TKODataReporting;
+import org.usfirst.frc.team1351.robot.drive.TKODrive;
+import org.usfirst.frc.team1351.robot.logger.TKOLogger;
+import org.usfirst.frc.team1351.robot.util.TKODataReporting;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,10 +19,10 @@ import edu.wpi.first.wpilibj.Timer;
  * WARNING: While it may look like a good choice to use for your code if you're inexperienced, don't. Unless you know what you are doing,
  * complex code will be much more difficult under this system. Use IterativeRobot or Command-Based instead if you're new.
  */
-public class Robot extends SampleRobot
+public class MarkXII extends SampleRobot
 {
 
-	public Robot()
+	public MarkXII()
 	{
 		
 	}

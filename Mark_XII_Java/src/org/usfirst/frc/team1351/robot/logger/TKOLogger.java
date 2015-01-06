@@ -1,22 +1,36 @@
-package org.usfirst.frc.team1351.logger;
+package org.usfirst.frc.team1351.robot.logger;
 
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
-import org.usfirst.frc.team1351.util.TKOThread;
+import org.usfirst.frc.team1351.robot.util.TKOThread;
 
 public class TKOLogger implements Runnable
 {
 	private static LinkedList<String> m_MessageBuffer = new LinkedList<String>();
 	private static PrintWriter m_LogFile;
 	private static TKOThread loggerThread = new TKOThread(new TKOLogger());
+	private static String directory = "/home/lvuser/";
 
 	protected TKOLogger()
 	{
 		System.out.println("Contstructing logger");
-		//TODO check if file exists, rename file to something
+		File f = new File(directory + "log.txt");
+		if(f.exists() && !f.isDirectory()) //check if file exists
+		{
+			int i = 1;
+			File test = null;
+			do
+			{
+				test = new File(directory + "log_" + i + ".txt");
+				i++;
+			} while (test.exists() && !test.isDirectory());
+			f.renameTo(test); //TODO Test this but it should rename log file if exists instead of rewriting
+		}
 		System.out.println("Done constructing logger");
 	}
 
@@ -33,8 +47,9 @@ public class TKOLogger implements Runnable
 		try
 		{
 			System.out.println(System.getProperty("user.dir"));
-			m_LogFile = new PrintWriter("/home/lvuser/log.txt", "UTF-8");
-		} catch (FileNotFoundException | UnsupportedEncodingException e)
+			//m_LogFile = new PrintWriter(directory + "log.txt", "UTF-8");
+			m_LogFile = new PrintWriter(new BufferedWriter(new FileWriter(directory + "log.txt", true)));
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -75,7 +90,8 @@ public class TKOLogger implements Runnable
 			String s = m_MessageBuffer.removeLast() + "\n";
 			synchronized (TKOLogger.class)
 			{
-				m_LogFile.write(s, 0, s.length());
+				//m_LogFile.write(s, 0, s.length());
+				m_LogFile.println(s);
 			}
 		}
 	}

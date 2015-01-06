@@ -18,7 +18,7 @@ class MarkXII: public SampleRobot
 	public:
 		MarkXII()
 		{
-			TKOPointers::inst()->initPointers();
+
 		}
 
 		/**
@@ -35,6 +35,7 @@ class MarkXII: public SampleRobot
 		 */
 		void OperatorControl()
 		{
+			TKOPointers::inst()->initPointers();
 			TKODrive::inst()->Start();
 			while (IsOperatorControl() && IsEnabled())
 			{
@@ -42,6 +43,7 @@ class MarkXII: public SampleRobot
 				Wait(0.005);				// wait for a motor update time
 			}
 			TKODrive::inst()->Stop();
+			TKOPointers::inst()->destroyPointers();
 		}
 
 		/**

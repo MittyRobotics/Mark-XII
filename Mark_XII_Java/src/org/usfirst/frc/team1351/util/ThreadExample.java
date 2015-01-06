@@ -37,7 +37,6 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 		if (!exampleThread.isThreadRunning())
 		{
 			exampleThread.setThreadRunning(true);
-			exampleThread.start();
 		}
 	}
 
@@ -51,13 +50,6 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 		if (exampleThread.isThreadRunning())
 		{
 			exampleThread.setThreadRunning(false);
-			try
-			{
-				exampleThread.join();
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 

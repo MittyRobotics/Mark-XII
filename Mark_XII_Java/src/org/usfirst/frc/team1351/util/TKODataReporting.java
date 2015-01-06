@@ -3,7 +3,9 @@ package org.usfirst.frc.team1351.util;
 import org.usfirst.frc.team1351.logger.TKOLogger;
 import org.usfirst.frc.team1351.util.TKOThread;
 
+import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Data collection for everything
@@ -39,7 +41,6 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		if (!exampleThread.isThreadRunning())
 		{
 			exampleThread.setThreadRunning(true);
-			exampleThread.start();
 		}
 	}
 
@@ -53,13 +54,6 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		if (exampleThread.isThreadRunning())
 		{
 			exampleThread.setThreadRunning(false);
-			try
-			{
-				exampleThread.join();
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -75,7 +69,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		{
 			while (exampleThread.isThreadRunning())
 			{
-				System.out.println("THREAD RAN!");
+				System.out.println("DATA REPORTING THREAD RAN!");
 				record();
 				synchronized (exampleThread) // synchronized per the thread to make sure that we wait safely
 				{
@@ -93,6 +87,24 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 */
 	public static void record()
 	{
-		TKOLogger.addMessage("Current:" + pdp.getTotalCurrent());
+		TKOLogger.addMessage("Total pdp current:" + pdp.getTotalCurrent());
+		for (int i = 0; i < 16; i++)
+		{
+			TKOLogger.addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
+			SmartDashboard.putNumber("PDP Current for " + i, pdp.getCurrent(i));
+		}
+		try
+		{
+			for (CANJaguar motor : TKOHardware.getDriveJaguars())
+			{
+				TKOLogger.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+				TKOLogger.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
+				TKOLogger.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
+				TKOLogger.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

@@ -18,10 +18,8 @@ public class TKODrive implements Runnable
 	{
 		System.out.println("Starting drive task");
 		if (!driveThread.isThreadRunning())
-		{
 			driveThread.setThreadRunning(true);
-			driveThread.start();
-		}
+
 		System.out.println("Started drive task");
 	}
 
@@ -29,16 +27,8 @@ public class TKODrive implements Runnable
 	{
 		System.out.println("Stopping drive task");
 		if (driveThread.isThreadRunning())
-		{
 			driveThread.setThreadRunning(false);
-			try
-			{
-				driveThread.join();
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		
 		System.out.println("Stopped drive task");
 	}
 
@@ -48,7 +38,7 @@ public class TKODrive implements Runnable
 		{
 			try
 			{
-				TKOHardware.getDriveTalon(i).set(TKOHardware.getJoystick(i).getY());
+				TKOHardware.getDriveJaguar(i).set(TKOHardware.getJoystick(i).getY());
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -65,7 +55,7 @@ public class TKODrive implements Runnable
 		{
 			while (driveThread.isThreadRunning())
 			{
-				System.out.println("THREAD RAN!");
+				System.out.println("DRIVE THREAD RAN!");
 				tankDrive();
 				synchronized (driveThread)
 				{

@@ -2,12 +2,12 @@ package org.usfirst.frc.team1351.util;
 
 import org.usfirst.frc.team1351.robot.Definitions;
 
-import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class TKOHardware
 {
-	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_JAGS];
+	protected static CANJaguar drive[] = new CANJaguar[Definitions.NUM_DRIVE_JAGS];
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	
 	public TKOHardware()
@@ -31,9 +31,11 @@ public class TKOHardware
 		for (int i = 1; i <= Definitions.NUM_DRIVE_JAGS; i++)
 		{
 			if (drive[i] != null)
-				drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
+				drive[i] = new CANJaguar(Definitions.DRIVE_JAGUAR_ID[i]);
 			
-			drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
+			//drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
+			drive[i].setPercentMode();
+			drive[i].enableControl();
 		}
 	}
 	
@@ -51,16 +53,16 @@ public class TKOHardware
 		}
 	}
 	
-	public static CANTalon getDriveTalon(int num) throws Exception
+	public static CANJaguar getDriveJaguar(int num) throws Exception
 	{
 		if (num > Definitions.NUM_DRIVE_JAGS)
 		{
-			throw new Exception("Drive talon requested out of bounds");
+			throw new Exception("Drive jaguar requested out of bounds");
 		}
 		if (drive[num] != null)
 			return drive[num];
 		else
-			throw new Exception("Drive talon " + num + " is null");
+			throw new Exception("Drive jaguar " + num + " is null");
 	}
 	
 	public static Joystick getJoystick(int num) throws Exception
@@ -73,5 +75,15 @@ public class TKOHardware
 			return stick[num];
 		else
 			throw new Exception("Joystick " + num + " is null");
+	}
+	
+	public static CANJaguar[] getDriveJaguars() throws Exception
+	{
+		return drive;
+	}
+	
+	public static Joystick[] getJoysticks() throws Exception
+	{
+		return stick;
 	}
 }

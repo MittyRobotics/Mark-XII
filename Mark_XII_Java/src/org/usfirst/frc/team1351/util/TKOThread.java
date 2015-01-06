@@ -13,6 +13,19 @@ public class TKOThread extends Thread
 	public synchronized void setThreadRunning(boolean status)
 	{
 		isThreadRunning = status;
+		if (isThreadRunning)
+		{
+			this.start();
+		} else
+		{
+			try
+			{//TODO Make sure join is good idea
+				this.join(); //waits for it to finish running
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public synchronized boolean isThreadRunning()

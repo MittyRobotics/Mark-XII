@@ -31,7 +31,8 @@ public class TKOLogger implements Runnable
 		System.out.println("Starting logger task");
 		try
 		{
-			m_LogFile = new PrintWriter("log.txt", "UTF-8");
+			System.out.println(System.getProperty("user.dir"));
+			m_LogFile = new PrintWriter("/home/lvuser/log.txt", "UTF-8");
 		} catch (FileNotFoundException | UnsupportedEncodingException e)
 		{
 			e.printStackTrace();
@@ -39,7 +40,6 @@ public class TKOLogger implements Runnable
 		if (!loggerThread.isThreadRunning())
 		{
 			loggerThread.setThreadRunning(true);
-			loggerThread.start();
 		}
 		System.out.println("Started logger task");
 	}
@@ -50,13 +50,6 @@ public class TKOLogger implements Runnable
 		if (loggerThread.isThreadRunning())
 		{
 			loggerThread.setThreadRunning(false);
-			try
-			{
-				loggerThread.join();
-			} catch (InterruptedException e1)
-			{
-				e1.printStackTrace();
-			}
 		}
 		while (m_MessageBuffer.size() > 0)
 		{
@@ -94,7 +87,7 @@ public class TKOLogger implements Runnable
 			while (TKOLogger.loggerThread.isThreadRunning())
 			{
 				writeFromQueue();
-				System.out.println("THREAD RAN!");
+				System.out.println("LOGGER THREAD RAN!");
 				synchronized (loggerThread)
 				{
 					loggerThread.wait(100);

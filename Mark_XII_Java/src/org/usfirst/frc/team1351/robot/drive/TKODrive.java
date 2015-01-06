@@ -1,9 +1,8 @@
-package org.usfirst.frc.team1351.drive;
+package org.usfirst.frc.team1351.robot.drive;
 
-import org.usfirst.frc.team1351.logger.TKOLogger;
-import org.usfirst.frc.team1351.robot.Definitions;
-import org.usfirst.frc.team1351.util.TKOHardware;
-import org.usfirst.frc.team1351.util.TKOThread;
+import org.usfirst.frc.team1351.robot.util.*;
+import org.usfirst.frc.team1351.robot.logger.*;
+import org.usfirst.frc.team1351.robot.main.*;
 
 public class TKODrive implements Runnable
 {
@@ -38,8 +37,7 @@ public class TKODrive implements Runnable
 		{
 			try
 			{
-				//TODO multiplier negative positive for each motor
-				TKOHardware.getDriveJaguar(i).set(TKOHardware.getJoystick(i).getY());
+				TKOHardware.getDriveJaguar(i).set(TKOHardware.getJoystick((i/3) + 1).getY() * Definitions.DRIVE_MULTIPLIER[i]);
 			} catch (Exception e)
 			{
 				e.printStackTrace();

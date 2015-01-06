@@ -1,24 +1,27 @@
-package org.usfirst.frc.team1351.util;
+package org.usfirst.frc.team1351.robot.util;
 
-import org.usfirst.frc.team1351.util.TKOThread;
+import org.usfirst.frc.team1351.robot.logger.TKOLogger;
+
+import edu.wpi.first.wpilibj.CANJaguar;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * This is an example of how to make a class that runs as a thread. The most important reason for making TKOThread was to make the thread
- * implementation thread-safe everywhere, meaning that if we happened to use two threads to do the same thing to an object, we would not
- * have memory corruption / other problems.
+ * Data collection for everything
  * 
  * @author Vadim
  */
-public class ThreadExample implements Runnable // implements Runnable is important to make this class support the Thread (run method)
+public class TKODataReporting implements Runnable // implements Runnable is important to make this class support the Thread (run method)
 {
 	/*
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
-	private static TKOThread exampleThread = new TKOThread(new ThreadExample());
+	private static TKOThread exampleThread = new TKOThread(new TKODataReporting());
+	private static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
-	protected ThreadExample()
+	protected TKODataReporting()
 	{
 
 	}
@@ -65,16 +68,40 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 		{
 			while (exampleThread.isThreadRunning())
 			{
-				System.out.println("THREAD RAN!");
-				/*
-				 * THIS IS WHERE YOU PUT ALL OF YOUR CODEZ
-				 */
+				System.out.println("DATA REPORTING THREAD RAN!");
+				record();
 				synchronized (exampleThread) // synchronized per the thread to make sure that we wait safely
 				{
-					exampleThread.wait(100); // the wait time that the thread sleeps, in milliseconds
+					exampleThread.wait(500); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public static void record()
+	{
+		TKOLogger.addMessage("Total pdp current:" + pdp.getTotalCurrent());
+		for (int i = 0; i < 16; i++)
+		{
+			TKOLogger.addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
+			SmartDashboard.putNumber("PDP Current for " + i, pdp.getCurrent(i));
+		}
+		try
+		{
+			for (CANJaguar motor : TKOHardware.getDriveJaguars())
+			{
+				TKOLogger.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+				TKOLogger.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
+				TKOLogger.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
+				TKOLogger.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+			}
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}

@@ -6,11 +6,11 @@ import org.usfirst.frc.team1351.robot.main.*;
 
 public class TKODrive implements Runnable
 {
-	private static TKOThread driveThread = new TKOThread(new TKODrive());
+	public static TKOThread driveThread = new TKOThread(new TKODrive());
 
 	protected TKODrive()
 	{
-
+		
 	}
 
 	public static void start()
@@ -27,11 +27,10 @@ public class TKODrive implements Runnable
 		System.out.println("Stopping drive task");
 		if (driveThread.isThreadRunning())
 			driveThread.setThreadRunning(false);
-		
 		System.out.println("Stopped drive task");
 	}
 
-	public static void tankDrive()
+	public static synchronized void tankDrive()
 	{
 		for (int i = 1; i <= Definitions.NUM_DRIVE_JAGS; i++)
 		{

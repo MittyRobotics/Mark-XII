@@ -61,6 +61,13 @@ public class MarkXII extends SampleRobot
 		}
 		TKODataReporting.stop();
 		TKODrive.stop();
+		try
+		{
+			TKODrive.driveThread.join();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 		TKOLogger.stop();
 	}
 

@@ -67,6 +67,14 @@ public class TKOLogger implements Runnable
 		{
 			loggerThread.setThreadRunning(false);
 		}
+		try
+		{
+			loggerThread.join();
+		} catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		while (m_MessageBuffer.size() > 0)
 		{
 			writeFromQueue();
@@ -87,9 +95,9 @@ public class TKOLogger implements Runnable
 			return;
 		if (m_MessageBuffer.size() > 0)
 		{
-			String s = m_MessageBuffer.removeLast() + "\n";
 			synchronized (TKOLogger.class)
 			{
+				String s = m_MessageBuffer.removeLast() + "\n";
 				//m_LogFile.write(s, 0, s.length());
 				m_LogFile.println(s);
 			}
@@ -110,6 +118,7 @@ public class TKOLogger implements Runnable
 					loggerThread.wait(100);
 				}
 			}
+			System.out.println("Leaving run method in TKOLogger...");
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();

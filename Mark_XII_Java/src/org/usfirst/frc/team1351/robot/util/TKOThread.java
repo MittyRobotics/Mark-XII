@@ -2,7 +2,7 @@ package org.usfirst.frc.team1351.robot.util;
 
 public class TKOThread extends Thread
 {
-	private boolean isThreadRunning = false;
+	private volatile boolean isThreadRunning = false;
 
 	public TKOThread(Runnable r)
 	{
@@ -15,15 +15,14 @@ public class TKOThread extends Thread
 		isThreadRunning = status;
 		if (isThreadRunning)
 		{
-			this.start();
-		} else
-		{
-			try
-			{//TODO Make sure join is good idea
-				this.join(); //waits for it to finish running
-			} catch (InterruptedException e)
+			if (!this.isAlive())
 			{
-				e.printStackTrace();
+				try {
+					this.start();
+				} catch (IllegalThreadStateException e)
+				{
+					System.out.println("Thread is already started!");
+				}
 			}
 		}
 	}

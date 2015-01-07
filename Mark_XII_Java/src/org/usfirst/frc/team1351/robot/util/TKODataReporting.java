@@ -17,7 +17,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
-	private static TKOThread exampleThread = new TKOThread(new TKODataReporting());
+	private static TKOThread dataReportThread = new TKOThread(new TKODataReporting());
 	private static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
@@ -37,9 +37,9 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 */
 	public static void start()
 	{
-		if (!exampleThread.isThreadRunning())
+		if (!dataReportThread.isThreadRunning())
 		{
-			exampleThread.setThreadRunning(true);
+			dataReportThread.setThreadRunning(true);
 		}
 	}
 
@@ -50,9 +50,17 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	// TODO Make sure that using join is a good idea
 	public static void stop()
 	{
-		if (exampleThread.isThreadRunning())
+		if (dataReportThread.isThreadRunning())
 		{
-			exampleThread.setThreadRunning(false);
+			dataReportThread.setThreadRunning(false);
+		}
+		try
+		{
+			dataReportThread.join();
+		} catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -66,13 +74,13 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	{
 		try
 		{
-			while (exampleThread.isThreadRunning())
+			while (dataReportThread.isThreadRunning())
 			{
 				System.out.println("DATA REPORTING THREAD RAN!");
 				record();
-				synchronized (exampleThread) // synchronized per the thread to make sure that we wait safely
+				synchronized (dataReportThread) // synchronized per the thread to make sure that we wait safely
 				{
-					exampleThread.wait(500); // the wait time that the thread sleeps, in milliseconds
+					dataReportThread.wait(500); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (InterruptedException e)
@@ -96,10 +104,11 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		{
 			for (CANJaguar motor : TKOHardware.getDriveJaguars())
 			{
-				TKOLogger.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+				//TODO Check if motors are null
+				/*TKOLogger.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
 				TKOLogger.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 				TKOLogger.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
-				TKOLogger.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+				TKOLogger.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());*/
 			}
 		} catch (Exception e)
 		{

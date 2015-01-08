@@ -6,23 +6,36 @@ import org.usfirst.frc.team1351.robot.main.*;
 
 public class TKODrive implements Runnable
 {
-	public static TKOThread driveThread = new TKOThread(new TKODrive());
+	public TKOThread driveThread = null;
+	private static TKODrive m_Instance = null;
 
 	protected TKODrive()
 	{
 		
 	}
+	
+	public static synchronized TKODrive getInstance()
+	{
+		if (TKODrive.m_Instance == null)
+		{
+			m_Instance = new TKODrive();
+			m_Instance.driveThread = new TKOThread(m_Instance);
+		}
+		return m_Instance;
+	}
 
-	public static void start()
+	public void start()
 	{
 		System.out.println("Starting drive task");
+		if (!driveThread.isAlive() && m_Instance != null)
+			driveThread = new TKOThread(m_Instance);
 		if (!driveThread.isThreadRunning())
 			driveThread.setThreadRunning(true);
 
 		System.out.println("Started drive task");
 	}
 
-	public static void stop()
+	public void stop()
 	{
 		System.out.println("Stopping drive task");
 		if (driveThread.isThreadRunning())
@@ -40,8 +53,8 @@ public class TKODrive implements Runnable
 			} catch (Exception e)
 			{
 				e.printStackTrace();
-				TKOLogger.addMessage("ERROR IN TANK DRIVE CAUGHT! " + e.getMessage());
-				stop();
+				TKOLogger.getInstance().addMessage("ERROR IN TANK DRIVE CAUGHT! " + e.getMessage());
+				TKODrive.getInstance().stop();
 			}
 		}
 	}

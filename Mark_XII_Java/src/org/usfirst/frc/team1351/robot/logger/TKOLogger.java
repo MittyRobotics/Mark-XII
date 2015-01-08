@@ -13,7 +13,8 @@ public class TKOLogger implements Runnable
 {
 	private static LinkedList<String> m_MessageBuffer = new LinkedList<String>();
 	private static PrintWriter m_LogFile;
-	private static TKOThread loggerThread = new TKOThread(new TKOLogger());
+	private static TKOLogger m_Instance = null;
+	public TKOThread loggerThread = null;
 	private static String directory = "/home/lvuser/";
 
 	protected TKOLogger()
@@ -33,17 +34,29 @@ public class TKOLogger implements Runnable
 		}
 		System.out.println("Done constructing logger");
 	}
+	
+	public static synchronized TKOLogger getInstance()
+	{
+		if (TKOLogger.m_Instance == null)
+		{
+			m_Instance = new TKOLogger();
+			m_Instance.loggerThread = new TKOThread(m_Instance);
+		}
+		return m_Instance;
+	}
 
-	public static void addMessage(String message)
+	public void addMessage(String message)
 	{
 		// String str = "Time: " + DriverStation.getInstance().getMatchTime() + ";Message: " + message;
 		String str = "Time:;Message:" + message;
 		m_MessageBuffer.push(str);
 	}
 
-	public static void start()
+	public void start()
 	{
 		System.out.println("Starting logger task");
+		if (!loggerThread.isAlive() && m_Instance != null)
+			loggerThread = new TKOThread(m_Instance);
 		try
 		{
 			System.out.println(System.getProperty("user.dir"));
@@ -60,20 +73,12 @@ public class TKOLogger implements Runnable
 		System.out.println("Started logger task");
 	}
 
-	public static void stop()
+	public void stop()
 	{
 		System.out.println("Stopping logger task");
 		if (loggerThread.isThreadRunning())
 		{
 			loggerThread.setThreadRunning(false);
-		}
-		try
-		{
-			loggerThread.join();
-		} catch (InterruptedException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		while (m_MessageBuffer.size() > 0)
 		{
@@ -84,12 +89,12 @@ public class TKOLogger implements Runnable
 		System.out.println("Stopped logger task");
 	}
 
-	public static int getBufferLength()
+	public int getBufferLength()
 	{
 		return m_MessageBuffer.size();
 	}
 
-	public static void writeFromQueue()
+	public void writeFromQueue()
 	{
 		if (m_LogFile == null)
 			return;
@@ -109,7 +114,7 @@ public class TKOLogger implements Runnable
 	{
 		try
 		{
-			while (TKOLogger.loggerThread.isThreadRunning())
+			while (loggerThread.isThreadRunning())
 			{
 				writeFromQueue();
 				System.out.println("LOGGER THREAD RAN!");

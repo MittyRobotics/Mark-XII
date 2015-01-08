@@ -3,6 +3,7 @@ package org.usfirst.frc.team1351.robot.main;
 import org.usfirst.frc.team1351.robot.drive.TKODrive;
 import org.usfirst.frc.team1351.robot.logger.TKOLogger;
 import org.usfirst.frc.team1351.robot.util.TKODataReporting;
+import org.usfirst.frc.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -29,7 +30,7 @@ public class MarkXII extends SampleRobot
 	
 	public void robotInit()
 	{
-		
+		TKOHardware.initObjects();
 	}
 	
 	public void disabled()
@@ -51,24 +52,39 @@ public class MarkXII extends SampleRobot
 	public void operatorControl()
 	{
 		System.out.println("Enabling teleop!");
-		TKOLogger.start();
-		TKODrive.start();
-		TKODataReporting.start();
+		TKOLogger.getInstance().start();
+		TKODrive.getInstance().start();
+		TKODataReporting.getInstance().start();
 		while (isOperatorControl() && isEnabled())
 		{
-			TKOLogger.addMessage("Testing...");
-			Timer.delay(1); // wait for a motor update time
+			TKOLogger.getInstance().addMessage("Testing...");
+			Timer.delay(0.25); // wait for a motor update time
 		}
-		TKODataReporting.stop();
-		TKODrive.stop();
+		
+		TKODataReporting.getInstance().stop();
 		try
 		{
-			TKODrive.driveThread.join();
+			TKODataReporting.getInstance().dataReportThread.join();
+		} catch (InterruptedException e1)
+		{
+			e1.printStackTrace();
+		}
+		TKODrive.getInstance().stop();
+		try
+		{
+			TKODrive.getInstance().driveThread.join();
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
-		TKOLogger.stop();
+		TKOLogger.getInstance().stop();
+		try
+		{
+			TKOLogger.getInstance().loggerThread.join();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**

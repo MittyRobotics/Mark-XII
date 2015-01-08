@@ -17,13 +17,24 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
-	private static TKOThread dataReportThread = new TKOThread(new TKODataReporting());
+	public TKOThread dataReportThread = null;
 	private static PowerDistributionPanel pdp = new PowerDistributionPanel();
+	private static TKODataReporting m_Instance = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKODataReporting()
 	{
 
+	}
+	
+	public static synchronized TKODataReporting getInstance()
+	{
+		if (TKODataReporting.m_Instance == null)
+		{
+			m_Instance = new TKODataReporting();
+			m_Instance.dataReportThread = new TKOThread(m_Instance);
+		}
+		return m_Instance;
 	}
 
 	/**
@@ -35,8 +46,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * 
 	 * @category
 	 */
-	public static void start()
+	public void start()
 	{
+		if (!dataReportThread.isAlive() && m_Instance != null)
+			dataReportThread = new TKOThread(m_Instance);
 		if (!dataReportThread.isThreadRunning())
 		{
 			dataReportThread.setThreadRunning(true);
@@ -48,19 +61,11 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * waits for the method to stop running (on the next iteration of run).
 	 */
 	// TODO Make sure that using join is a good idea
-	public static void stop()
+	public void stop()
 	{
 		if (dataReportThread.isThreadRunning())
 		{
 			dataReportThread.setThreadRunning(false);
-		}
-		try
-		{
-			dataReportThread.join();
-		} catch (InterruptedException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -94,10 +99,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 */
 	public static void record()
 	{
-		TKOLogger.addMessage("Total pdp current:" + pdp.getTotalCurrent());
+		TKOLogger.getInstance().addMessage("Total pdp current:" + pdp.getTotalCurrent());
 		for (int i = 0; i < 16; i++)
 		{
-			TKOLogger.addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
+			TKOLogger.getInstance().addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
 			SmartDashboard.putNumber("PDP Current for " + i, pdp.getCurrent(i));
 		}
 		try

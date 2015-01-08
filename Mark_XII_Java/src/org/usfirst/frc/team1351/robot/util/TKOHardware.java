@@ -25,17 +25,17 @@ public class TKOHardware
 	{
 		for (int i = 1; i <= Definitions.NUM_JOYSTICKS; i++)
 		{
-			if (stick[i] != null)
-				stick[i] = new Joystick(Definitions.JOYSTICK_ID[i]);
+			if (stick[i - 1] != null)
+				stick[i - 1] = new Joystick(Definitions.JOYSTICK_ID[i - 1]);
 		}
 		for (int i = 1; i <= Definitions.NUM_DRIVE_JAGS; i++)
 		{
-			if (drive[i] != null)
-				drive[i] = new CANJaguar(Definitions.DRIVE_JAGUAR_ID[i]);
+			if (drive[i - 1] != null)
+				drive[i - 1] = new CANJaguar(Definitions.DRIVE_JAGUAR_ID[i - 1]);
 			
 			//drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
-			drive[i].setPercentMode();
-			drive[i].enableControl();
+			drive[i - 1].setPercentMode();
+			drive[i - 1].enableControl();
 		}
 	}
 	
@@ -59,10 +59,10 @@ public class TKOHardware
 		{
 			throw new Exception("Drive jaguar requested out of bounds");
 		}
-		if (drive[num] != null)
-			return drive[num];
+		if (drive[num - 1] != null)
+			return drive[num - 1];
 		else
-			throw new Exception("Drive jaguar " + num + " is null");
+			throw new Exception("Drive jaguar " + (num - 1) + "(array value) is null");
 	}
 	
 	public static Joystick getJoystick(int num) throws Exception
@@ -71,10 +71,10 @@ public class TKOHardware
 		{
 			throw new Exception("Joystick requested out of bounds");
 		}
-		if (stick[num] != null)
-			return stick[num];
+		if (stick[num - 1] != null)
+			return stick[num - 1];
 		else
-			throw new Exception("Joystick " + num + " is null");
+			throw new Exception("Joystick " + (num - 1) + "(array value) is null");
 	}
 	
 	public static CANJaguar[] getDriveJaguars() throws Exception

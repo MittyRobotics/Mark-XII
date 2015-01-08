@@ -14,12 +14,23 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
-	private static TKOThread exampleThread = new TKOThread(new ThreadExample());
+	public TKOThread exampleThread = null;
+	private static ThreadExample m_Instance = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected ThreadExample()
 	{
 
+	}
+	
+	public static synchronized ThreadExample getInstance()
+	{
+		if (ThreadExample.m_Instance == null)
+		{
+			m_Instance = new ThreadExample();
+			m_Instance.exampleThread = new TKOThread(m_Instance);
+		}
+		return m_Instance;
 	}
 
 	/**
@@ -31,8 +42,10 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 * 
 	 * @category
 	 */
-	public static void start()
+	public void start()
 	{
+		if (!exampleThread.isAlive() && m_Instance != null)
+			exampleThread = new TKOThread(m_Instance);
 		if (!exampleThread.isThreadRunning())
 		{
 			exampleThread.setThreadRunning(true);
@@ -44,7 +57,7 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 * waits for the method to stop running (on the next iteration of run).
 	 */
 	// TODO Make sure that using join is a good idea
-	public static void stop()
+	public void stop()
 	{
 		if (exampleThread.isThreadRunning())
 		{

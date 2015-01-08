@@ -7,4 +7,7 @@ public class Definitions
 	public static final int[] JOYSTICK_ID = {0, 1, 2, 3};
 	public static final int[] DRIVE_JAGUAR_ID = {1, 2, 3, 4};
 	public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
+	
+	// the camera name (ex "cam0") can be found through the roborio web interface
+	public static final String CAMERA_NAME = "cam0";
 }

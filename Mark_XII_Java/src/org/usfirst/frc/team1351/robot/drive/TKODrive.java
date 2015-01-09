@@ -11,9 +11,9 @@ public class TKODrive implements Runnable
 
 	protected TKODrive()
 	{
-		
+
 	}
-	
+
 	public static synchronized TKODrive getInstance()
 	{
 		if (TKODrive.m_Instance == null)
@@ -43,20 +43,46 @@ public class TKODrive implements Runnable
 		System.out.println("Stopped drive task");
 	}
 
-	public static synchronized void tankDrive()
+	public synchronized void tankDrive()
 	{
-		for (int i = 1; i <= Definitions.NUM_DRIVE_JAGS; i++)
+		try
 		{
+			TKOHardware.getDriveJaguar(0).set(TKOHardware.getJoystick(1).getY() * Definitions.DRIVE_MULTIPLIER[0]);
+			TKOHardware.getDriveJaguar(1).set(TKOHardware.getJoystick(1).getY() * Definitions.DRIVE_MULTIPLIER[1]);
+			TKOHardware.getDriveJaguar(2).set(TKOHardware.getJoystick(0).getY() * Definitions.DRIVE_MULTIPLIER[2]);
+			TKOHardware.getDriveJaguar(3).set(TKOHardware.getJoystick(0).getY() * Definitions.DRIVE_MULTIPLIER[3]);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			TKOLogger.getInstance().addMessage("ERROR IN TANK DRIVE CAUGHT! " + e.getMessage());
+			TKODrive.getInstance().stop();
+		}
+	}
+
+	public synchronized void PIDCurrentCalibration()
+	{
+		float p = 0, i = 0, d = 0;
+
+		while (true/*IS CALIBRATING*/)
+		{
+			TKOHardware.initObjects();
 			try
 			{
-				TKOHardware.getDriveJaguar(i).set(TKOHardware.getJoystick((i/3) + 1).getY() * Definitions.DRIVE_MULTIPLIER[i]);
+				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
+				{
+					TKOHardware.getDriveJaguar(j).disableControl();
+					TKOHardware.getDriveJaguar(j).setCurrentMode(p, i, d);
+					TKOHardware.getDriveJaguar(j).enableControl();
+				}
 			} catch (Exception e)
 			{
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-				TKOLogger.getInstance().addMessage("ERROR IN TANK DRIVE CAUGHT! " + e.getMessage());
-				TKODrive.getInstance().stop();
 			}
+			TKOHardware.destroyObjects();
 		}
+		TKOHardware.destroyObjects(); //TODO make sure cant destroy if already destroyed
+		TKOHardware.initObjects();
 	}
 
 	@Override
@@ -66,7 +92,7 @@ public class TKODrive implements Runnable
 		{
 			while (driveThread.isThreadRunning())
 			{
-				System.out.println("DRIVE THREAD RAN!");
+				// System.out.println("DRIVE THREAD RAN!");
 				tankDrive();
 				synchronized (driveThread)
 				{

@@ -30,7 +30,7 @@ public class MarkXII extends SampleRobot
 	
 	public void robotInit()
 	{
-		TKOHardware.initObjects();
+		
 	}
 	
 	public void disabled()
@@ -52,6 +52,7 @@ public class MarkXII extends SampleRobot
 	public void operatorControl()
 	{
 		System.out.println("Enabling teleop!");
+		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKODataReporting.getInstance().start();

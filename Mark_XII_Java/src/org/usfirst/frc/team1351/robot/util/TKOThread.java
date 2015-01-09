@@ -29,7 +29,7 @@ public class TKOThread extends Thread
 
 	public synchronized boolean isThreadRunning()
 	{
-		System.out.println(this.isAlive());
+		//System.out.println(this.isAlive());
 		return isThreadRunning;
 	}
 }

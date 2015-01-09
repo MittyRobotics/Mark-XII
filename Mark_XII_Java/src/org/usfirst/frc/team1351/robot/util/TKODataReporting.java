@@ -81,11 +81,11 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		{
 			while (dataReportThread.isThreadRunning())
 			{
-				System.out.println("DATA REPORTING THREAD RAN!");
+				//System.out.println("DATA REPORTING THREAD RAN!");
 				record();
 				synchronized (dataReportThread) // synchronized per the thread to make sure that we wait safely
 				{
-					dataReportThread.wait(500); // the wait time that the thread sleeps, in milliseconds
+					dataReportThread.wait(100); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (InterruptedException e)
@@ -99,10 +99,12 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 */
 	public static void record()
 	{
-		TKOLogger.getInstance().addMessage("Total pdp current:" + pdp.getTotalCurrent());
+		TKOLogger inst = TKOLogger.getInstance();
+		
+		inst.addMessage("Total pdp current:" + pdp.getTotalCurrent());
 		for (int i = 0; i < 16; i++)
 		{
-			TKOLogger.getInstance().addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
+			inst.addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
 			SmartDashboard.putNumber("PDP Current for " + i, pdp.getCurrent(i));
 		}
 		try
@@ -110,10 +112,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			for (CANJaguar motor : TKOHardware.getDriveJaguars())
 			{
 				//TODO Check if motors are null
-				/*TKOLogger.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
-				TKOLogger.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
-				TKOLogger.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
-				TKOLogger.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());*/
+				inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+				inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
+				inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
+				inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
 			}
 		} catch (Exception e)
 		{

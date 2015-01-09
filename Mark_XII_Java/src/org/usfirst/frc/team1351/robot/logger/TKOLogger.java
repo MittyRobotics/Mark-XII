@@ -117,7 +117,7 @@ public class TKOLogger implements Runnable
 			while (loggerThread.isThreadRunning())
 			{
 				writeFromQueue();
-				System.out.println("LOGGER THREAD RAN!");
+				//System.out.println("LOGGER THREAD RAN!");
 				synchronized (loggerThread)
 				{
 					loggerThread.wait(100);

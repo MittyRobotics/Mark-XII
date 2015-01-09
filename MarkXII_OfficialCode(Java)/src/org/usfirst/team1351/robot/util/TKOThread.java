@@ -1,5 +1,7 @@
 package org.usfirst.team1351.robot.util;
 
+import org.usfirst.team1351.robot.main.Definitions;
+
 public class TKOThread extends Thread
 {
 	private volatile boolean isThreadRunning = false;
@@ -8,6 +10,7 @@ public class TKOThread extends Thread
 	{
 		super(r);
 		super.setName(r.toString());
+		Definitions.addThreadName(super.getName());
 	}
 
 	public synchronized void setThreadRunning(boolean status)

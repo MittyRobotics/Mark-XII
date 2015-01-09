@@ -54,7 +54,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	public void start()
 	{
 		if (!dataReportThread.isAlive() && m_Instance != null)
+		{
 			dataReportThread = new TKOThread(m_Instance);
+			dataReportThread.setPriority(Definitions.getPriority("dataReporting"));
+		}
 		if (!dataReportThread.isThreadRunning())
 		{
 			dataReportThread.setThreadRunning(true);

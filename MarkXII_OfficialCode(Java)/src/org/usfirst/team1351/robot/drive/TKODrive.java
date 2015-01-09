@@ -33,7 +33,10 @@ public class TKODrive implements Runnable
 	{
 		System.out.println("Starting drive task");
 		if (!driveThread.isAlive() && m_Instance != null)
+		{
 			driveThread = new TKOThread(m_Instance);
+			driveThread.setPriority(Definitions.getPriority("drive"));
+		}
 		if (!driveThread.isThreadRunning())
 			driveThread.setThreadRunning(true);
 
@@ -66,7 +69,7 @@ public class TKODrive implements Runnable
 
 	public synchronized void PIDCurrentCalibration() // TODO Finish this
 	{
-		float p = 0, i = 0, d = 0;
+		double p = 0., i = 0., d = 0.;
 		boolean calibrating = true;
 
 		try

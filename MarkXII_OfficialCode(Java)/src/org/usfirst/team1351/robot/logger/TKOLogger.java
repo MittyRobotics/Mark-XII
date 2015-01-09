@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
+import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOThread;
 
 public class TKOLogger implements Runnable
@@ -87,7 +88,10 @@ public class TKOLogger implements Runnable
 	{
 		System.out.println("Starting logger task");
 		if (!loggerThread.isAlive() && m_Instance != null)
+		{
 			loggerThread = new TKOThread(m_Instance);
+			loggerThread.setPriority(Definitions.getPriority("logger"));
+		}
 		try
 		{
 			System.out.println("Home dir: " + System.getProperty("user.dir"));

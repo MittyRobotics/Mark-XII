@@ -2,6 +2,7 @@ package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.main.Definitions;
 
+
 /**
  * This is an example of how to make a class that runs as a thread. The most important reason for making TKOThread was to make the thread
  * implementation thread-safe everywhere, meaning that if we happened to use two threads to do the same thing to an object, we would not
@@ -9,31 +10,30 @@ import org.usfirst.team1351.robot.main.Definitions;
  * 
  * @author Vadim
  */
-public class ThreadExample implements Runnable // implements Runnable is important to make this class support the Thread (run method)
+public class TKOLEDArduino implements Runnable // implements Runnable is important to make this class support the Thread (run method)
 {
 	/*
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
-	public TKOThread exampleThread = null;
-	private static ThreadExample m_Instance = null;
+	public TKOThread ledArduinoThread = null;
+	private static TKOLEDArduino m_Instance = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
-	protected ThreadExample()
+	protected TKOLEDArduino()
 	{
 
 	}
-
 	/**
 	 * This function makes the class a singleton, so that there can only be one instance of the class even though the class is not static
-	 * This is needed for the Thread to work properly.
+	 * This is needed for the Thread to work properly. 
 	 */
-	public static synchronized ThreadExample getInstance()
+	public static synchronized TKOLEDArduino getInstance()
 	{
-		if (ThreadExample.m_Instance == null)
+		if (TKOLEDArduino.m_Instance == null)
 		{
-			m_Instance = new ThreadExample();
-			m_Instance.exampleThread = new TKOThread(m_Instance);
+			m_Instance = new TKOLEDArduino();
+			m_Instance.ledArduinoThread = new TKOThread(m_Instance);
 		}
 		return m_Instance;
 	}
@@ -46,18 +46,17 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 * thread. This function is completely thread safe.
 	 * 
 	 * @category
-	 
 	 */
 	public void start()
 	{
-		if (!exampleThread.isAlive() && m_Instance != null)
+		if (!ledArduinoThread.isAlive() && m_Instance != null)
 		{
-			exampleThread = new TKOThread(m_Instance);
-			exampleThread.setPriority(Definitions.getPriority("threadExample"));
+			ledArduinoThread = new TKOThread(m_Instance);
+			ledArduinoThread.setPriority(Definitions.getPriority("ledArduino"));
 		}
-		if (!exampleThread.isThreadRunning())
+		if (!ledArduinoThread.isThreadRunning())
 		{
-			exampleThread.setThreadRunning(true);
+			ledArduinoThread.setThreadRunning(true);
 		}
 	}
 
@@ -67,9 +66,9 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 */
 	public void stop()
 	{
-		if (exampleThread.isThreadRunning())
+		if (ledArduinoThread.isThreadRunning())
 		{
-			exampleThread.setThreadRunning(false);
+			ledArduinoThread.setThreadRunning(false);
 		}
 	}
 
@@ -82,15 +81,15 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	{
 		try
 		{
-			while (exampleThread.isThreadRunning())
+			while (ledArduinoThread.isThreadRunning())
 			{
 				System.out.println("THREAD RAN!");
 				/*
 				 * THIS IS WHERE YOU PUT ALL OF YOUR CODEZ
 				 */
-				synchronized (exampleThread) // synchronized per the thread to make sure that we wait safely
+				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{
-					exampleThread.wait(100); // the wait time that the thread sleeps, in milliseconds
+					ledArduinoThread.wait(1000); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (Exception e)
@@ -99,3 +98,4 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 		}
 	}
 }
+

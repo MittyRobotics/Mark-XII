@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1351.robot.util;
+package org.usfirst.team1351.robot.util;
 
 public class TKOThread extends Thread
 {

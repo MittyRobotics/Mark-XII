@@ -1,6 +1,6 @@
-package org.usfirst.frc.team1351.robot.util;
+package org.usfirst.team1351.robot.util;
 
-import org.usfirst.frc.team1351.robot.logger.TKOLogger;
+import org.usfirst.team1351.robot.logger.TKOLogger;
 
 import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;

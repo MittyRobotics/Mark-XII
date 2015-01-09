@@ -1,8 +1,11 @@
-package org.usfirst.frc.team1351.robot.drive;
+package org.usfirst.team1351.robot.drive;
 
-import org.usfirst.frc.team1351.robot.util.*;
-import org.usfirst.frc.team1351.robot.logger.*;
-import org.usfirst.frc.team1351.robot.main.*;
+import org.usfirst.team1351.robot.logger.TKOLogger;
+import org.usfirst.team1351.robot.main.Definitions;
+import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOThread;
+
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class TKODrive implements Runnable
 {
@@ -59,11 +62,12 @@ public class TKODrive implements Runnable
 		}
 	}
 
-	public synchronized void PIDCurrentCalibration()
+	public synchronized void PIDCurrentCalibration() //TODO Finish this
 	{
 		float p = 0, i = 0, d = 0;
+		boolean calibrating = true;
 
-		while (true/*IS CALIBRATING*/)
+		while (calibrating && DriverStation.getInstance().isEnabled())
 		{
 			TKOHardware.initObjects();
 			try

@@ -1,3 +1,5 @@
+package org.usfirst.team1351.robot.logger;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,6 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
+import org.usfirst.team1351.robot.util.TKOThread;
+
 public class TKOLogger implements Runnable
 {
 	private LinkedList<String> m_MessageBuffer = new LinkedList<String>();
@@ -15,9 +19,9 @@ public class TKOLogger implements Runnable
 	private PrintWriter m_DataLogFile;
 	private static TKOLogger m_Instance = null;
 	public TKOThread loggerThread = null;
-	private String directory = "";
-	private String logFileName = "log";
-	private String dataDumpFileName = "data";
+	private String directory = "/home/lvuser/";
+	private String logFileName = "log.txt";
+	private String dataDumpFileName = "data.csv";
 	public long startTime;
 
 	protected TKOLogger()

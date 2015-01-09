@@ -1,7 +1,7 @@
-package org.usfirst.frc.team1351.robot.util;
+package org.usfirst.team1351.robot.util;
 
-import org.usfirst.frc.team1351.robot.logger.TKOLogger;
-import org.usfirst.frc.team1351.robot.main.*;
+import org.usfirst.team1351.robot.logger.TKOLogger;
+import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.Joystick;
@@ -25,7 +25,7 @@ public class TKOHardware
 		}
 	}
 
-	public static void initObjects()
+	public static synchronized void initObjects()
 	{
 		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
@@ -57,7 +57,7 @@ public class TKOHardware
 		}
 	}
 
-	public static void destroyObjects()
+	public static synchronized void destroyObjects()
 	{
 		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
@@ -71,7 +71,7 @@ public class TKOHardware
 		}
 	}
 
-	public static CANJaguar getDriveJaguar(int num) throws Exception
+	public static synchronized CANJaguar getDriveJaguar(int num) throws Exception
 	{
 		if (num > Definitions.NUM_DRIVE_JAGS)
 		{
@@ -83,7 +83,7 @@ public class TKOHardware
 			throw new Exception("Drive jaguar " + (num) + "(array value) is null");
 	}
 
-	public static Joystick getJoystick(int num) throws Exception
+	public static synchronized Joystick getJoystick(int num) throws Exception
 	{
 		if (num > Definitions.NUM_JOYSTICKS)
 		{
@@ -95,12 +95,12 @@ public class TKOHardware
 			throw new Exception("Joystick " + (num) + "(array value) is null");
 	}
 
-	public static CANJaguar[] getDriveJaguars() throws Exception
+	public static synchronized CANJaguar[] getDriveJaguars() throws Exception
 	{
 		return drive;
 	}
 
-	public static Joystick[] getJoysticks() throws Exception
+	public static synchronized Joystick[] getJoysticks() throws Exception
 	{
 		return stick;
 	}

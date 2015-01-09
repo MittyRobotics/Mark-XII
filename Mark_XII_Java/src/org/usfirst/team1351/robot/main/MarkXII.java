@@ -1,9 +1,9 @@
-package org.usfirst.frc.team1351.robot.main;
+package org.usfirst.team1351.robot.main;
 
-import org.usfirst.frc.team1351.robot.drive.TKODrive;
-import org.usfirst.frc.team1351.robot.logger.TKOLogger;
-import org.usfirst.frc.team1351.robot.util.TKODataReporting;
-import org.usfirst.frc.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.drive.TKODrive;
+import org.usfirst.team1351.robot.logger.TKOLogger;
+import org.usfirst.team1351.robot.util.TKODataReporting;
+import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;

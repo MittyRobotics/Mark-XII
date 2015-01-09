@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1351.robot.main;
+package org.usfirst.team1351.robot.main;
 
 public class Definitions
 {

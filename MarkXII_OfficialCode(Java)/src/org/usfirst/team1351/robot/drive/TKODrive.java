@@ -97,13 +97,16 @@ public class TKODrive implements Runnable
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
+				if (TKOHardware.getJoystick(0).getRawButton(5))
+					PIDCurrentCalibration();
+					
 				tankDrive();
 				synchronized (driveThread)
 				{
 					driveThread.wait(5);
 				}
 			}
-		} catch (InterruptedException e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}

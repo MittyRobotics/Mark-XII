@@ -8,4 +8,5 @@ public class Definitions
 	public static final int[] DRIVE_JAGUAR_ID = {1, 2, 3, 4};
 	//public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	public static final double[] DRIVE_MULTIPLIER = {15., 15., -15., -15.};
+	public static final int DEF_DATA_REPORTING_THREAD_WAIT = 250;
 }

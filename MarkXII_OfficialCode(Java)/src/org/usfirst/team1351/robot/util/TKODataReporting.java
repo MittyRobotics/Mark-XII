@@ -1,6 +1,7 @@
 package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.logger.TKOLogger;
+import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -18,15 +19,18 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * makes it easy to make using the thread safe
 	 */
 	public TKOThread dataReportThread = null;
-	private static PowerDistributionPanel pdp = new PowerDistributionPanel();
+	private PowerDistributionPanel pdp = new PowerDistributionPanel();
 	private static TKODataReporting m_Instance = null;
+	private boolean collectingDriveData = false;
+	private boolean collectingDefaultData = true;
+	private int threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKODataReporting()
 	{
 
 	}
-	
+
 	public static synchronized TKODataReporting getInstance()
 	{
 		if (TKODataReporting.m_Instance == null)
@@ -45,6 +49,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * thread. This function is completely thread safe.
 	 * 
 	 * @category
+	 
 	 */
 	public void start()
 	{
@@ -69,6 +74,20 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		}
 	}
 
+	public synchronized void startCollectingDriveData()
+	{
+		collectingDefaultData = false;
+		collectingDriveData = true;
+		threadWaitTime = 10;
+	}
+
+	public synchronized void stopCollectingDriveData()
+	{
+		collectingDefaultData = true;
+		collectingDriveData = false;
+		threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
+	}
+
 	/**
 	 * The run method is what the thread actually calls once. The continual running of the thread loop is done by the while loop, controlled
 	 * by a safe boolean inside the TKOThread object. The wait is synchronized to make sure the thread safely sleeps.
@@ -81,11 +100,11 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		{
 			while (dataReportThread.isThreadRunning())
 			{
-				//System.out.println("DATA REPORTING THREAD RAN!");
+				// System.out.println("DATA REPORTING THREAD RAN!");
 				record();
 				synchronized (dataReportThread) // synchronized per the thread to make sure that we wait safely
 				{
-					dataReportThread.wait(100); // the wait time that the thread sleeps, in milliseconds
+					dataReportThread.wait(threadWaitTime); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (InterruptedException e)
@@ -93,29 +112,56 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
-	public static void record()
+	public void record()
+	{
+		if (collectingDefaultData)
+		{
+			TKOLogger inst = TKOLogger.getInstance();
+
+			inst.addMessage("Total pdp current:" + pdp.getTotalCurrent());
+			for (int i = 0; i < 16; i++)
+			{
+				inst.addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
+				SmartDashboard.putNumber("PDP Current for " + i, pdp.getCurrent(i));
+			}
+			try
+			{
+				for (CANJaguar motor : TKOHardware.getDriveJaguars())
+				{
+					// TODO Check if motors are null
+					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
+					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
+					inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+				}
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		if (collectingDriveData)
+		{
+			collectDriveData();
+		}
+	}
+
+	public void collectDriveData()
 	{
 		TKOLogger inst = TKOLogger.getInstance();
-		
-		inst.addMessage("Total pdp current:" + pdp.getTotalCurrent());
-		for (int i = 0; i < 16; i++)
-		{
-			inst.addMessage("PDP Current for " + i + ": " + pdp.getCurrent(i));
-			SmartDashboard.putNumber("PDP Current for " + i, pdp.getCurrent(i));
-		}
 		try
 		{
 			for (CANJaguar motor : TKOHardware.getDriveJaguars())
 			{
-				//TODO Check if motors are null
-				inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
-				inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
-				inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
-				inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+				int id = motor.getDeviceID();
+				inst.addData("Temperature", motor.getTemperature(), "" + id);
+				inst.addData("Out_Current", motor.getOutputCurrent(), "" + id);
+				inst.addData("Out_Voltage", motor.getOutputVoltage(), "" + id);
+				inst.addData("In_Voltage", motor.getBusVoltage(), "" + id);
 			}
 		} catch (Exception e)
 		{

@@ -76,6 +76,8 @@ public class TKOLogger implements Runnable
 
 	public void addData(String dataType, double value, String additionalComment)
 	{
+		if (additionalComment == null)
+			additionalComment = new String();
 		String sep = ",";
 		String str = dataType + sep + (System.nanoTime() - startTime) + sep + value + sep + additionalComment;
 		m_DataBuffer.push(str);

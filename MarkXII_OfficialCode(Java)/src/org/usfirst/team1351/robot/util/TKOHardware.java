@@ -46,12 +46,18 @@ public class TKOHardware
 					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
 				}
 			}
-
-			// drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
+		}
+		configJags(10., 0., 0.);
+	}
+	
+	public static synchronized void configJags(double p, double I, double d)
+	{
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		{
 			if (drive[i] != null)
 			{
-				//drive[i].setPercentMode();
-				drive[i].setCurrentMode(10., 0, 0);
+				drive[i].disableControl();
+				drive[i].setCurrentMode(p, I, d);
 				drive[i].enableControl();
 			}
 		}

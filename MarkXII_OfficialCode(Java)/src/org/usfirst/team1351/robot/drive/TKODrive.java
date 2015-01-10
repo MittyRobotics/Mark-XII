@@ -87,8 +87,8 @@ public class TKODrive implements Runnable
 				TKOHardware.configJags(p, i, d);
 				TKOHardware.setZero();
 				System.out.println("Done with all, starting commands");
-				Thread.sleep(250);
-				TKOLogger.getInstance().addData("Pval", p, null);
+				//Thread.sleep(250);
+				TKOLogger.getInstance().addData("Pval", p, null, -1);
 				System.out.println("Starting collecting data");
 				TKODataReporting.getInstance().startCollectingDriveData(p, i, d); // stops regular data collection
 				System.out.println("Starting set commands");
@@ -97,9 +97,9 @@ public class TKODrive implements Runnable
 				{
 					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);
 					if (p < 10)
-						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: 0" + p + " i: 0" + i + " d: 0" + d);
+						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), "p: 0" + p + " i: 0" + i + " d: 0" + d, j);
 					else
-						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p + " i: " + i + " d: " + d);
+						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), "p: " + p + " i: " + i + " d: " + d, j);
 				}
 				long start = System.currentTimeMillis();
 				int runningTime = 5000;

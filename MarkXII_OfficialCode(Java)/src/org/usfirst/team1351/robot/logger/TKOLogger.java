@@ -78,12 +78,12 @@ public class TKOLogger implements Runnable
 		m_MessageBuffer.add(str);
 	}
 
-	public void addData(String dataType, double value, String additionalComment)
+	public void addData(String dataType, double value, String additionalComment, int motor)
 	{
 		if (additionalComment == null)
 			additionalComment = new String();
 		String sep = ",";
-		String str = dataType + sep + (System.nanoTime() - startTime) + sep + value + sep + additionalComment;
+		String str = dataType + sep + (System.nanoTime() - startTime) + sep + value + sep + additionalComment + sep + motor;
 		m_DataBuffer.add(str);
 		dataBufferSize++;
 	}
@@ -105,7 +105,7 @@ public class TKOLogger implements Runnable
 			BufferedReader br = new BufferedReader(new FileReader(directory + dataDumpFileName + ".csv"));
 			if (br.readLine() == null)
 			{
-				m_DataLogFile.println("DataDescriptor,TimeElap(ns),Value,AdditionalComment");
+				m_DataLogFile.println("DataDescriptor,TimeElap(ns),Value,AdditionalComment,Motor");
 			}
 			br.close();
 		} catch (IOException e)

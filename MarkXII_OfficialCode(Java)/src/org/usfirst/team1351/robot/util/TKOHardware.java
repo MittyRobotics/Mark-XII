@@ -49,21 +49,33 @@ public class TKOHardware
 		}
 		configJags(10., 0., 0.);
 	}
-	
+
 	public static synchronized void configJags(double p, double I, double d)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
 		{
 			if (drive[i] != null)
 			{
-				drive[i].disableControl();
-				drive[i].setCurrentMode(p, I, d);
-				drive[i].configNeutralMode(CANJaguar.NeutralMode.Coast);
-				drive[i].enableControl();
+				/*
+				 * drive[i].disableControl(); drive[i].setCurrentMode(p, I, d); drive[i].configNeutralMode(CANJaguar.NeutralMode.Coast);
+				 * drive[i].enableControl();
+				 */
+
+				if (i == 0 || i == 3)
+				{
+					drive[i].disableControl();
+					drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
+					drive[i].enableControl(0.);
+				} else
+				{
+					drive[i].disableControl();
+					drive[i].setPercentMode();
+					drive[i].enableControl();
+				}
 			}
 		}
 	}
-	
+
 	public static synchronized void setZero()
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)

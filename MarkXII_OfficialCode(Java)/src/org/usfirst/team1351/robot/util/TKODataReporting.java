@@ -5,6 +5,7 @@ import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Data collection for everything
@@ -24,6 +25,8 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	private boolean collectingDefaultData = true;
 	private int threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
 	private double currentPTested = -1;
+	private double currentITested = -1;
+	private double currentDTested = -1;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKODataReporting()
@@ -78,12 +81,14 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		}
 	}
 
-	public synchronized void startCollectingDriveData(double p)
+	public synchronized void startCollectingDriveData(double p, double i, double d)
 	{
 		collectingDefaultData = false;
 		collectingDriveData = true;
 		threadWaitTime = 10;
 		currentPTested = p;
+		currentITested = i;
+		currentDTested = d;
 		record();
 		dataReportThread.interrupt();
 	}
@@ -182,6 +187,8 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	public void collectDriveData()
 	{
 		TKOLogger inst = TKOLogger.getInstance();
+		SmartDashboard.putNumber("DataBufferSize", TKOLogger.getInstance().dataBufferSize);
+		
 		try
 		{
 			for (CANJaguar motor : TKOHardware.getDriveJaguars())
@@ -192,17 +199,21 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 
 				if (currentPTested < 10)
 				{
-					inst.addData("Temperature", motor.getTemperature(), id + "; p: 0" + currentPTested);
-					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: 0" + currentPTested);
-					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: 0" + currentPTested);
-					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: 0" + currentPTested);
+					inst.addData("Temperature", motor.getTemperature(), id + "; p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested);
+					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested);
+					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested);
+					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested);
 				} else
 				{
-					inst.addData("Temperature", motor.getTemperature(), id + "; p: " + currentPTested);
-					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: " + currentPTested);
-					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: " + currentPTested);
-					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: " + currentPTested);
+					inst.addData("Temperature", motor.getTemperature(), id + "; p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested);
+					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested);
+					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested);
+					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested);
 				}
+				SmartDashboard.putNumber("Temperature Jag " + id, motor.getTemperature());
+				SmartDashboard.putNumber("Out_Current Jag " + id, motor.getOutputCurrent());
+				SmartDashboard.putNumber("Out_Voltage Jag " + id, motor.getOutputVoltage());
+				SmartDashboard.putNumber("In_Voltage Jag " + id, motor.getBusVoltage());
 			}
 		} catch (Exception e)
 		{

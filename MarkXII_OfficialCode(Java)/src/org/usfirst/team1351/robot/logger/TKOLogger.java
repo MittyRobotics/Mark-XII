@@ -25,6 +25,7 @@ public class TKOLogger implements Runnable
 	private String logFileName = "log";
 	private String dataDumpFileName = "data";
 	public long startTime;
+	public long dataBufferSize = 0;
 	//private long writeCounter = 0;
 
 	protected TKOLogger()
@@ -84,6 +85,7 @@ public class TKOLogger implements Runnable
 		String sep = ",";
 		String str = dataType + sep + (System.nanoTime() - startTime) + sep + value + sep + additionalComment;
 		m_DataBuffer.add(str);
+		dataBufferSize++;
 	}
 
 	public void start()
@@ -166,6 +168,7 @@ public class TKOLogger implements Runnable
 			if (!m_DataBuffer.isEmpty())
 			{
 				String s = m_DataBuffer.poll();
+				dataBufferSize--;
 				synchronized (TKOLogger.class)
 				{
 					m_DataLogFile.println(s);

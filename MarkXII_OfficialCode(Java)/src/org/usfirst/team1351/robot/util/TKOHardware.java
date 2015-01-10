@@ -58,6 +58,7 @@ public class TKOHardware
 			{
 				drive[i].disableControl();
 				drive[i].setCurrentMode(p, I, d);
+				drive[i].configNeutralMode(CANJaguar.NeutralMode.Coast);
 				drive[i].enableControl();
 			}
 		}

@@ -6,6 +6,8 @@ import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class TKODrive implements Runnable
 {
 	public TKOThread driveThread = null;
@@ -66,17 +68,17 @@ public class TKODrive implements Runnable
 
 	public synchronized void PIDCurrentCalibration()
 	{
-		double p = 5., i = 0., d = 0.;
+		double p = 0., i = 0., d = 0.;
 		boolean calibrating = true;
 		long bestTime = Long.MAX_VALUE;
 
 		try
 		{
-			while (calibrating)// TODO first run does not actually go until one iteration of loop
+			while (calibrating && DriverStation.getInstance().isEnabled())// TODO first run does not actually go until one iteration of loop
 			{
 				System.out.println("Stopping all data collection");
 				TKODataReporting.getInstance().stopAllDataCollection();
-				System.out.println("Running PID Tuning! P: " + p);
+				System.out.println("Running PID Tuning! P: " + p + " I: " + i + " D: " + d);
 				System.out.println("Destroying objects");
 				TKOHardware.destroyObjects();
 				System.out.println("Initialing objects");
@@ -88,16 +90,16 @@ public class TKODrive implements Runnable
 				Thread.sleep(250);
 				TKOLogger.getInstance().addData("Pval", p, null);
 				System.out.println("Starting collecting data");
-				TKODataReporting.getInstance().startCollectingDriveData(p); // stops regular data collection
+				TKODataReporting.getInstance().startCollectingDriveData(p, i, d); // stops regular data collection
 				System.out.println("Starting set commands");
 				Thread.sleep(1500);
 				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
 				{
 					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);
 					if (p < 10)
-						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: 0" + p);
+						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: 0" + p + " i: 0" + i + " d: 0" + d);
 					else
-						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p);
+						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p + " i: " + i + " d: " + d);
 				}
 				long start = System.currentTimeMillis();
 				int runningTime = 5000;
@@ -118,9 +120,16 @@ public class TKODrive implements Runnable
 				TKOHardware.initObjects();
 				System.out.println("Initialized objects, stopping collecting drive data");
 				TKODataReporting.getInstance().stopCollectingDriveData(); // starts regular data collection
-				p += 1.;
-				if (p > 15.)
-					calibrating = false;
+				//p += 1.;
+				//if (p > 15.)
+				i += 0.01;
+				if (i > .1)
+				{
+					i = 0.;
+					p += 1.;
+					if (p > 15.)
+						calibrating = false;
+				}
 				System.out.println("Next iteration");
 			}
 		} catch (Exception e)
@@ -137,15 +146,15 @@ public class TKODrive implements Runnable
 	{
 		try
 		{
-			boolean calibRan = false;
+			//boolean calibRan = false;
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
-				// if (TKOHardware.getJoystick(0).getRawButton(5))
-				if (!calibRan)
+				if (TKOHardware.getJoystick(0).getRawButton(5))
+				//if (!calibRan)
 				{
 					PIDCurrentCalibration();
-					calibRan = true;
+					//calibRan = true;
 				}
 
 				tankDrive();

@@ -68,6 +68,7 @@ public class TKODrive implements Runnable
 	{
 		double p = 5., i = 0., d = 0.;
 		boolean calibrating = true;
+		long bestTime = Long.MAX_VALUE;
 
 		try
 		{
@@ -83,11 +84,12 @@ public class TKODrive implements Runnable
 				System.out.println("Configuring jaguars");
 				TKOHardware.configJags(p, i, d);
 				System.out.println("Done with all, starting commands");
-				Thread.sleep(1000);
+				Thread.sleep(250);
 				TKOLogger.getInstance().addData("Pval", p, null);
 				System.out.println("Starting collecting data");
 				TKODataReporting.getInstance().startCollectingDriveData(p); // stops regular data collection
 				System.out.println("Starting set commands");
+				Thread.sleep(250);
 				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
 				{
 					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);
@@ -96,7 +98,18 @@ public class TKODrive implements Runnable
 					else
 						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p);
 				}
-				Thread.sleep(5000);
+				long start = System.currentTimeMillis();
+				int runningTime = 5000;
+				while ((System.currentTimeMillis() - start) < runningTime)
+				{
+					//record the point in time when feedback exceeds target, or is within x% of target
+					if (TKOHardware.getDriveJaguar(0).getOutputCurrent() > Definitions.DRIVE_MULTIPLIER[0])
+					{
+						if (bestTime > System.nanoTime())
+							bestTime = System.nanoTime();
+					}
+					//record final deviation from target at the end of 5 s
+				}
 				TKODataReporting.getInstance().stopAllDataCollection();
 				System.out.println("Destroying objects");
 				TKOHardware.destroyObjects();

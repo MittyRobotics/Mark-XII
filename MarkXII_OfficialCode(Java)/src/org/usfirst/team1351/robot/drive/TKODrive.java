@@ -83,13 +83,14 @@ public class TKODrive implements Runnable
 				TKOHardware.initObjects();
 				System.out.println("Configuring jaguars");
 				TKOHardware.configJags(p, i, d);
+				TKOHardware.setZero();
 				System.out.println("Done with all, starting commands");
 				Thread.sleep(250);
 				TKOLogger.getInstance().addData("Pval", p, null);
 				System.out.println("Starting collecting data");
 				TKODataReporting.getInstance().startCollectingDriveData(p); // stops regular data collection
 				System.out.println("Starting set commands");
-				Thread.sleep(250);
+				Thread.sleep(1500);
 				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
 				{
 					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);

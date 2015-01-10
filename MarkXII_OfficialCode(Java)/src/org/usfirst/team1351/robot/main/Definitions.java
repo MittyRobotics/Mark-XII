@@ -13,7 +13,7 @@ public class Definitions
 	{ 1, 2, 3, 4 };
 	// public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	public static final double[] DRIVE_MULTIPLIER =
-	{ 15., 15., -15., -15. };
+	{ 5., 5., -5., -5. };
 	public static final int DEF_DATA_REPORTING_THREAD_WAIT = 250;
 	public static ArrayList<String> threadNames = new ArrayList<String>();
 	public static HashMap<String, Integer> threadPriorities;

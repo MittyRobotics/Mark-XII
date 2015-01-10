@@ -62,6 +62,17 @@ public class TKOHardware
 			}
 		}
 	}
+	
+	public static synchronized void setZero()
+	{
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		{
+			if (drive[i] != null)
+			{
+				drive[i].set(0);
+			}
+		}
+	}
 
 	public static synchronized void destroyObjects()
 	{

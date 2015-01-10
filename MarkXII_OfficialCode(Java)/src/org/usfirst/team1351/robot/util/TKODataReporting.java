@@ -84,6 +84,8 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		collectingDriveData = true;
 		threadWaitTime = 10;
 		currentPTested = p;
+		record();
+		dataReportThread.interrupt();
 	}
 
 	public synchronized void stopCollectingDriveData()
@@ -91,6 +93,8 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		collectingDefaultData = true;
 		collectingDriveData = false;
 		threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
+		record();
+		dataReportThread.interrupt();
 	}
 	
 	public synchronized void stopAllDataCollection()
@@ -98,6 +102,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		collectingDefaultData = false;
 		collectingDriveData = false;
 		threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
+		dataReportThread.interrupt();
 	}
 
 	/**
@@ -121,7 +126,8 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			}
 		} catch (InterruptedException e)
 		{
-			e.printStackTrace();
+			run();
+			//e.printStackTrace();
 		}
 	}
 

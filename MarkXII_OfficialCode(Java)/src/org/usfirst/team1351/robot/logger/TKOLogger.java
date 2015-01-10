@@ -7,23 +7,25 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOThread;
 
 public class TKOLogger implements Runnable
 {
-	private LinkedList<String> m_MessageBuffer = new LinkedList<String>();
+	private ConcurrentLinkedQueue<String> m_MessageBuffer = new ConcurrentLinkedQueue<String>();
+	private ConcurrentLinkedQueue<String> m_DataBuffer = new ConcurrentLinkedQueue<String>();
 	private PrintWriter m_LogFile;
-	private LinkedList<String> m_DataBuffer = new LinkedList<String>();
 	private PrintWriter m_DataLogFile;
 	private static TKOLogger m_Instance = null;
 	public TKOThread loggerThread = null;
-	private String directory = "/home/lvuser/logs/";
+	private String directory = "/home/lvuser/logs/"; //THIS IS ACTUAL
+	//private String directory = ""; //FOR PC TESTING
 	private String logFileName = "log";
 	private String dataDumpFileName = "data";
 	public long startTime;
+	private long writeCounter = 0;
 
 	protected TKOLogger()
 	{
@@ -72,7 +74,7 @@ public class TKOLogger implements Runnable
 	{
 		// String str = "Time: " + DriverStation.getInstance().getMatchTime() + ";Message: " + message;
 		String str = "Time(s): " + (System.nanoTime() / 1000000000) + " Message:" + message;
-		m_MessageBuffer.push(str);
+		m_MessageBuffer.add(str);
 	}
 
 	public void addData(String dataType, double value, String additionalComment)
@@ -81,7 +83,7 @@ public class TKOLogger implements Runnable
 			additionalComment = new String();
 		String sep = ",";
 		String str = dataType + sep + (System.nanoTime() - startTime) + sep + value + sep + additionalComment;
-		m_DataBuffer.push(str);
+		m_DataBuffer.add(str);
 	}
 
 	public void start()
@@ -126,9 +128,7 @@ public class TKOLogger implements Runnable
 		{
 			writeFromQueue();
 		}
-		m_LogFile.flush();
 		m_LogFile.close();
-		m_DataLogFile.flush();
 		m_DataLogFile.close();
 		System.out.println("Stopped logger task");
 	}
@@ -146,23 +146,29 @@ public class TKOLogger implements Runnable
 				return;
 			if (m_MessageBuffer.size() > 0)
 			{
+				String s = m_MessageBuffer.poll();
 				synchronized (TKOLogger.class)
 				{
-					String s = m_MessageBuffer.removeLast();
 					m_LogFile.println(s);
 				}
 			}
 			if (m_DataBuffer.size() > 0)
 			{
+				String s = m_DataBuffer.poll();
 				synchronized (TKOLogger.class)
 				{
-					String s = m_DataBuffer.removeLast();
 					m_DataLogFile.println(s);
 				}
 			}
 		} catch (NullPointerException e)
 		{
 			e.printStackTrace();
+		}
+		writeCounter++;
+		if (writeCounter % 1000 == 0 && loggerThread.isThreadRunning())
+		{
+			m_LogFile.flush();
+			m_DataLogFile.flush();
 		}
 	}
 
@@ -177,7 +183,7 @@ public class TKOLogger implements Runnable
 				// System.out.println("LOGGER THREAD RAN!");
 				synchronized (loggerThread)
 				{
-					loggerThread.wait(100);
+					loggerThread.wait(50);
 				}
 			}
 			System.out.println("Leaving run method in TKOLogger...");

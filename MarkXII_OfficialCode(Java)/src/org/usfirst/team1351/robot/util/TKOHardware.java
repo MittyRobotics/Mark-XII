@@ -42,7 +42,7 @@ public class TKOHardware
 				} catch (AllocationException | CANMessageNotFoundException e)
 				{
 					e.printStackTrace();
-					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND");
+					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
 					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
 				}
 			}

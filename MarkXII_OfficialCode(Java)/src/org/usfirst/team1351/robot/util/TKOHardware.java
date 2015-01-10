@@ -4,13 +4,14 @@ import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
 
 public class TKOHardware
 {
-	protected static CANJaguar drive[] = new CANJaguar[Definitions.NUM_DRIVE_JAGS];
+	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_JAGS];
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
 
 	public TKOHardware()
@@ -38,7 +39,7 @@ public class TKOHardware
 			{
 				try
 				{
-					drive[i] = new CANJaguar(Definitions.DRIVE_JAGUAR_ID[i]);
+					drive[i] = new CANTalon(Definitions.DRIVE_JAGUAR_ID[i]);
 				} catch (AllocationException | CANMessageNotFoundException e)
 				{
 					e.printStackTrace();
@@ -64,12 +65,13 @@ public class TKOHardware
 				if (i == 0 || i == 3)
 				{
 					drive[i].disableControl();
-					drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
-					drive[i].enableControl(0.);
+					drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
+				//	drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
+					drive[i].enableControl();
 				} else
 				{
 					drive[i].disableControl();
-					drive[i].setPercentMode();
+					drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
 					drive[i].enableControl();
 				}
 			}
@@ -100,13 +102,13 @@ public class TKOHardware
 		{
 			if (drive[i] != null)
 			{
-				drive[i].free();
+				drive[i].delete();
 				drive[i] = null;
 			}
 		}
 	}
 
-	public static synchronized CANJaguar getDriveJaguar(int num) throws Exception
+	public static synchronized CANTalon getDriveJaguar(int num) throws Exception
 	{
 		if (num > Definitions.NUM_DRIVE_JAGS)
 		{
@@ -130,7 +132,7 @@ public class TKOHardware
 			throw new Exception("Joystick " + (num) + "(array value) is null");
 	}
 
-	public static synchronized CANJaguar[] getDriveJaguars() throws Exception
+	public static synchronized CANTalon[] getDriveJaguars() throws Exception
 	{
 		return drive;
 	}

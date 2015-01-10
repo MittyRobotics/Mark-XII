@@ -4,6 +4,7 @@ import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -163,12 +164,12 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			{
 				SmartDashboard.putNumber("EncLeft", TKOHardware.getDriveJaguar(0).getPosition());
 				SmartDashboard.putNumber("EncRight", TKOHardware.getDriveJaguar(2).getPosition());
-				for (CANJaguar motor : TKOHardware.getDriveJaguars())
+				for (CANTalon motor : TKOHardware.getDriveJaguars())
 				{
 					// TODO Check if motors are null
 					if (motor == null)
 						continue;
-					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemp());
 					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
 					inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
@@ -194,7 +195,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		SmartDashboard.putNumber("DValTested", currentDTested);
 		try
 		{
-			for (CANJaguar motor : TKOHardware.getDriveJaguars())
+			for (CANTalon motor : TKOHardware.getDriveJaguars())
 			{
 				if (motor == null)
 					continue;
@@ -202,18 +203,18 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 
 				if (currentPTested < 10)
 				{
-					inst.addData("Temperature", motor.getTemperature(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
+					inst.addData("Temperature", motor.getTemp(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
 					inst.addData("Out_Current", motor.getOutputCurrent(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
 					inst.addData("Out_Voltage", motor.getOutputVoltage(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
 					inst.addData("In_Voltage", motor.getBusVoltage(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
 				} else
 				{
-					inst.addData("Temperature", motor.getTemperature(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
+					inst.addData("Temperature", motor.getTemp(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
 					inst.addData("Out_Current", motor.getOutputCurrent(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
 					inst.addData("Out_Voltage", motor.getOutputVoltage(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
 					inst.addData("In_Voltage", motor.getBusVoltage(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
 				}
-				SmartDashboard.putNumber("Temperature Jag " + id, motor.getTemperature());
+				SmartDashboard.putNumber("Temperature Jag " + id, motor.getTemp());
 				SmartDashboard.putNumber("Out_Current Jag " + id, motor.getOutputCurrent());
 				SmartDashboard.putNumber("Out_Voltage Jag " + id, motor.getOutputVoltage());
 				SmartDashboard.putNumber("In_Voltage Jag " + id, motor.getBusVoltage());

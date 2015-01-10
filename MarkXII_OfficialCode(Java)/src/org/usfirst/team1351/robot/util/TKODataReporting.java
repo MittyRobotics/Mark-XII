@@ -24,6 +24,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	private boolean collectingDriveData = false;
 	private boolean collectingDefaultData = true;
 	private int threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
+	private double currentPTested = -1;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKODataReporting()
@@ -77,16 +78,24 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		}
 	}
 
-	public synchronized void startCollectingDriveData()
+	public synchronized void startCollectingDriveData(double p)
 	{
 		collectingDefaultData = false;
 		collectingDriveData = true;
 		threadWaitTime = 10;
+		currentPTested = p;
 	}
 
 	public synchronized void stopCollectingDriveData()
 	{
 		collectingDefaultData = true;
+		collectingDriveData = false;
+		threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
+	}
+	
+	public synchronized void stopAllDataCollection()
+	{
+		collectingDefaultData = false;
 		collectingDriveData = false;
 		threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
 	}
@@ -136,6 +145,8 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 				for (CANJaguar motor : TKOHardware.getDriveJaguars())
 				{
 					// TODO Check if motors are null
+					if (motor == null)
+						continue;
 					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
 					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
@@ -160,11 +171,13 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		{
 			for (CANJaguar motor : TKOHardware.getDriveJaguars())
 			{
+				if (motor == null)
+					continue;
 				int id = motor.getDeviceID();
-				inst.addData("Temperature", motor.getTemperature(), "" + id);
-				inst.addData("Out_Current", motor.getOutputCurrent(), "" + id);
-				inst.addData("Out_Voltage", motor.getOutputVoltage(), "" + id);
-				inst.addData("In_Voltage", motor.getBusVoltage(), "" + id);
+				inst.addData("Temperature", motor.getTemperature(), id + "; p: " + currentPTested);
+				inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: " + currentPTested);
+				inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: " + currentPTested);
+				inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: " + currentPTested);
 			}
 		} catch (Exception e)
 		{

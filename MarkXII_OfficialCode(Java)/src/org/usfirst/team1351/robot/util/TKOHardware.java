@@ -68,12 +68,17 @@ public class TKOHardware
 		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
 			if (stick[i] != null)
+			{
 				stick[i] = null;
+			}
 		}
 		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
 		{
 			if (drive[i] != null)
+			{
+				drive[i].free();
 				drive[i] = null;
+			}
 		}
 	}
 

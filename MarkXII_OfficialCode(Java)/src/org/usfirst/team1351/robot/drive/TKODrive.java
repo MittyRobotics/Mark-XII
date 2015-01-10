@@ -69,27 +69,44 @@ public class TKODrive implements Runnable
 
 	public synchronized void PIDCurrentCalibration() // TODO Finish this
 	{
-		double p = 0., i = 0., d = 0.;
+		double p = 5., i = 0., d = 0.;
 		boolean calibrating = true;
 
 		try
 		{
-			while (calibrating && DriverStation.getInstance().isEnabled())
+			while (calibrating && DriverStation.getInstance().isEnabled())//todofirstrundoesnotactuallygountiloneiterationofloop
 			{
+				System.out.println("Stopping all data collection");
+				TKODataReporting.getInstance().stopAllDataCollection();
+				System.out.println("Running PID Tuning! P: " + p);
+				System.out.println("Destroying objects");
+				TKOHardware.destroyObjects();
+				System.out.println("Initialing objects");
 				TKOHardware.initObjects();
+				System.out.println("Configuring jaguars");
 				TKOHardware.configJags(p, i, d);
+				System.out.println("Done with all, starting set commands");
+				Timer.delay(0.25);
 				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
 				{
 					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);
+					TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p);
 				}
 				TKOLogger.getInstance().addData("Pval", p, null);
-				TKODataReporting.getInstance().startCollectingDriveData();
+				System.out.println("Starting collecting data");
+				TKODataReporting.getInstance().startCollectingDriveData(p);
 				Timer.delay(10);
-				TKODataReporting.getInstance().stopCollectingDriveData();
+				TKODataReporting.getInstance().stopAllDataCollection();
+				System.out.println("Destroying objects");
 				TKOHardware.destroyObjects();
-				p += 0.1;
-				if (p > 1.)
+				System.out.println("Reinitializing objects");
+				TKOHardware.initObjects();
+				System.out.println("Initialized objects, stopping collecting drive data");
+				TKODataReporting.getInstance().stopCollectingDriveData();
+				p += 1.;
+				if (p > 15.)
 					calibrating = false;
+				System.out.println("Next iteration");
 			}
 		} catch (Exception e)
 		{
@@ -98,6 +115,7 @@ public class TKODrive implements Runnable
 		}
 		TKOHardware.destroyObjects(); // TODO make sure cant destroy if already destroyed
 		TKOHardware.initObjects();
+		TKODataReporting.getInstance().stopCollectingDriveData();
 	}
 
 	@Override
@@ -105,11 +123,16 @@ public class TKODrive implements Runnable
 	{
 		try
 		{
+			boolean calibRan = false;
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
-				if (TKOHardware.getJoystick(0).getRawButton(5))
+			//	if (TKOHardware.getJoystick(0).getRawButton(5))
+				if (!calibRan)
+				{
 					PIDCurrentCalibration();
+					calibRan = true;
+				}
 
 				tankDrive();
 				synchronized (driveThread)

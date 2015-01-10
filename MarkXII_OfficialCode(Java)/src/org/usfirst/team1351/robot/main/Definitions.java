@@ -25,11 +25,11 @@ public class Definitions
 		case "drive":
 			return Thread.NORM_PRIORITY - 3;
 		case "logger":
-			return Thread.NORM_PRIORITY + 20;
+			return Thread.NORM_PRIORITY + 2;
 		case "dataReporting":
-			return Thread.NORM_PRIORITY + 21;
+			return Thread.NORM_PRIORITY + 3;
 		case "ledArduino":
-			return Thread.NORM_PRIORITY + 10;
+			return Thread.NORM_PRIORITY + 1;
 
 		default:
 			return Thread.NORM_PRIORITY;

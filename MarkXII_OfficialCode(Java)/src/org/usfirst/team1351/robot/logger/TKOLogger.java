@@ -20,9 +20,9 @@ public class TKOLogger implements Runnable
 	private PrintWriter m_DataLogFile;
 	private static TKOLogger m_Instance = null;
 	public TKOThread loggerThread = null;
-	private String directory = "/home/lvuser/";
-	private String logFileName = "log.txt";
-	private String dataDumpFileName = "data.csv";
+	private String directory = "/home/lvuser/logs/";
+	private String logFileName = "log";
+	private String dataDumpFileName = "data";
 	public long startTime;
 
 	protected TKOLogger()

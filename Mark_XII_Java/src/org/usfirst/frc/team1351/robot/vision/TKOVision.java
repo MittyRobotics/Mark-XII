@@ -18,6 +18,7 @@ public class TKOVision implements Runnable {
 	private static TKOThread visionThread = new TKOThread(new TKOVision());
 	private static int session;
 	private static Image frame;
+	private static boolean isEnabled; 
 	
 	protected TKOVision()
 	{
@@ -48,10 +49,12 @@ public class TKOVision implements Runnable {
 	public static void draw()
 	{
 		NIVision.IMAQdxStartAcquisition(session);
+		
+		
 
 		NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
 
-		while (isOperatorControl() && isEnabled())
+		while (isOperatorControl() && isEnabled = true)
 		{
 			NIVision.IMAQdxGrab(session, frame, 1);
 			NIVision.imaqDrawShapeOnImage(frame, frame, rect, DrawMode.DRAW_VALUE, ShapeMode.SHAPE_OVAL, 0.0f);

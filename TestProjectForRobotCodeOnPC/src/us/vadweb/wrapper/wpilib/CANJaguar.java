@@ -6,6 +6,7 @@ public class CANJaguar
 {
 	private int id;
 	private Random r = new Random();
+	private long counterOfCurrentCalls = 0;
 	
 	public CANJaguar(int id)
 	{
@@ -37,7 +38,7 @@ public class CANJaguar
 	}
 	public void set(double d)
 	{
-		
+		counterOfCurrentCalls -= 20;
 	}
 	public double getTemperature()
 	{
@@ -45,7 +46,11 @@ public class CANJaguar
 	}
 	public double getOutputCurrent()
 	{
-		return (r.nextDouble() * r.nextDouble()) + (r.nextInt(20));
+		counterOfCurrentCalls++;
+		if (counterOfCurrentCalls < 100)
+			return counterOfCurrentCalls;
+		else
+			return (r.nextDouble() * r.nextDouble()) + (r.nextInt(7));
 	}
 	public double getOutputVoltage()
 	{

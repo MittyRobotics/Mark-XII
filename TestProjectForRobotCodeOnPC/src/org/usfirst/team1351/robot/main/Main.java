@@ -16,30 +16,18 @@ public class Main
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKODataReporting.getInstance().start();
-		while ((System.currentTimeMillis() - startTime) < 120000)
+		while ((System.currentTimeMillis() - startTime) < 80000)
 		{
-			//do nothing
+			// do nothing
 		}
-		
-		TKODataReporting.getInstance().stop();
+
 		try
 		{
+			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
-		} catch (InterruptedException e1)
-		{
-			e1.printStackTrace();
-		}
-		TKODrive.getInstance().stop();
-		try
-		{
+			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
-		} catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		TKOLogger.getInstance().stop();
-		try
-		{
+			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{

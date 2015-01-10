@@ -6,9 +6,6 @@ import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-
 public class TKODrive implements Runnable
 {
 	public TKOThread driveThread = null;
@@ -74,7 +71,7 @@ public class TKODrive implements Runnable
 
 		try
 		{
-			while (calibrating && DriverStation.getInstance().isEnabled())// TODO first run does not actually go until one iteration of loop
+			while (calibrating)// TODO first run does not actually go until one iteration of loop
 			{
 				System.out.println("Stopping all data collection");
 				TKODataReporting.getInstance().stopAllDataCollection();
@@ -85,17 +82,21 @@ public class TKODrive implements Runnable
 				TKOHardware.initObjects();
 				System.out.println("Configuring jaguars");
 				TKOHardware.configJags(p, i, d);
-				System.out.println("Done with all, starting set commands");
-				Timer.delay(1.);
-				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
-				{
-					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);
-					TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p);
-				}
+				System.out.println("Done with all, starting commands");
+				Thread.sleep(1000);
 				TKOLogger.getInstance().addData("Pval", p, null);
 				System.out.println("Starting collecting data");
 				TKODataReporting.getInstance().startCollectingDriveData(p); // stops regular data collection
-				Timer.delay(5);
+				System.out.println("Starting set commands");
+				for (int j = 0; j < Definitions.NUM_DRIVE_JAGS; j++)
+				{
+					TKOHardware.getDriveJaguar(j).set(Definitions.DRIVE_MULTIPLIER[j]);
+					if (p < 10)
+						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: 0" + p);
+					else
+						TKOLogger.getInstance().addData("MotorSetCommand", System.nanoTime(), j + "; p: " + p);
+				}
+				Thread.sleep(5000);
 				TKODataReporting.getInstance().stopAllDataCollection();
 				System.out.println("Destroying objects");
 				TKOHardware.destroyObjects();

@@ -20,12 +20,12 @@ public class TKOLogger implements Runnable
 	private PrintWriter m_DataLogFile;
 	private static TKOLogger m_Instance = null;
 	public TKOThread loggerThread = null;
-	private String directory = "/home/lvuser/logs/"; //THIS IS ACTUAL
-	//private String directory = ""; //FOR PC TESTING
+	private String directory = "/home/lvuser/logs/"; //TODO THIS IS ACTUAL
+	//private String directory = "";
 	private String logFileName = "log";
 	private String dataDumpFileName = "data";
 	public long startTime;
-	private long writeCounter = 0;
+	//private long writeCounter = 0;
 
 	protected TKOLogger()
 	{
@@ -117,17 +117,28 @@ public class TKOLogger implements Runnable
 		System.out.println("Started logger task");
 	}
 
-	public void stop()
+	public void stop() // TODO test abrupt program termination effects on log files
 	{
 		System.out.println("Stopping logger task");
 		if (loggerThread.isThreadRunning())
 		{
 			loggerThread.setThreadRunning(false);
 		}
-		while (m_MessageBuffer.size() > 0 || m_DataBuffer.size() > 0)
+		System.out.println("Logging flushing buffers");
+		long totalOperations = 0;
+		int messBuffSize = m_MessageBuffer.size();
+		int dataBuffSize = m_DataBuffer.size();
+		int largest = Math.max(messBuffSize, dataBuffSize);
+
+		for (int i = 0; i < largest; i++)
 		{
+			long writeStartNS = System.nanoTime();
 			writeFromQueue();
+			totalOperations += (System.nanoTime() - writeStartNS);
 		}
+		System.out.println("Logging buffers flushed");
+		System.out.println("Flushing took: " + (totalOperations / 10E9) + " (s).");
+		System.out.println("Average log flush write duration: " + ((totalOperations / 10E6) / largest) + " (ms).");
 		m_LogFile.close();
 		m_DataLogFile.close();
 		System.out.println("Stopped logger task");
@@ -144,7 +155,7 @@ public class TKOLogger implements Runnable
 		{
 			if (m_LogFile == null)
 				return;
-			if (m_MessageBuffer.size() > 0)
+			if (!m_MessageBuffer.isEmpty())
 			{
 				String s = m_MessageBuffer.poll();
 				synchronized (TKOLogger.class)
@@ -152,7 +163,7 @@ public class TKOLogger implements Runnable
 					m_LogFile.println(s);
 				}
 			}
-			if (m_DataBuffer.size() > 0)
+			if (!m_DataBuffer.isEmpty())
 			{
 				String s = m_DataBuffer.poll();
 				synchronized (TKOLogger.class)
@@ -164,12 +175,10 @@ public class TKOLogger implements Runnable
 		{
 			e.printStackTrace();
 		}
-		writeCounter++;
-		if (writeCounter % 1000 == 0 && loggerThread.isThreadRunning())
-		{
-			m_LogFile.flush();
-			m_DataLogFile.flush();
-		}
+		//writeCounter++;
+		/*
+		 * if (writeCounter % 1000 == 0 && loggerThread.isThreadRunning()) { m_LogFile.flush(); m_DataLogFile.flush(); }
+		 */
 	}
 
 	@Override
@@ -181,9 +190,13 @@ public class TKOLogger implements Runnable
 			{
 				writeFromQueue();
 				// System.out.println("LOGGER THREAD RAN!");
-				synchronized (loggerThread)
+
+				if (m_MessageBuffer.isEmpty() && m_DataBuffer.isEmpty()) //TODO make sure this doesnt slow down other threads
 				{
-					loggerThread.wait(50);
+					synchronized (loggerThread)
+					{
+						loggerThread.wait(50);
+					}
 				}
 			}
 			System.out.println("Leaving run method in TKOLogger...");

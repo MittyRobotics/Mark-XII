@@ -68,29 +68,16 @@ public class MarkXII extends SampleRobot
 		TKODataReporting.getInstance().start();
 		while (isOperatorControl() && isEnabled())
 		{
-			TKOLogger.getInstance().addMessage("Testing...");
 			Timer.delay(0.25); // wait for a motor update time
 		}
-		
-		TKODataReporting.getInstance().stop();
+
 		try
 		{
+			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
-		} catch (InterruptedException e1)
-		{
-			e1.printStackTrace();
-		}
-		TKODrive.getInstance().stop();
-		try
-		{
+			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
-		} catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		TKOLogger.getInstance().stop();
-		try
-		{
+			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{

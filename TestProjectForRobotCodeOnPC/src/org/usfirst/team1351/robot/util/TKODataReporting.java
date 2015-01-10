@@ -50,6 +50,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * 
 	 * @category
 	 
+	 
 	 */
 	public void start()
 	{
@@ -95,13 +96,23 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		record();
 		dataReportThread.interrupt();
 	}
-	
+
 	public synchronized void stopAllDataCollection()
 	{
 		collectingDefaultData = false;
 		collectingDriveData = false;
 		threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
 		dataReportThread.interrupt();
+	}
+
+	public boolean isCollectingDefaultData()
+	{
+		return collectingDefaultData;
+	}
+
+	public boolean isCollectingDriveData()
+	{
+		return collectingDriveData;
 	}
 
 	/**
@@ -126,7 +137,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		} catch (InterruptedException e)
 		{
 			run();
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -178,10 +189,20 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 				if (motor == null)
 					continue;
 				int id = motor.getDeviceID();
-				inst.addData("Temperature", motor.getTemperature(), id + "; p: " + currentPTested);
-				inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: " + currentPTested);
-				inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: " + currentPTested);
-				inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: " + currentPTested);
+
+				if (currentPTested < 10)
+				{
+					inst.addData("Temperature", motor.getTemperature(), id + "; p: 0" + currentPTested);
+					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: 0" + currentPTested);
+					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: 0" + currentPTested);
+					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: 0" + currentPTested);
+				} else
+				{
+					inst.addData("Temperature", motor.getTemperature(), id + "; p: " + currentPTested);
+					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: " + currentPTested);
+					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: " + currentPTested);
+					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: " + currentPTested);
+				}
 			}
 		} catch (Exception e)
 		{

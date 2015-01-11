@@ -1,0 +1,13 @@
+The testing bed must be PID controlled, and will feature two hard-stops on either side of the bench to ensure no permanent damage to the test fixture in the case of a software malfunction. 
+Along with these hard-stops are two optical limit switches, which are to be used for homing, as well as software stops for the sled.
+ After a period of homing, within autonomous, the sled is not to touch the optical limit switches again, and will instead oscillate back and forth between the switches, using PID. 
+ If one of the optical switches is hit, the sled will stop in place, at least in autonomous. 
+ Within the teleoperated period, using joysticks, after a period of calibration, the user can use the joysticks to move the sled back and forth. If, within this period, either of the optical limit switches is activated, the sled will stop, and the user will be able to move it in any direction except for out towards the other direction. 
+ There will be a test mode in which the sled will home in on one point, then run forward X ticks to make sure that the second switch is there. There will be both a long and short test. In the short test, the sled will simply cycle once. In the long test, the sled will home once, check X ticks, then move back and forth many (100?) times, then re-home and make sure home is all proper. 
+ Every time the program runs, a sign will display calling the bench a pinch zone, please make sure that button is pressed before software continues. 
+ Scratch the autonomous, only canned tests - short and long. 
+ Success -
+	Short test - Home successfully. Pre-defined range is correct(Range of tolerance - Few (10-20 counts) counts within the final position. Can get from one end to the other without hitting the switches. Will do with a consistent time. Then, oscillate back and fourth number of times, then will try and find home. 
+	Long test - Same as short, except for a larger number of oscillations (100?) 
+Outputs average motor voltage, PID positions, Current motor voltage, Jaguar current outputs, average current output
+Safety Check - prolonged current spike (about 3 seconds long) means total shutdown. For safety purposes. The time restriction is because if the sled quickly changes direction, there will be a current spike, but this won't be bad. The spike in current means something is resisting it, which is a strong safety hazard. 

@@ -246,50 +246,72 @@ public:
 		float incrementer = 3.0;
 		float p = 0.0050;
 		float i = 0.001;
-		driveControl.SetPID(p, i, 0.0);
+//		leftTest.SetVoltageRampRate(12.);
+//		rightTest.SetVoltageRampRate(12.);
+		driveControl.SetPID(p, i, 0.0); //P is 0.2, I is 0, incrementer is 1.250, distance is 3.0 
 		driveControl.Enable();
+		rightTest.ConfigSoftPositionLimits(0, 940);
 		incrementer = driverStation->GetAnalogIn(3);
-		/*while (IsEnabled()) {
+		p = driverStation->GetAnalogIn(1) / 10;
+		i = driverStation->GetAnalogIn(2) / 10;
+		driveControl.SetPID(p, i, 0.0);
+		double length = ncoder.GetDistance(); 
+		while (IsEnabled()) {
 			float addition = -joy1.GetY() * incrementer;
-//			printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
-//					driveControl.GetSetpoint(), addition, ncoder.GetDistance());
+			printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
+					driveControl.GetSetpoint(), addition, ncoder.GetDistance());
 
-			if (opticalTest1.Get() == 0) {
-				if (addition <= 0) {
-					addition = 0;
-//					rightTest.Set(0);
-//					leftTest.Set(0);
-					driveControl.SetSetpoint(ncoder.GetDistance());
-				}
+			if (opticalTest1.Get() == 0 && addition <= -0.1) {
 
-			} else if (opticalTest2.Get() == 0) {
-				if (addition >= 0) {
-					addition = 0;
-//					rightTest.Set(0);
-//					leftTest.Set(0);
-					driveControl.SetSetpoint(ncoder.GetDistance());
-					
-				}
+				addition = 0;
+				//				rightTest.Set(0);
+				//				leftTest.Set(0);
+				//driveControl.SetSetpoint(0);
+				driveControl.SetSetpoint(ncoder.GetDistance()); 
+				//driveControl.Disable();
+
+			} else if (opticalTest2.Get() == 0 && addition >= 0.1) {
+
+				addition = 0;
+				//				rightTest.Set(0);
+				//				leftTest.Set(0);
+				//driveControl.SetSetpoint(length);
+				driveControl.SetSetpoint(ncoder.GetDistance()); 
+				//driveControl.Disable();
 
 			}
-			if (addition > 0.5 || addition < -0.5) {
-				driveControl.SetSetpoint(driveControl.GetSetpoint() + addition);
+			if (addition > 0.1 || addition < -0.1) {
+				//				if (!driveControl.IsEnabled()) {
+				//					driveControl.Enable();
+				//				}
+				//driveControl.SetSetpoint(driveControl.GetSetpoint() + addition);
+				driveControl.SetSetpoint(ncoder.GetDistance() + 10*addition);
 			}
-			
+
 			leftTest.Set(rightTest.Get());
 		}
-		*/ 
-		while(IsEnabled()) {
-			float addition = -joy1.GetY() * incrementer; 
-			if(opticalTest1.Get() == 0) {
-				addition = 0; 
-				driveControl.SetSetpoint(ncoder.GetDistance()); 
-			}
-			if(opticalTest2.Get() == 0) {
-				addition = 0;
-				driveControl.SetSetpoint(ncoder.GetDistance()); 
-			}
-		}
+		/*
+		 printf("ITS DONE!");
+		 while (IsEnabled()) {
+		 float addition = -joy1.GetY() * incrementer;
+		 printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
+		 driveControl.GetSetpoint(), addition, ncoder.GetDistance());
+		 if (opticalTest1.Get() == 0 && addition < 0.5) {
+		 addition = 0;
+		 driveControl.SetSetpoint(ncoder.GetDistance());
+		 leftTest.Set(rightTest.Get());
+		 }
+		 if (opticalTest2.Get() == 0 && addition > 0.5) {
+		 addition = 0;
+		 driveControl.SetSetpoint(ncoder.GetDistance());
+		 leftTest.Set(rightTest.Get());
+		 }
+		 if (addition < -0.5 || addition > 0.5) {
+		 driveControl.SetSetpoint(driveControl.GetSetpoint() + addition);
+		 leftTest.Set(rightTest.Get());
+		 }
+		 }
+		 */
 
 	}
 

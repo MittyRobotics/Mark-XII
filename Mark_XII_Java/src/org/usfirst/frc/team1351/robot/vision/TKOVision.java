@@ -17,8 +17,7 @@ public class TKOVision implements Runnable {
 
 	private static TKOThread visionThread = new TKOThread(new TKOVision());
 	private static int session;
-	private static Image frame;
-	 
+	private static Image frame;  
 	
 	protected TKOVision()
 	{
@@ -26,6 +25,18 @@ public class TKOVision implements Runnable {
 		// TODO change camera name
 		session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 		NIVision.IMAQdxConfigureGrab(session);
+		double lastDist = 0.0;
+		double lastProcessingTime = 0.0; //values from 2014
+		double lastTimestamp = 0.0;
+		wpilibj.GetWriteMaxFPS(30);
+		
+		
+	}
+	
+	public void TKOValues() 
+	{
+		//Might not need this
+		
 	}
 	
 	public static void start()
@@ -55,8 +66,7 @@ public class TKOVision implements Runnable {
 		while (isOperatorControl() && isEnabled())
 		{
 			NIVision.IMAQdxGrab(session, frame, 1);
-			NIVision.imaqDrawShapeOnImage(frame, frame, rect, DrawMode.DRAW_VALUE, ShapeMode.SHAPE_OVAL, 0.0f);
-
+			NIVision.imaqDrawShapeOnImage(frame, frame, rect, DrawMode.DRAW_VALUE, ShapeMode.SHAPE_OVAL, 0.0f); // (Image dest, Image source, Rect rect, DrawMode mode, ShapeMode shape, float newPixelValue)
 			CameraServer.getInstance().setImage(frame);
 
 			//TODO Here:

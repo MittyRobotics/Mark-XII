@@ -1,3 +1,6 @@
+// Last edited by Ben Kim
+// on 01/17/2015
+
 package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.logger.TKOLogger;
@@ -5,6 +8,8 @@ import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -13,16 +18,22 @@ public class TKOHardware
 {
 	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_JAGS];
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
+	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
+	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
 
 	public TKOHardware()
 	{
-		for (int i = 1; i <= Definitions.NUM_JOYSTICKS; i++)
+		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
 			stick[i] = null;
 		}
-		for (int i = 1; i <= Definitions.NUM_DRIVE_JAGS; i++)
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
 		{
 			drive[i] = null;
+		}
+		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
+		{
+			piston[i] = null;
 		}
 	}
 
@@ -48,6 +59,12 @@ public class TKOHardware
 				}
 			}
 		}
+		
+		if (piston[0] == null)
+			piston[0] = new DoubleSolenoid(Definitions.LEFT_PISTON_SOLENOID_A, Definitions.LEFT_PISTON_SOLENOID_B);
+		if (piston[1] == null)
+			piston[1] = new DoubleSolenoid(Definitions.RIGHT_PISTON_SOLENOID_A, Definitions.RIGHT_PISTON_SOLENOID_B);
+		
 		configJags(10., 0., 0.);
 	}
 
@@ -62,10 +79,11 @@ public class TKOHardware
 				 * drive[i].enableControl();
 				 */
 
-				if (i == 0 || i == 3)
+				if (i == 1 || i == 3)
 				{
 					drive[i].disableControl();
-					drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
+					drive[i].changeControlMode(CANTalon.ControlMode.Follower);
+					drive[i].set(i - 1);
 				//	drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
 					drive[i].enableControl();
 				} else

@@ -54,10 +54,12 @@ public class TKODrive implements Runnable
 	{
 		try
 		{
-			TKOHardware.getDriveJaguar(0).set(TKOHardware.getJoystick(1).getY() * Definitions.DRIVE_MULTIPLIER[0]);
-			TKOHardware.getDriveJaguar(1).set(TKOHardware.getJoystick(1).getY() * Definitions.DRIVE_MULTIPLIER[1]);
-			TKOHardware.getDriveJaguar(2).set(TKOHardware.getJoystick(0).getY() * Definitions.DRIVE_MULTIPLIER[2]);
-			TKOHardware.getDriveJaguar(3).set(TKOHardware.getJoystick(0).getY() * Definitions.DRIVE_MULTIPLIER[3]);
+			TKOHardware.getDriveJaguar(0).set(TKOHardware.getJoystick(0).getY());
+			//TKOHardware.getDriveJaguar(1).set(TKOHardware.getJoystick(0).getY());
+			TKOHardware.getDriveJaguar(2).set(TKOHardware.getJoystick(1).getY());
+			//TKOHardware.getDriveJaguar(3).set(TKOHardware.getJoystick(1).getY());
+			System.out.println("Drive 2 Get " + TKOHardware.getDriveJaguar(2).get());
+			System.out.println("Drive 3 Get " + TKOHardware.getDriveJaguar(3).get());
 		} catch (Exception e)
 		{
 			e.printStackTrace();

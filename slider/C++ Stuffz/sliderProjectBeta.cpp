@@ -4,9 +4,9 @@
 /* 
  * Code for usage on the test bed. 
  * This code is for the testing of CANJaguars, Physical and Optical Limit Switches, and Encoders, as well as motors via the CANJaguars
- * Ports must be declared, otherwise, the values a     re mostly garbage, and the code shouldn't run properly
+ * Ports must be declared, otherwise, the values are mostly garbage, and the code shouldn't run properly
  * Have fun?
- * Last edited by Ishan Shah on 10 Jan 2015
+ * Last edited by Ishan Shah on 9 Jan 2015
  */
 class RobotDemo: public SimpleRobot {
 	//Initializations
@@ -246,8 +246,8 @@ public:
 		float incrementer = 3.0;
 		float p = 0.0050;
 		float i = 0.001;
-//		leftTest.SetVoltageRampRate(12.);
-//		rightTest.SetVoltageRampRate(12.);
+		//		leftTest.SetVoltageRampRate(12.);
+		//		rightTest.SetVoltageRampRate(12.);
 		driveControl.SetPID(p, i, 0.0); //P is 0.2, I is 0, incrementer is 1.250, distance is 3.0 
 		driveControl.Enable();
 		rightTest.ConfigSoftPositionLimits(0, 940);
@@ -255,40 +255,33 @@ public:
 		p = driverStation->GetAnalogIn(1) / 10;
 		i = driverStation->GetAnalogIn(2) / 10;
 		driveControl.SetPID(p, i, 0.0);
-		double length = ncoder.GetDistance(); 
+		double length = ncoder.GetDistance();
+		bool check = false; 
 		while (IsEnabled()) {
 			float addition = -joy1.GetY() * incrementer;
 			printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 					driveControl.GetSetpoint(), addition, ncoder.GetDistance());
-
-			if (opticalTest1.Get() == 0 && addition <= -0.1) {
-
-				addition = 0;
-				//				rightTest.Set(0);
-				//				leftTest.Set(0);
-				//driveControl.SetSetpoint(0);
-				driveControl.SetSetpoint(ncoder.GetDistance()); 
-				//driveControl.Disable();
-
-			} else if (opticalTest2.Get() == 0 && addition >= 0.1) {
-
-				addition = 0;
-				//				rightTest.Set(0);
-				//				leftTest.Set(0);
-				//driveControl.SetSetpoint(length);
-				driveControl.SetSetpoint(ncoder.GetDistance()); 
-				//driveControl.Disable();
-
+			leftTest.Set(rightTest.Get()); 
+			if ((addition > 0.1 && opticalTest2.Get() == 1) || (addition < -0.1
+					&& opticalTest1.Get() == 1)) {
+				double value = ncoder.GetDistance() + (10 * addition); 
+				//driveControl.SetSetpoint(ncoder.GetDistance() + 10 * addition);
+				//check = true; 
+				if(value > length) {
+					value = length; 
+				}
+				if(value < 0.) {
+					value = 0.; 
+				}
+				driveControl.SetSetpoint(value); 
+				leftTest.Set(rightTest.Get());
+			} else if(check) {
+				driveControl.SetSetpoint(ncoder.GetDistance());
+				check = false;  
+				leftTest.Set(rightTest.Get()); 
 			}
-			if (addition > 0.1 || addition < -0.1) {
-				//				if (!driveControl.IsEnabled()) {
-				//					driveControl.Enable();
-				//				}
-				//driveControl.SetSetpoint(driveControl.GetSetpoint() + addition);
-				driveControl.SetSetpoint(ncoder.GetDistance() + 10*addition);
-			}
-
-			leftTest.Set(rightTest.Get());
+			leftTest.Set(rightTest.Get()); 
+			
 		}
 		/*
 		 printf("ITS DONE!");

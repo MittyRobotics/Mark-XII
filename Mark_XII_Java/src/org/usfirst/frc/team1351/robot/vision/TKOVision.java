@@ -12,6 +12,8 @@ import com.ni.vision.NIVision.ShapeMode;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.vision.AxisCamera;
+
 
 public class TKOVision implements Runnable {
 
@@ -20,24 +22,35 @@ public class TKOVision implements Runnable {
 	private static Image frame;  
 	
 	protected TKOVision()
+	
 	{
+		//stick4(STICK_4_PORT);
+		System.out.println("Vision Activated!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		// TODO change camera name
 		session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 		NIVision.IMAQdxConfigureGrab(session);
-		double lastDist = 0.0;
-		double lastProcessingTime = 0.0; //values from 2014
+		double lastDist = 0.;
+		double lastProcessingTime = 0.; //values from 2014
 		double lastTimestamp = 0.0;
-		wpilibj.GetWriteMaxFPS(30);
+		//AxisCamera.writeMaxFPS(30); check static
+		//AxisCamera.writeCompression(30);
+		
+		boolean lastTarget = false; //.Hot later
+		lastDist = 0.;
+		
+		//AddToSingletonList();
+	}
+	
+	public void inst()
+	{
+		if(!m_instance){
+			
+		}
 		
 		
 	}
 	
-	public void TKOValues() 
-	{
-		//Might not need this
-		
-	}
 	
 	public static void start()
 	{

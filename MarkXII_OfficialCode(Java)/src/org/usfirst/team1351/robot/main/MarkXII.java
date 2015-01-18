@@ -18,8 +18,9 @@ import edu.wpi.first.wpilibj.Timer;
  * Recreate documentation for java
  * TKOGyro/TKORelay?
  * Port/rewrite Autonomous Atoms/Molecules?
- * TODO global current checker/safety manager in TKOHardware for each jag?
+ * TODO global current checker/safety manager loop in TKOHardware for each jag?
  * TODO Thread priorities
+ * 
  */
 public class MarkXII extends SampleRobot
 {

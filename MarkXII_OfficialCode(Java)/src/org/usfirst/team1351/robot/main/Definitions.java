@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class Definitions
 {
-	public static final int NUM_DRIVE_JAGS = 4;
+	public static final int NUM_DRIVE_TALONS = 4;
 	public static final int NUM_JOYSTICKS = 4;
 	
 	public static final int NUM_PISTONS = 2;
@@ -20,7 +20,7 @@ public class Definitions
 	
 	public static final int[] JOYSTICK_ID =
 	{ 0, 1, 2, 3 };
-	public static final int[] DRIVE_JAGUAR_ID =
+	public static final int[] DRIVE_TALON_ID =
 	{ 0, 1, 2, 3 };
 	// public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	//public static final double[] DRIVE_MULTIPLIER =

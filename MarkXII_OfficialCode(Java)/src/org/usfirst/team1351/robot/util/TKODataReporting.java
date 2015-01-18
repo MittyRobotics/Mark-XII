@@ -162,9 +162,9 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			}
 			try
 			{
-				SmartDashboard.putNumber("EncLeft", TKOHardware.getDriveJaguar(0).getPosition());
-				SmartDashboard.putNumber("EncRight", TKOHardware.getDriveJaguar(2).getPosition());
-				for (CANTalon motor : TKOHardware.getDriveJaguars())
+				SmartDashboard.putNumber("EncLeft", TKOHardware.getDriveTalon(0).getPosition());
+				SmartDashboard.putNumber("EncRight", TKOHardware.getDriveTalon(2).getPosition());
+				for (CANTalon motor : TKOHardware.getDriveTalons())
 				{
 					// TODO Check if motors are null
 					if (motor == null)
@@ -195,7 +195,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		SmartDashboard.putNumber("DValTested", currentDTested);
 		try
 		{
-			for (CANTalon motor : TKOHardware.getDriveJaguars())
+			for (CANTalon motor : TKOHardware.getDriveTalons())
 			{
 				if (motor == null)
 					continue;

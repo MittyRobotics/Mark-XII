@@ -6,7 +6,6 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
-import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -16,7 +15,7 @@ import edu.wpi.first.wpilibj.util.AllocationException;
 
 public class TKOHardware
 {
-	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_JAGS];
+	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
 	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
@@ -27,7 +26,7 @@ public class TKOHardware
 		{
 			stick[i] = null;
 		}
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
 			drive[i] = null;
 		}
@@ -44,13 +43,13 @@ public class TKOHardware
 			if (stick[i] == null)
 				stick[i] = new Joystick(Definitions.JOYSTICK_ID[i]);
 		}
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
 			if (drive[i] == null)
 			{
 				try
 				{
-					drive[i] = new CANTalon(Definitions.DRIVE_JAGUAR_ID[i]);
+					drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
 				} catch (AllocationException | CANMessageNotFoundException e)
 				{
 					e.printStackTrace();
@@ -65,44 +64,34 @@ public class TKOHardware
 		if (piston[1] == null)
 			piston[1] = new DoubleSolenoid(Definitions.RIGHT_PISTON_SOLENOID_A, Definitions.RIGHT_PISTON_SOLENOID_B);
 		
-		configJags(10., 0., 0.);
+		configTalons(10., 0., 0.);
 	}
 
-	public static synchronized void configJags(double p, double I, double d)
+	public static synchronized void configTalons(double p, double I, double d)
 	{
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
 			if (drive[i] != null)
 			{
-				/*
-				 * drive[i].disableControl(); drive[i].setCurrentMode(p, I, d); drive[i].configNeutralMode(CANJaguar.NeutralMode.Coast);
-				 * drive[i].enableControl();
-				 */
-
 				if (i == 1 || i == 3)
 				{
-					drive[i].disableControl();
 					drive[i].changeControlMode(CANTalon.ControlMode.Follower);
 					drive[i].set(i - 1);
-				//	drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
-					drive[i].enableControl();
 				} else
 				{
-					drive[i].disableControl();
 					drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
-					drive[i].enableControl();
 				}
 			}
 		}
 	}
 
-	public static synchronized void setZero()
+	public static synchronized void setAll(double setTarget)
 	{
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
 			if (drive[i] != null)
 			{
-				drive[i].set(0);
+				drive[i].set(setTarget);
 			}
 		}
 	}
@@ -116,7 +105,7 @@ public class TKOHardware
 				stick[i] = null;
 			}
 		}
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
 			if (drive[i] != null)
 			{
@@ -124,39 +113,64 @@ public class TKOHardware
 				drive[i] = null;
 			}
 		}
+		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
+		{
+			if (piston[i] != null)
+			{
+				piston[i].free();
+				piston[i] = null;
+			}
+		}
 	}
 
-	public static synchronized CANTalon getDriveJaguar(int num) throws Exception
+	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
 	{
-		if (num > Definitions.NUM_DRIVE_JAGS)
+		if (num > Definitions.NUM_DRIVE_TALONS)
 		{
-			throw new Exception("Drive jaguar requested out of bounds");
+			throw new TKOException("Drive talon requested out of bounds");
 		}
 		if (drive[num] != null)
 			return drive[num];
 		else
-			throw new Exception("Drive jaguar " + (num) + "(array value) is null");
+			throw new TKOException("Drive talon " + (num) + "(array value) is null");
 	}
 
-	public static synchronized Joystick getJoystick(int num) throws Exception
+	public static synchronized Joystick getJoystick(int num) throws TKOException
 	{
 		if (num > Definitions.NUM_JOYSTICKS)
 		{
-			throw new Exception("Joystick requested out of bounds");
+			throw new TKOException("Joystick requested out of bounds");
 		}
 		if (stick[num] != null)
 			return stick[num];
 		else
-			throw new Exception("Joystick " + (num) + "(array value) is null");
+			throw new TKOException("Joystick " + (num) + "(array value) is null");
+	}
+	
+	public static synchronized DoubleSolenoid getPiston(int num) throws TKOException
+	{
+		if (num > Definitions.NUM_JOYSTICKS)
+		{
+			throw new TKOException("Piston requested out of bounds");
+		}
+		if (piston[num] != null)
+			return piston[num];
+		else
+			throw new TKOException("Piston " + (num) + "(array value) is null");
 	}
 
-	public static synchronized CANTalon[] getDriveJaguars() throws Exception
+	public static synchronized CANTalon[] getDriveTalons() throws TKOException
 	{
 		return drive;
 	}
 
-	public static synchronized Joystick[] getJoysticks() throws Exception
+	public static synchronized Joystick[] getJoysticks() throws TKOException
 	{
 		return stick;
+	}
+	
+	public static synchronized DoubleSolenoid[] getPistons() throws TKOException
+	{
+		return piston;
 	}
 }

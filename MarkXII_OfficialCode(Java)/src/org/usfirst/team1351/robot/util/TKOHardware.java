@@ -1,5 +1,5 @@
 // Last edited by Ben Kim
-// on 01/17/2015
+// on 01/19/2015
 
 package org.usfirst.team1351.robot.util;
 
@@ -8,86 +8,76 @@ import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
 
-public class TKOHardware
-{
+public class TKOHardware {
 	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_JAGS];
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
-	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
-	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
+	protected static DoubleSolenoid piston;
+	protected static Compressor comp;
 
-	public TKOHardware()
-	{
-		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
-		{
+	public TKOHardware() {
+		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++) {
 			stick[i] = null;
 		}
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
-		{
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++) {
 			drive[i] = null;
 		}
-		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
-		{
-			piston[i] = null;
-		}
+		piston = null;
+		comp = null;
 	}
 
-	public static synchronized void initObjects()
-	{
-		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
-		{
+	public static synchronized void initObjects() {
+		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++) {
 			if (stick[i] == null)
 				stick[i] = new Joystick(Definitions.JOYSTICK_ID[i]);
 		}
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
-		{
-			if (drive[i] == null)
-			{
-				try
-				{
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++) {
+			if (drive[i] == null) {
+				try {
 					drive[i] = new CANTalon(Definitions.DRIVE_JAGUAR_ID[i]);
-				} catch (AllocationException | CANMessageNotFoundException e)
-				{
+				} catch (AllocationException | CANMessageNotFoundException e) {
 					e.printStackTrace();
-					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
-					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
+					System.out.println("MOTOR CONTROLLER " + i
+							+ " NOT FOUND OR IN USE");
+					TKOLogger.getInstance().addMessage(
+							"MOTOR CONTROLLER " + i + " CAN ERROR");
 				}
 			}
 		}
-		
-		if (piston[0] == null)
-			piston[0] = new DoubleSolenoid(Definitions.LEFT_PISTON_SOLENOID_A, Definitions.LEFT_PISTON_SOLENOID_B);
-		if (piston[1] == null)
-			piston[1] = new DoubleSolenoid(Definitions.RIGHT_PISTON_SOLENOID_A, Definitions.RIGHT_PISTON_SOLENOID_B);
-		
+
+		if (piston == null) {
+			piston = new DoubleSolenoid(Definitions.PISTON_SOLENOID_A,
+					Definitions.PISTON_SOLENOID_B);
+		}
+		if (comp == null) {
+			comp = new Compressor(Definitions.COMP_ID);
+		}
+
 		configJags(10., 0., 0.);
 	}
 
-	public static synchronized void configJags(double p, double I, double d)
-	{
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
-		{
-			if (drive[i] != null)
-			{
+	public static synchronized void configJags(double p, double I, double d) {
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++) {
+			if (drive[i] != null) {
 				/*
-				 * drive[i].disableControl(); drive[i].setCurrentMode(p, I, d); drive[i].configNeutralMode(CANJaguar.NeutralMode.Coast);
+				 * drive[i].disableControl(); drive[i].setCurrentMode(p, I, d);
+				 * drive[i].configNeutralMode(CANJaguar.NeutralMode.Coast);
 				 * drive[i].enableControl();
 				 */
 
-				if (i == 1 || i == 3)
-				{
+				if (i == 1 || i == 3) {
 					drive[i].disableControl();
 					drive[i].changeControlMode(CANTalon.ControlMode.Follower);
 					drive[i].set(i - 1);
-				//	drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
+					// drive[i].setPercentMode(CANJaguar.kQuadEncoder, 250);
 					drive[i].enableControl();
-				} else
-				{
+				} else {
 					drive[i].disableControl();
 					drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
 					drive[i].enableControl();
@@ -96,52 +86,49 @@ public class TKOHardware
 		}
 	}
 
-	public static synchronized void setZero()
-	{
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
-		{
-			if (drive[i] != null)
-			{
+	public static synchronized void setZero() {
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++) {
+			if (drive[i] != null) {
 				drive[i].set(0);
 			}
 		}
 	}
 
-	public static synchronized void destroyObjects()
-	{
-		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
-		{
-			if (stick[i] != null)
-			{
+	public static synchronized void destroyObjects() {
+		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++) {
+			if (stick[i] != null) {
 				stick[i] = null;
 			}
 		}
-		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++)
-		{
-			if (drive[i] != null)
-			{
+		for (int i = 0; i < Definitions.NUM_DRIVE_JAGS; i++) {
+			if (drive[i] != null) {
 				drive[i].delete();
 				drive[i] = null;
 			}
 		}
+		if (piston != null) {
+			piston.free();
+			piston = null;
+		}
+		if (comp != null) {
+			comp = null;
+		}
 	}
 
-	public static synchronized CANTalon getDriveJaguar(int num) throws Exception
-	{
-		if (num > Definitions.NUM_DRIVE_JAGS)
-		{
+	public static synchronized CANTalon getDriveJaguar(int num)
+			throws Exception {
+		if (num > Definitions.NUM_DRIVE_JAGS) {
 			throw new Exception("Drive jaguar requested out of bounds");
 		}
 		if (drive[num] != null)
 			return drive[num];
 		else
-			throw new Exception("Drive jaguar " + (num) + "(array value) is null");
+			throw new Exception("Drive jaguar " + (num)
+					+ "(array value) is null");
 	}
 
-	public static synchronized Joystick getJoystick(int num) throws Exception
-	{
-		if (num > Definitions.NUM_JOYSTICKS)
-		{
+	public static synchronized Joystick getJoystick(int num) throws Exception {
+		if (num > Definitions.NUM_JOYSTICKS) {
 			throw new Exception("Joystick requested out of bounds");
 		}
 		if (stick[num] != null)
@@ -150,13 +137,20 @@ public class TKOHardware
 			throw new Exception("Joystick " + (num) + "(array value) is null");
 	}
 
-	public static synchronized CANTalon[] getDriveJaguars() throws Exception
-	{
+	public static synchronized CANTalon[] getDriveJaguars() throws Exception {
 		return drive;
 	}
 
-	public static synchronized Joystick[] getJoysticks() throws Exception
-	{
+	public static synchronized Joystick[] getJoysticks() throws Exception {
 		return stick;
 	}
+	public static synchronized DoubleSolenoid getPiston() throws Exception
+	{
+		return piston;
+	}
+	public static synchronized Compressor getCompressor() throws Exception
+	{
+		return comp;
+	}
+
 }

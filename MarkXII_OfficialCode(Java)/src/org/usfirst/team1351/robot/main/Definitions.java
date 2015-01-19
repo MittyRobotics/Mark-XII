@@ -1,5 +1,5 @@
 // Last edited by Ben Kim
-// on 01/17/2015
+// on 01/19/2015
 
 package org.usfirst.team1351.robot.main;
 
@@ -11,12 +11,9 @@ public class Definitions
 	public static final int NUM_DRIVE_JAGS = 4;
 	public static final int NUM_JOYSTICKS = 4;
 	
-	public static final int NUM_PISTONS = 2;
-	public static final int LEFT_PISTON_SOLENOID_A = 100;
-	public static final int LEFT_PISTON_SOLENOID_B = 101;
-	public static final int RIGHT_PISTON_SOLENOID_A = 102;
-	public static final int RIGHT_PISTON_SOLENOID_B = 103;
-	public static final int NUM_SWITCHES = 4;
+	public static final int PISTON_SOLENOID_A = 0;
+	public static final int PISTON_SOLENOID_B = 1;
+	public static final int COMP_ID = 0;
 	
 	public static final int[] JOYSTICK_ID =
 	{ 0, 1, 2, 3 };

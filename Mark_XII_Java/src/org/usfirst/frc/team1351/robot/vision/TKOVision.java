@@ -1,5 +1,4 @@
-//Last edited by Alex Parks
-//on 1/19/15
+//Last edited by Adam Filiz on 1/19/15
 
 package org.usfirst.frc.team1351.robot.vision;
 
@@ -14,9 +13,10 @@ import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ShapeMode;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.vision.USBCamera;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.vision.AxisCamera;
+
 
 
 public class TKOVision implements Runnable {
@@ -100,6 +100,24 @@ public class TKOVision implements Runnable {
 
 			//TODO Here: stuff
 			//
+			
+			double timeStart; // = GetClock();
+			if (!picProcess ){
+				System.out.println("Pic task not ready");
+				//return false; cant return false yet
+			}
+			rawImage = new RGBImage();
+			thresholdImage = new BinaryImage();
+			convexHullImage = new BinaryImage();
+			filteredImage = new BinaryImage();
+			
+			System.out.println("Starting processing");
+			
+			Threshold greenThreshHSV(60, 255,58,255,130,255);
+			
+			
+			
+			
 			Timer.delay(0.005); // wait for a motor update time
 		}
 		NIVision.IMAQdxStopAcquisition(session);

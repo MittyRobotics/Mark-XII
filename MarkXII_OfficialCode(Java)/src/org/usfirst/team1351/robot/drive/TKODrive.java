@@ -8,6 +8,7 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class TKODrive implements Runnable
@@ -57,7 +58,7 @@ public class TKODrive implements Runnable
 		try
 		{
 			if (TKOHardware.getDriveTalon(0).getControlMode() == CANTalon.ControlMode.PercentVbus)
-				TKOHardware.getDriveTalon(0).set(left);
+				TKOHardware.getDriveTalon(0).set(-left);
 			else
 				throw new TKOException("CANTALON NOT IN PERCENT VBUS: " + TKOHardware.getDriveTalon(0).getDeviceID());
 
@@ -231,11 +232,21 @@ public class TKODrive implements Runnable
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
-				if (TKOHardware.getJoystick(0).getRawButton(5))
+				if (TKOHardware.getJoystick(0).getRawButton(2))
 				// if (!calibRan)
 				{
 					PIDCurrentCalibration();
 					// calibRan = true;
+				}
+				if (TKOHardware.getJoystick(0).getRawButton(4))
+				{
+					//TODO make this not ghetto
+					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+				}
+				if (TKOHardware.getJoystick(0).getRawButton(5))
+				{
+					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+					//TODO make this not ghetto
 				}
 
 				tankDrive();

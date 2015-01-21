@@ -39,7 +39,7 @@ public class TKOGripper implements Runnable {
 			gripperThread.setThreadRunning(true);
 		try {
 			TKOHardware.getCompressor().start();
-			TKOHardware.getPiston().set(DoubleSolenoid.Value.kForward);
+			TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,10 +64,10 @@ public class TKOGripper implements Runnable {
 	public synchronized void pistonControl() {
 		try {
 			if (TKOHardware.getJoystick(0).getRawButton(2)) {
-				TKOHardware.getPiston().set(DoubleSolenoid.Value.kForward);
+				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward); //TODO Fix the 0 to a constant
 			}
 			if (TKOHardware.getJoystick(0).getRawButton(3)) {
-				TKOHardware.getPiston().set(DoubleSolenoid.Value.kReverse);
+				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
 			}
 
 		} catch (Exception e) {

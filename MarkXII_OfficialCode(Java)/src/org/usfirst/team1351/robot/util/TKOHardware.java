@@ -7,6 +7,7 @@ import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
@@ -19,6 +20,7 @@ public class TKOHardware
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
 	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
+	protected static Compressor comp = new Compressor(Definitions.PCM_ID);
 
 	public TKOHardware()
 	{
@@ -58,12 +60,13 @@ public class TKOHardware
 				}
 			}
 		}
-		
+
 		if (piston[0] == null)
-			piston[0] = new DoubleSolenoid(Definitions.LEFT_PISTON_SOLENOID_A, Definitions.LEFT_PISTON_SOLENOID_B);
-		if (piston[1] == null)
-			piston[1] = new DoubleSolenoid(Definitions.RIGHT_PISTON_SOLENOID_A, Definitions.RIGHT_PISTON_SOLENOID_B);
+			piston[0] = new DoubleSolenoid(Definitions.SHIFTER_A, Definitions.SHIFTER_B);
 		
+		if (comp == null)
+			comp = new Compressor(Definitions.PCM_ID);
+
 		configTalons(10., 0., 0.);
 	}
 
@@ -83,6 +86,10 @@ public class TKOHardware
 				}
 			}
 		}
+		/*drive[0].reverseOutput(true);
+		drive[1].reverseOutput(false);
+		drive[2].reverseOutput(false);
+		drive[3].reverseOutput(false);*/
 	}
 
 	public static synchronized void setAll(double setTarget)
@@ -121,6 +128,11 @@ public class TKOHardware
 				piston[i] = null;
 			}
 		}
+		if (comp != null)
+		{
+			comp.free();
+			comp = null;
+		}
 	}
 
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
@@ -146,7 +158,7 @@ public class TKOHardware
 		else
 			throw new TKOException("Joystick " + (num) + "(array value) is null");
 	}
-	
+
 	public static synchronized DoubleSolenoid getPiston(int num) throws TKOException
 	{
 		if (num > Definitions.NUM_JOYSTICKS)
@@ -158,19 +170,32 @@ public class TKOHardware
 		else
 			throw new TKOException("Piston " + (num) + "(array value) is null");
 	}
+	
+	public static synchronized Compressor getCompressor() throws TKOException
+	{
+		if (comp == null)
+			throw new TKOException("NULL COMPRESSOR");
+		return comp;
+	}
 
 	public static synchronized CANTalon[] getDriveTalons() throws TKOException
 	{
+		if (drive == null)
+			throw new TKOException("NULL DRIVE ARRAY");
 		return drive;
 	}
 
 	public static synchronized Joystick[] getJoysticks() throws TKOException
 	{
+		if (stick == null)
+			throw new TKOException("NULL STICK ARRAY");
 		return stick;
 	}
-	
+
 	public static synchronized DoubleSolenoid[] getPistons() throws TKOException
 	{
+		if (piston == null)
+			throw new TKOException("NULL PISTON ARRAY");
 		return piston;
 	}
 }

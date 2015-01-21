@@ -7,8 +7,10 @@ import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -17,8 +19,10 @@ public class TKOHardware
 {
 	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
-	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
-	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
+	protected static DoubleSolenoid piston;
+	protected static Compressor comp;
+	protected static Encoder encoder_L, encoder_R;
+//	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
 
 	public TKOHardware()
 	{
@@ -30,10 +34,10 @@ public class TKOHardware
 		{
 			drive[i] = null;
 		}
-		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
-		{
-			piston[i] = null;
-		}
+		piston = null;
+		comp = null;
+		encoder_L = null;
+		encoder_R = null;
 	}
 
 	public static synchronized void initObjects()
@@ -59,10 +63,20 @@ public class TKOHardware
 			}
 		}
 		
-		if (piston[0] == null)
-			piston[0] = new DoubleSolenoid(Definitions.LEFT_PISTON_SOLENOID_A, Definitions.LEFT_PISTON_SOLENOID_B);
-		if (piston[1] == null)
-			piston[1] = new DoubleSolenoid(Definitions.RIGHT_PISTON_SOLENOID_A, Definitions.RIGHT_PISTON_SOLENOID_B);
+        if (piston == null) {
+            piston = new DoubleSolenoid(Definitions.PISTON_SOLENOID_A, Definitions.PISTON_SOLENOID_B);
+        }
+        if (comp == null) {
+            comp = new Compressor(Definitions.COMP_ID);
+        }
+        if (encoder_L == null)
+        {
+        	encoder_L = new Encoder(Definitions.ENCODER_LEFT_A, Definitions.ENCODER_LEFT_B);
+        }
+        if (encoder_R == null)
+        {
+        	encoder_R = new Encoder(Definitions.ENCODER_RIGHT_A, Definitions.ENCODER_RIGHT_B);
+        }
 		
 		configTalons(10., 0., 0.);
 	}
@@ -113,14 +127,17 @@ public class TKOHardware
 				drive[i] = null;
 			}
 		}
-		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
-		{
-			if (piston[i] != null)
-			{
-				piston[i].free();
-				piston[i] = null;
-			}
-		}
+        if (piston != null)
+        {
+            piston.free();
+            piston = null;
+        }
+        if (comp != null)
+            comp = null;
+        if (encoder_L != null)
+        	encoder_L = null;
+        if (encoder_R != null)
+        	encoder_R = null;
 	}
 
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
@@ -146,18 +163,6 @@ public class TKOHardware
 		else
 			throw new TKOException("Joystick " + (num) + "(array value) is null");
 	}
-	
-	public static synchronized DoubleSolenoid getPiston(int num) throws TKOException
-	{
-		if (num > Definitions.NUM_JOYSTICKS)
-		{
-			throw new TKOException("Piston requested out of bounds");
-		}
-		if (piston[num] != null)
-			return piston[num];
-		else
-			throw new TKOException("Piston " + (num) + "(array value) is null");
-	}
 
 	public static synchronized CANTalon[] getDriveTalons() throws TKOException
 	{
@@ -169,8 +174,20 @@ public class TKOHardware
 		return stick;
 	}
 	
-	public static synchronized DoubleSolenoid[] getPistons() throws TKOException
+	public static synchronized DoubleSolenoid getPiston() throws TKOException
 	{
 		return piston;
 	}
+    public static synchronized Compressor getCompressor() throws TKOException
+    {
+        return comp;
+    }
+    public static synchronized Encoder getLeftEncoder() throws TKOException
+    {
+        return encoder_L;
+    }
+    public static synchronized Encoder getRightEncoder() throws TKOException
+    {
+        return encoder_R;
+    }
 }

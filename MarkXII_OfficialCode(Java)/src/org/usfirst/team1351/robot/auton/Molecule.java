@@ -21,6 +21,14 @@ public class Molecule {
 		chain.clear();
 	}
 	
+	public void init()
+	{
+		for (Atom a : chain)
+		{
+			a.init();
+		}
+	}
+	
 	public void run()
 	{
 		for (Atom a : chain)

@@ -1,45 +1,61 @@
 package org.usfirst.team1351.robot.auton;
 
+import org.usfirst.team1351.robot.main.Definitions;
+import org.usfirst.team1351.robot.util.TKOException;
+import org.usfirst.team1351.robot.util.TKOHardware;
+
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.Encoder;
 
 public class DriveAtom extends Atom {
-
-	CANTalon m_driveL1, m_driveL2, m_driveR1, m_driveR2;
+	
 	float distance;
-	Encoder encoder_L;
-	Encoder encoder_R;
-	public DriveAtom()
+
+	public DriveAtom(float f)
 	{
-		m_driveL1 = new CANTalon(0);
-		m_driveL2 = new CANTalon(1);
-		m_driveR1 = new CANTalon(2);
-		m_driveR2 = new CANTalon(3);
-		encoder_L = new Encoder(1, 2);
-		encoder_R = new Encoder(3, 4);
-		distance = 10.f;
+		distance = f;
+	}
+	
+	public void init()
+	{
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
+			try {
+				TKOHardware.getDriveTalon(i).changeControlMode(CANTalon.ControlMode.PercentVbus);
+			} catch (TKOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		try {
+			TKOHardware.getLeftEncoder().setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
+			TKOHardware.getRightEncoder().setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
+		} catch (TKOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void execute()
-	{
-		m_driveL1.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		m_driveL2.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		m_driveR1.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		m_driveR2.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		
-		encoder_L.setDistancePerPulse(0.112);
-		encoder_R.setDistancePerPulse(0.112);
-		while(encoder_L.get() < distance){
-			m_driveL1.set(0.3);
-			m_driveL2.set(0.3);
-			m_driveR1.set(0.3);
-			m_driveR2.set(0.3);
+	{	
+		try {
+			while (TKOHardware.getLeftEncoder().get() < distance &&
+					TKOHardware.getRightEncoder().get() < distance)
+			{
+				for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
+					TKOHardware.getDriveTalon(i).set(0.3);
+			}
+		} catch (TKOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		m_driveL1.set(0);
-		m_driveL2.set(0);
-		m_driveR1.set(0);
-		m_driveR2.set(0);
+		
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
+			try {
+				TKOHardware.getDriveTalon(i).set(0.0);
+			} catch (TKOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 }

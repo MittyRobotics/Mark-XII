@@ -3,6 +3,8 @@
 
 package org.usfirst.team1351.robot.main;
 
+import org.usfirst.team1351.robot.auton.DriveAtom;
+import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOGripper;
 import org.usfirst.team1351.robot.logger.TKOLogger;
@@ -42,7 +44,37 @@ public class MarkXII extends SampleRobot
 
 	public void autonomous()
 	{
+		System.out.println("Enabling autonomous!");
+		TKOHardware.initObjects();
+		TKOLogger.getInstance().start();
+		TKODrive.getInstance().start();
+//		TKOGripper.getInstance().start();
+		TKODataReporting.getInstance().start();
 		
+		Molecule molecule = new Molecule();
+		DriveAtom drive = new DriveAtom(10.f);
+		molecule.add(drive);
+		molecule.init();
+		
+		while (isAutonomous() && isEnabled())
+		{
+			Timer.delay(0.25); // wait for a motor update time
+		}
+
+		try
+		{
+			TKODataReporting.getInstance().stop();
+			TKODataReporting.getInstance().dataReportThread.join();
+//			TKOGripper.getInstance().stop();
+//			TKOGripper.getInstance().gripperThread.join();
+			TKODrive.getInstance().stop();
+			TKODrive.getInstance().driveThread.join();
+			TKOLogger.getInstance().stop();
+			TKOLogger.getInstance().loggerThread.join();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void operatorControl()

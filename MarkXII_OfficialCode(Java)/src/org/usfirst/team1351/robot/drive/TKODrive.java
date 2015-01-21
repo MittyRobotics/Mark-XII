@@ -70,6 +70,10 @@ public class TKODrive implements Runnable
 			System.out.println("Drive 1 Get " + TKOHardware.getDriveTalon(1).get());
 			System.out.println("Drive 2 Get " + TKOHardware.getDriveTalon(2).get());
 			System.out.println("Drive 3 Get " + TKOHardware.getDriveTalon(3).get());
+			System.out.println("Encoder L Get " + TKOHardware.getLeftEncoder().get());
+			System.out.println("Encoder R Get " + TKOHardware.getRightEncoder().get());
+			System.out.println();
+			
 		} catch (TKOException e)
 		{
 			e.printStackTrace();

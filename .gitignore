@@ -33,7 +33,5 @@ PPC603gnu/
 *.cbp
 *.depend
 *.layout
-*.xml
-*.*.xml
 *.settings
 *.class

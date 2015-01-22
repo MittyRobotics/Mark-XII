@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
  * Port/rewrite Autonomous Atoms/Molecules?
  * TODO global current checker/safety manager loop in TKOHardware for each jag?
  * TODO Thread priorities
+ * TODO organize TKOHardware by the different things components will be used for, (array of arrays?)
  * 
  */
 public class MarkXII extends SampleRobot

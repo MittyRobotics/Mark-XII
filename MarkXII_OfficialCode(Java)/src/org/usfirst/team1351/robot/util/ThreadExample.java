@@ -8,7 +8,7 @@ import org.usfirst.team1351.robot.main.Definitions;
  * have memory corruption / other problems.
  * 
  * @author Vadim
- * @version 01/17/15
+ * @version 01/21/15
  */
 public class ThreadExample implements Runnable // implements Runnable is important to make this class support the Thread (run method)
 {
@@ -31,7 +31,7 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 */
 	public static synchronized ThreadExample getInstance()
 	{
-		if (ThreadExample.m_Instance == null)
+		if (m_Instance == null)
 		{
 			m_Instance = new ThreadExample();
 			m_Instance.exampleThread = new TKOThread(m_Instance);

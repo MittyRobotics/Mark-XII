@@ -1,4 +1,4 @@
-#include "WPILib.h"
+#include "WPILib.h" //library for methods and functions provided by FRC
 #include "Definitions.h"
 
 /* 
@@ -6,7 +6,7 @@
  * This code is for the testing of CANJaguars, Physical and Optical Limit Switches, and Encoders, as well as motors via the CANJaguars
  * Ports must be declared, otherwise, the values are mostly garbage, and the code shouldn't run properly
  * Have fun?
- * Last edited by Ishan Shah on 9 Jan 2015
+ * Last edited by Ishan Shah, Louis Coffin, and Shreyas Vaidya on 22 Jan 2015
  */
 class RobotDemo: public SimpleRobot {
 	//Initializations
@@ -21,11 +21,11 @@ class RobotDemo: public SimpleRobot {
 	Joystick joy1;
 
 	//Ports for the parts
-	int rightJaguarPort;
+	int rightJaguarPort;//controls motor current and voltage
 	int leftJaguarPort;
-	int opticalSwitchPort1;
+	int opticalSwitchPort1;//stops the robot if the flag stops the light
 	int opticalSwitchPort2;
-	int digitalSideCar;
+	int digitalSideCar;//big grey thing that moves
 	int ncoderPort;
 	int aChannel;
 	int bChannel;
@@ -34,7 +34,7 @@ public:
 	RobotDemo() :
 				// as they are declared above.
 
-				//Moar Declarations
+				//Port Declarations
 				rightTest(1, CANJaguar::kPercentVbus),
 				leftTest(4, CANJaguar::kPercentVbus), opticalTest1(1, 7),
 				opticalTest2(1, 6), ncoder(1, 2, true, CounterBase::k4X),
@@ -57,6 +57,7 @@ public:
 	}
 
 	void Disabled() {
+		//safety before the code runs for the drivers reference
 		printf(
 				"Initializing in autonomous mode with all default settings will make the robot perform 10 loops after an autohome. It will then travel to the second limit switch and hold its position there, all via PID. \n Use the DriverStation IO to change the number of iterations. \n");
 		printf(
@@ -67,6 +68,7 @@ public:
 	}
 
 	void autoHome() {
+		// code for autohoming
 		ncoder.Start();
 		ncoder.Reset();
 		driveControl.SetPID(0.0100, 0.001, 0);
@@ -98,8 +100,9 @@ public:
 		}
 		//driveControl.SetSetpoint(100); //100 increments above the original
 	}
-
-	void goForward(float incrementer) { //Please forgive the horrid naming convention. Please. 
+	
+	//code for going forward. needs pid, incrementer, etc.
+	void goForward(float incrementer) { 
 		double p = driveControl.GetP();
 		while (ncoder.GetDistance() <= 800 && IsEnabled()) {
 			driveControl.SetSetpoint(driveControl.GetSetpoint() + incrementer);
@@ -124,6 +127,7 @@ public:
 			}
 		}
 	}
+	//code to move backwards. includes incrementer, pid, etc.
 	void goBackward(float incrementer) { //More horrid naming convention, very sorry
 		double p = driveControl.GetP();
 		while (ncoder.GetDistance() >= 100 && IsEnabled()) {
@@ -147,7 +151,7 @@ public:
 			}
 		}
 	}
-
+// test stuff
 	void goForwardTest(float incrementer, double conversion) { //Please forgive the horrid naming convention. Please. 
 		while (ncoder.GetDistance() <= 800 && IsEnabled()) {
 			driveControl.SetSetpoint(driveControl.GetSetpoint() + incrementer);
@@ -180,16 +184,14 @@ public:
 
 		}
 	}
-
+// set in autonomous for autohoming
 	void Autonomous() {
 		autoHome();
 		while (IsAutonomous() && IsEnabled()) {
 			float point = driverStation->GetAnalogIn(4) * 100;
 			driveControl.Enable();
 			//driveControl.SetSetpoint(ncoder.Get() + 500);
-			driveControl.SetOutputRange(-.5, .5);
-			//For tomorrow: Work on having it autohome using the optical switches
-			//After that, have it oscillate between two points about 10 times before asking it to go back to X value, and see how accurate it is. 
+			driveControl.SetOutputRange(-.5, .5); 
 
 			float incrementer = 3.0;
 			int rotations = 10;

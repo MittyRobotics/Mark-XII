@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj.Timer;
  * TODO global current checker/safety manager loop in TKOHardware for each jag?
  * TODO Thread priorities
  * TODO organize TKOHardware by the different things components will be used for, (array of arrays?)
- * 
+ * TODO Drive - access only drives 0/2?
+ * TODO don't forget to turn on all the subsystems
  */
 public class MarkXII extends SampleRobot
 {

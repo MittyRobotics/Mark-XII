@@ -3,7 +3,6 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
-import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -195,6 +194,9 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		SmartDashboard.putNumber("DValTested", currentDTested);
 		try
 		{
+			SmartDashboard.putNumber("Accelerometer X", TKOHardware.getAcc().getX());
+			SmartDashboard.putNumber("Accelerometer Y", TKOHardware.getAcc().getY());
+			SmartDashboard.putNumber("Accelerometer Z", TKOHardware.getAcc().getZ());
 			for (CANTalon motor : TKOHardware.getDriveTalons())
 			{
 				if (motor == null)

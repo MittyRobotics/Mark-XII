@@ -172,6 +172,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 				SmartDashboard.putNumber("EncRight", TKOHardware.getDriveTalon(2).getPosition());
 				for (CANTalon motor : TKOHardware.getDriveTalons())
 				{
+					int id = motor.getDeviceID();
 					// TODO Check if motors are null
 					if (motor == null)
 						continue;
@@ -179,6 +180,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
 					inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+					SmartDashboard.putNumber("Temperature Jag " + id, motor.getTemp());
+					SmartDashboard.putNumber("Out_Current Jag " + id, motor.getOutputCurrent());
+					SmartDashboard.putNumber("Out_Voltage Jag " + id, motor.getOutputVoltage());
+					SmartDashboard.putNumber("In_Voltage Jag " + id, motor.getBusVoltage());
 				}
 			} catch (Exception e)
 			{

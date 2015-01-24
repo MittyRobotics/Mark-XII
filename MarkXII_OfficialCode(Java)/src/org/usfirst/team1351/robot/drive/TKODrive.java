@@ -73,17 +73,19 @@ public class TKODrive implements Runnable
 		}
 	}
 
-	public synchronized void setLeftRightMotorOutputsCurrent(double leftCurrent, double rightCurrent)
+	public synchronized void setLeftRightMotorOutputsCurrent(double leftMult, double rightMult)
 	{
 		try
 		{
 			if (TKOHardware.getLeftDrive().getControlMode() == CANTalon.ControlMode.Current)
-				TKOHardware.getLeftDrive().set(Definitions.DRIVE_MULTIPLIER_LEFT * Definitions.MAX_CURRENT_LEFT * leftCurrent);
+			{
+				TKOHardware.getLeftDrive().set(Definitions.DRIVE_MULTIPLIER_LEFT * Definitions.MAX_CURRENT_LEFT * leftMult);
+			}
 			else
 				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.Current);
 
 			if (TKOHardware.getRightDrive().getControlMode() == CANTalon.ControlMode.Current)
-				TKOHardware.getRightDrive().set(Definitions.DRIVE_MULTIPLIER_RIGHT * Definitions.MAX_CURRENT_RIGHT * rightCurrent);
+				TKOHardware.getRightDrive().set(Definitions.DRIVE_MULTIPLIER_RIGHT * Definitions.MAX_CURRENT_RIGHT * rightMult);
 			else
 				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.Current);
 
@@ -277,6 +279,7 @@ public class TKODrive implements Runnable
 				}
 
 				tankDrive();
+				//currentModeTankDrive();
 				synchronized (driveThread)
 				{
 					driveThread.wait(5);

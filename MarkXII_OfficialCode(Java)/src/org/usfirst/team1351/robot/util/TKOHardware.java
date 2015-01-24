@@ -80,6 +80,9 @@ public class TKOHardware
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
+			drive[i].delete();
+			drive[i] = null;
+			drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
 			if (drive[i] != null)
 			{
 				if (i == 1 || i == 3)
@@ -91,6 +94,8 @@ public class TKOHardware
 					if (!(mode instanceof CANTalon.ControlMode))
 						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
 					drive[i].changeControlMode(mode);
+					drive[i].setPID(p, I, d);
+					drive[i].enableControl();
 				}
 			}
 		}

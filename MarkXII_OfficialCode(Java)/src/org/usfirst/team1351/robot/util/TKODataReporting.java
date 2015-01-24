@@ -161,6 +161,13 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			}
 			try
 			{
+				SmartDashboard.putNumber("Accelerometer X", TKOHardware.getAcc().getX());
+				SmartDashboard.putNumber("Accelerometer Y", TKOHardware.getAcc().getY());
+				SmartDashboard.putNumber("Accelerometer Z", TKOHardware.getAcc().getZ());
+				inst.addMessage("accX: " + TKOHardware.getAcc().getX());
+				inst.addMessage("accY: " + TKOHardware.getAcc().getY());
+				inst.addMessage("accZ: " + TKOHardware.getAcc().getZ());
+				
 				SmartDashboard.putNumber("EncLeft", TKOHardware.getDriveTalon(0).getPosition());
 				SmartDashboard.putNumber("EncRight", TKOHardware.getDriveTalon(2).getPosition());
 				for (CANTalon motor : TKOHardware.getDriveTalons())
@@ -193,10 +200,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		SmartDashboard.putNumber("IValTested", currentITested);
 		SmartDashboard.putNumber("DValTested", currentDTested);
 		try
-		{
-			SmartDashboard.putNumber("Accelerometer X", TKOHardware.getAcc().getX());
-			SmartDashboard.putNumber("Accelerometer Y", TKOHardware.getAcc().getY());
-			SmartDashboard.putNumber("Accelerometer Z", TKOHardware.getAcc().getZ());
+		{			
 			for (CANTalon motor : TKOHardware.getDriveTalons())
 			{
 				if (motor == null)

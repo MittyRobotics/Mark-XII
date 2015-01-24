@@ -30,8 +30,8 @@ public class Definitions
 	// public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	// public static final double[] DRIVE_MULTIPLIER =
 	// { 7., 7., -7., -7. };
-	public static final double DRIVE_P = 7.;
-	public static final double DRIVE_I = 0;
+	public static final double DRIVE_P = 4.;
+	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
 	public static final double[] DRIVE_MULTIPLIER =
 	{ -1., -1., 1., 1. };
@@ -39,7 +39,7 @@ public class Definitions
 	public static final double DRIVE_MULTIPLIER_RIGHT = DRIVE_MULTIPLIER[2];
 	public static final double MAX_CURRENT_LEFT = 10.;
 	public static final double MAX_CURRENT_RIGHT = 10.;
-	
+
 	public static final double[] TALON_CURRENT_TIMEOUT =
 	{ 100, 100, 100, 100 };
 	public static final long[] CURRENT_TIMEOUT_LENGTH =

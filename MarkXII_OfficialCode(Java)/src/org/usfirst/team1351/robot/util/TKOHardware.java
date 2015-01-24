@@ -3,8 +3,6 @@
 
 package org.usfirst.team1351.robot.util;
 
-import javax.management.RuntimeErrorException;
-
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 

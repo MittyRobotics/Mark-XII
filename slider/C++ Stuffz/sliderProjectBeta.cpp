@@ -1,7 +1,8 @@
-#include "WPILib.h" //library for methods and functions provided by FRC
+#include "WPILib.h"
 #include "Definitions.h"
 
 /* 
+ * 1.250, 0, 1.250 increment, and 3.001 distance 
  * Code for usage on the test bed. 
  * This code is for the testing of CANJaguars, Physical and Optical Limit Switches, and Encoders, as well as motors via the CANJaguars
  * Ports must be declared, otherwise, the values are mostly garbage, and the code shouldn't run properly
@@ -21,11 +22,11 @@ class RobotDemo: public SimpleRobot {
 	Joystick joy1;
 
 	//Ports for the parts
-	int rightJaguarPort;//controls motor current and voltage
+	int rightJaguarPort;//Controls motor current and voltage
 	int leftJaguarPort;
-	int opticalSwitchPort1;//stops the robot if the flag stops the light
+	int opticalSwitchPort1;//Stops the robot if the flag interupts the light
 	int opticalSwitchPort2;
-	int digitalSideCar;//big grey thing that moves
+	int digitalSideCar;//Moving metal piece on top of the slider
 	int ncoderPort;
 	int aChannel;
 	int bChannel;
@@ -51,13 +52,18 @@ public:
 		aChannel = 1;
 		bChannel = 2;
 		driverStation = DriverStation::GetInstance();
+		ncoder.SetDistancePerPulse(0.027); //Change this later, if possible, based on requirements and later calculations 
+		/*
+		*Recalculate this value every time you change the end hardware
+		*Utilize gear ratios to calculate the distance per pulse at first
+		*/
 	}
 
 	void RobotInit() {
 	}
 
 	void Disabled() {
-		//safety before the code runs for the drivers reference
+		//Safety before the code runs for the driver's reference
 		printf(
 				"Initializing in autonomous mode with all default settings will make the robot perform 10 loops after an autohome. It will then travel to the second limit switch and hold its position there, all via PID. \n Use the DriverStation IO to change the number of iterations. \n");
 		printf(
@@ -68,7 +74,6 @@ public:
 	}
 
 	void autoHome() {
-		// code for autohoming
 		ncoder.Start();
 		ncoder.Reset();
 		driveControl.SetPID(0.0100, 0.001, 0);
@@ -100,8 +105,7 @@ public:
 		}
 		//driveControl.SetSetpoint(100); //100 increments above the original
 	}
-	
-	//code for going forward. needs pid, incrementer, etc.
+	//Code for going forward. Needs PID, incrementer, etc.
 	void goForward(float incrementer) { 
 		double p = driveControl.GetP();
 		while (ncoder.GetDistance() <= 800 && IsEnabled()) {
@@ -127,7 +131,7 @@ public:
 			}
 		}
 	}
-	//code to move backwards. includes incrementer, pid, etc.
+	//Code to move backwards. Includes incrementer, PID, etc.
 	void goBackward(float incrementer) { //More horrid naming convention, very sorry
 		double p = driveControl.GetP();
 		while (ncoder.GetDistance() >= 100 && IsEnabled()) {
@@ -151,7 +155,7 @@ public:
 			}
 		}
 	}
-// test stuff
+//test stuff
 	void goForwardTest(float incrementer, double conversion) { //Please forgive the horrid naming convention. Please. 
 		while (ncoder.GetDistance() <= 800 && IsEnabled()) {
 			driveControl.SetSetpoint(driveControl.GetSetpoint() + incrementer);
@@ -184,14 +188,16 @@ public:
 
 		}
 	}
-// set in autonomous for autohoming
+//Set in autonomous for autohoming
 	void Autonomous() {
 		autoHome();
 		while (IsAutonomous() && IsEnabled()) {
 			float point = driverStation->GetAnalogIn(4) * 100;
 			driveControl.Enable();
 			//driveControl.SetSetpoint(ncoder.Get() + 500);
-			driveControl.SetOutputRange(-.5, .5); 
+			driveControl.SetOutputRange(-.5, .5);
+			//For tomorrow: Work on having it autohome using the optical switches
+			//After that, have it oscillate between two points about 10 times before asking it to go back to X value, and see how accurate it is. 
 
 			float incrementer = 3.0;
 			int rotations = 10;
@@ -258,32 +264,73 @@ public:
 		i = driverStation->GetAnalogIn(2) / 10;
 		driveControl.SetPID(p, i, 0.0);
 		double length = ncoder.GetDistance();
-		bool check = false; 
+		bool check = false;
 		while (IsEnabled()) {
 			float addition = -joy1.GetY() * incrementer;
 			printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 					driveControl.GetSetpoint(), addition, ncoder.GetDistance());
-			leftTest.Set(rightTest.Get()); 
+			//			printf("Distance: %f\t Ticks?: %d\n P: %f\t I: %f\n",
+			//					ncoder.GetDistance(), ncoder.Get(), driveControl.GetP(),
+			//					driveControl.GetI());
+			//			printf("Current: %f \t Voltage: %f\n",
+			//					rightTest.GetOutputCurrent(), rightTest.GetOutputVoltage());
+			//			printf("Switch 1: %d \t Switch 2: %d \n", opticalTest1.Get(),
+			//					opticalTest2.Get());
+			leftTest.Set(rightTest.Get());
 			if ((addition > 0.1 && opticalTest2.Get() == 1) || (addition < -0.1
 					&& opticalTest1.Get() == 1)) {
-				double value = ncoder.GetDistance() + (10 * addition); 
+				double value = ncoder.GetDistance() + (5 * addition);
 				//driveControl.SetSetpoint(ncoder.GetDistance() + 10 * addition);
 				//check = true; 
-				if(value > length) {
-					value = length; 
+				if (value > length) {
+					value = length;
 				}
-				if(value < 0.) {
-					value = 0.; 
+				if (value < 0.) {
+					value = 0.;
 				}
-				driveControl.SetSetpoint(value); 
+				driveControl.SetSetpoint(value);
 				leftTest.Set(rightTest.Get());
-			} else if(check) {
-				driveControl.SetSetpoint(ncoder.GetDistance());
-				check = false;  
-				leftTest.Set(rightTest.Get()); 
 			}
-			leftTest.Set(rightTest.Get()); 
-			
+			while (joy1.GetTrigger() == 1) {
+				driveControl.SetSetpoint(5);
+				leftTest.Set(rightTest.Get());
+				//				printf("Distance: %f\t Ticks?: %d\n P: %f\t I: %f\n",
+				//						ncoder.GetDistance() * 4, ncoder.Get(),
+				//						driveControl.GetP(), driveControl.GetI());
+				//				printf("Current: %f \t Voltage: %f\n",
+				//						rightTest.GetOutputCurrent(),
+				//						rightTest.GetOutputVoltage());
+				//				printf("Switch 1: %d \t Switch 2: %d \n", opticalTest1.Get(),
+				//						opticalTest2.Get());
+				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
+						driveControl.GetSetpoint(), addition,
+						ncoder.GetDistance());
+
+			}
+			while (joy1.GetRawButton(2) == 1) {
+				driveControl.SetSetpoint(length / 2);
+				leftTest.Set(rightTest.Get());
+				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
+						driveControl.GetSetpoint(), addition,
+						ncoder.GetDistance());
+
+			}
+			while (joy1.GetRawButton(4) == 1) {
+				driveControl.SetSetpoint(0);
+				leftTest.Set(rightTest.Get());
+				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
+						driveControl.GetSetpoint(), addition,
+						ncoder.GetDistance());
+				leftTest.Set(rightTest.Get());
+			}
+			while (joy1.GetRawButton(5) == 1) {
+				driveControl.SetSetpoint(length);
+				leftTest.Set(rightTest.Get());
+				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
+						driveControl.GetSetpoint(), addition,
+						ncoder.GetDistance());
+				leftTest.Set(rightTest.Get());
+			}
 		}
 		/*
 		 printf("ITS DONE!");
@@ -311,31 +358,41 @@ public:
 	}
 
 	void Test() {
-		double conversionFactor = 0.0320053120849933598937583001328;
-		while (IsEnabled()) {
-			autoHome();
-			float point = ncoder.GetDistance();
-			driveControl.Enable();
-			driveControl.SetOutputRange(-1., 1.);
-			float incrementer = 0.50;
-			int rotations = 10;
-			if (!driverStation->GetDigitalIn(1)) {
-				rotations = 5;
-			}
+		/*
+		 double conversionFactor = 0.0320053120849933598937583001328;
+		 while (IsEnabled()) {
+		 autoHome();
+		 float point = ncoder.GetDistance();
+		 driveControl.Enable();
+		 driveControl.SetOutputRange(-1., 1.);
+		 float incrementer = 0.50;
+		 int rotations = 10;
+		 if (!driverStation->GetDigitalIn(1)) {
+		 rotations = 5;
+		 }
 
-			for (int i = 0; i < rotations; i++) {
-				goBackwardTest(incrementer, conversionFactor);
-				goForwardTest(incrementer, conversionFactor);
-			}
-			while (true && IsEnabled()) {
-				driveControl.SetSetpoint(point);
-			}
+		 for (int i = 0; i < rotations; i++) {
+		 goBackwardTest(incrementer, conversionFactor);
+		 goForwardTest(incrementer, conversionFactor);
+		 }
+		 while (true && IsEnabled()) {
+		 driveControl.SetSetpoint(point);
+		 }
+		 }
+		 */
+		autoHome();
+		//driveControl.Enable(); 
+		while (IsEnabled()) {
+
+			printf("Distance: %f\t Ticks?: %d\n P: %f\t I: %f\n",
+					ncoder.GetDistance(), ncoder.GetRaw(), driveControl.GetP(),
+					driveControl.GetI());
+			printf("Current: %f \t Voltage: %f\n",
+					rightTest.GetOutputCurrent(), rightTest.GetOutputVoltage());
+			printf("Switch 1: %d \t Switch 2: %d \n", opticalTest1.Get(),
+					opticalTest2.Get());
 		}
 
-		/**
-		 * Runs during test mode
-		 */
-		//	void Test() {}
 	}
 };
 

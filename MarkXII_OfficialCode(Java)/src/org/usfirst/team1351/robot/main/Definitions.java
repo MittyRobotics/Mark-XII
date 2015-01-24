@@ -30,6 +30,9 @@ public class Definitions
 	// public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	// public static final double[] DRIVE_MULTIPLIER =
 	// { 7., 7., -7., -7. };
+	public static final double DRIVE_P = 7.;
+	public static final double DRIVE_I = 0;
+	public static final double DRIVE_D = 0;
 	public static final double[] DRIVE_MULTIPLIER =
 	{ -1., -1., 1., 1. };
 	public static final double DRIVE_MULTIPLIER_LEFT = DRIVE_MULTIPLIER[0];

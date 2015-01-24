@@ -3,6 +3,8 @@
 
 package org.usfirst.team1351.robot.util;
 
+import javax.management.RuntimeErrorException;
+
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
@@ -73,7 +75,7 @@ public class TKOHardware
 		if (acc == null)
 			acc = new BuiltInAccelerometer();
 
-		configDriveTalons(10., 0., 0., Definitions.DRIVE_TALONS_CONTROL_MODE);
+		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_CONTROL_MODE);
 	}
 
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
@@ -88,6 +90,8 @@ public class TKOHardware
 					drive[i].set(i - 1);
 				} else
 				{
+					if (!(mode instanceof CANTalon.ControlMode))
+						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
 					drive[i].changeControlMode(mode);
 				}
 			}

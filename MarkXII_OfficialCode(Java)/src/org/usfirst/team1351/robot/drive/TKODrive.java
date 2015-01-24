@@ -52,7 +52,7 @@ public class TKODrive implements Runnable
 			driveThread.setThreadRunning(false);
 		System.out.println("Stopped drive task");
 	}
-	
+
 	public synchronized void setLeftRightMotorOutputsPercentVBus(double left, double right)
 	{
 		try
@@ -60,19 +60,19 @@ public class TKODrive implements Runnable
 			if (TKOHardware.getLeftDrive().getControlMode() == CANTalon.ControlMode.PercentVbus)
 				TKOHardware.getLeftDrive().set(Definitions.DRIVE_MULTIPLIER[0] * left);
 			else
-				throw new TKOException("CANTALON NOT IN PERCENT VBUS: " + TKOHardware.getDriveTalon(0).getDeviceID());
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.PercentVbus);
 
 			if (TKOHardware.getRightDrive().getControlMode() == CANTalon.ControlMode.PercentVbus)
 				TKOHardware.getRightDrive().set(Definitions.DRIVE_MULTIPLIER[2] * right);
 			else
-				throw new TKOException("CANTALON NOT IN PERCENT VBUS: " + TKOHardware.getDriveTalon(2).getDeviceID());
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.PercentVbus);
 
 		} catch (TKOException e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public synchronized void setLeftRightMotorOutputsCurrent(double leftCurrent, double rightCurrent)
 	{
 		try
@@ -80,12 +80,12 @@ public class TKODrive implements Runnable
 			if (TKOHardware.getLeftDrive().getControlMode() == CANTalon.ControlMode.Current)
 				TKOHardware.getLeftDrive().set(Definitions.DRIVE_MULTIPLIER_LEFT * Definitions.MAX_CURRENT_LEFT * leftCurrent);
 			else
-				throw new TKOException("CANTALON NOT IN CURRENT MODE: " + TKOHardware.getDriveTalon(0).getDeviceID());
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.Current);
 
 			if (TKOHardware.getRightDrive().getControlMode() == CANTalon.ControlMode.Current)
 				TKOHardware.getRightDrive().set(Definitions.DRIVE_MULTIPLIER_RIGHT * Definitions.MAX_CURRENT_RIGHT * rightCurrent);
 			else
-				throw new TKOException("CANTALON NOT IN CURRENT MODE: " + TKOHardware.getDriveTalon(2).getDeviceID());
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.Current);
 
 		} catch (TKOException e)
 		{
@@ -163,7 +163,7 @@ public class TKODrive implements Runnable
 			e.printStackTrace();
 		}
 	}
-	
+
 	public synchronized void currentModeTankDrive()
 	{
 		try
@@ -267,13 +267,13 @@ public class TKODrive implements Runnable
 				}
 				if (TKOHardware.getJoystick(0).getRawButton(4))
 				{
-					//TODO make this not ghetto
+					// TODO make this not ghetto
 					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
 				}
 				if (TKOHardware.getJoystick(0).getRawButton(5))
 				{
 					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
-					//TODO make this not ghetto
+					// TODO make this not ghetto
 				}
 
 				tankDrive();

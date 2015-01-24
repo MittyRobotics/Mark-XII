@@ -22,8 +22,8 @@ public class TKOHardware
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
 	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
-	protected static Compressor comp = new Compressor(Definitions.PCM_ID);
-	protected static BuiltInAccelerometer acc = new BuiltInAccelerometer();
+	protected static Compressor comp = null;
+	protected static BuiltInAccelerometer acc = null;
 
 	public TKOHardware()
 	{

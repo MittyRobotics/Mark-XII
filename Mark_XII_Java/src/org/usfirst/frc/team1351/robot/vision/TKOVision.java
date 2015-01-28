@@ -1,4 +1,4 @@
-//Last edited by Alex Parks
+//Last edited by Adam Filiz
 //on 1/19/15
 
 package org.usfirst.frc.team1351.robot.vision;
@@ -104,6 +104,17 @@ public class TKOVision implements Runnable {
 		NIVision.IMAQdxStopAcquisition(session);
 	}
 
+	public static void straightDistance()
+	{
+		int dist;
+		int vertHeight;
+		int targetHeight;
+		int imageHeight;
+		int straightAngle;
+		
+	
+		
+	}
 	@Override
 	public void run() 
 	{

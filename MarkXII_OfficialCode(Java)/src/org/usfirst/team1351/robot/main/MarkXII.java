@@ -14,13 +14,16 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 
 /*-----------TODO-------------
- * Write TKOLEDArduino
+ * Write TKOLEDArduino lol rekt
  * Test/fix StateMachine
  * Recreate documentation for java
  * TKOGyro/TKORelay?
  * Port/rewrite Autonomous Atoms/Molecules?
  * TODO global current checker/safety manager loop in TKOHardware for each jag?
  * TODO Thread priorities
+ * TODO Drive - access only drives 0/2?
+ * TODO don't forget to turn on all the subsystems
+ * TODO organize TKOHardware by the different things components will be used for, (array of arrays?)
  * 
  */
 public class MarkXII extends SampleRobot

@@ -65,6 +65,8 @@ public class Definitions
 			return Thread.NORM_PRIORITY + 1;
 		case "gripper":
 			return Thread.NORM_PRIORITY - 1;
+		case "conveyor":
+			return Thread.NORM_PRIORITY - 2;
 
 		default:
 			return Thread.NORM_PRIORITY;

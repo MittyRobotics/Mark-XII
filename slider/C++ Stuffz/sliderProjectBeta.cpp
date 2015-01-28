@@ -8,7 +8,9 @@
  * This code is for the testing of CANJaguars, Physical and Optical Limit Switches, and Encoders, as well as motors via the CANJaguars
  * Ports must be declared, otherwise, the values are mostly garbage, and the code shouldn't run properly
  * Have fun?
- * Last edited by Ishan Shah, Louis Coffin, and Shreyas Vaidya on 24 Jan 2015
+ * Last edited by Ishan Shah on 28 Jan 2015
+ * 
+ * Look into setTolerance methods for the PIDController object to fix the errors Fairley gave me
  */
 class RobotDemo: public SimpleRobot {
 	//Initializations
@@ -63,6 +65,7 @@ public:
 	}
 
 	void RobotInit() {
+		//rightTest.enableDeadbandElimination(true); 
 	}
 
 	void Disabled() {
@@ -83,6 +86,7 @@ public:
 		driveControl.SetSetpoint(ncoder.GetDistance());
 		driveControl.Disable();
 		bool check = false;
+		//Make it so if the flag is triggered,, it moves back 
 		while (!check) {
 			rightTest.Set(-.25);
 			leftTest.Set(rightTest.Get());
@@ -104,6 +108,7 @@ public:
 				driveControl.SetSetpoint(ncoder.GetDistance());
 				rightTest.Set(0);
 				leftTest.Set(0);
+				//Throw error if off by too much. 
 			}
 		}
 		//driveControl.SetSetpoint(100); //100 increments above the original
@@ -118,9 +123,9 @@ public:
 			printf("Controller E: %f\n", driveControl.GetError());
 			printf("P Val: %f \n", p);
 			leftTest.Set(rightTest.Get()); //ASDF
-//			if (opticalTest1.Get() == 0 || opticalTest2.Get() == 0) {
-//				driveControl.Disable();
-//			}
+			//			if (opticalTest1.Get() == 0 || opticalTest2.Get() == 0) {
+			//				driveControl.Disable();
+			//			}
 		}
 		driveControl.SetSetpoint(24.5);
 		while (abs(driveControl.GetError()) > .5 && IsEnabled()) {
@@ -225,7 +230,7 @@ public:
 				goBackward(incrementer);
 				goForward(incrementer);
 				if (opticalTest1.Get() == 0 || opticalTest2.Get() == 0) {
-					driveControl.Disable();
+					driveControl.Disable(); //Should make this timed ,, 5 sec? 
 				}
 			}
 
@@ -278,9 +283,10 @@ public:
 			//			printf("Switch 1: %d \t Switch 2: %d \n", opticalTest1.Get(),
 			//					opticalTest2.Get());
 			leftTest.Set(rightTest.Get());
-			if ((addition > 0.1 && opticalTest2.Get() == 1) || (addition < -0.1
-					&& opticalTest1.Get() == 1)) {
+			if ((addition > 0.003 && opticalTest2.Get() == 1) || (addition
+					< -0.003 && opticalTest1.Get() == 1)) {
 				double value = (10. * addition) + driveControl.GetSetpoint();
+				printf("Value: %f", value);
 				if (value > length - .5) {
 					value = length - .5;
 				}
@@ -291,7 +297,16 @@ public:
 				leftTest.Set(rightTest.Get());
 			}
 			while (joy1.GetTrigger() == 1) {
-				driveControl.SetSetpoint(5);
+				if (driveControl.GetSetpoint() < 5.) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() + (10. * incrementer
+									/ 3.));
+				} else if (driveControl.GetSetpoint() > 5.) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() - (10. * incrementer
+									/ 3.));
+				}
+				//driveControl.SetSetpoint(5);
 				leftTest.Set(rightTest.Get());
 				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 						driveControl.GetSetpoint(), addition,
@@ -302,7 +317,17 @@ public:
 
 			}
 			while (joy1.GetRawButton(2) == 1) {
-				driveControl.SetSetpoint(length / 2);
+				if (driveControl.GetSetpoint() < (length / 2.)) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() + (10. * incrementer
+									/ 3.));
+				} else if (driveControl.GetSetpoint() > (length / 2.)) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() - (10. * incrementer
+									/ 3.));
+				}
+
+				//driveControl.SetSetpoint(length / 2);
 				leftTest.Set(rightTest.Get());
 				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 						driveControl.GetSetpoint(), addition,
@@ -313,7 +338,17 @@ public:
 
 			}
 			while (joy1.GetRawButton(3) == 1) {
-				driveControl.SetSetpoint(6);
+				if (driveControl.GetSetpoint() < 6.) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() + (10. * incrementer
+									/ 3.));
+				} else if (driveControl.GetSetpoint() > 6.) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() - (10. * incrementer
+									/ 3.));
+				}
+
+				//driveControl.SetSetpoint(6);
 				leftTest.Set(rightTest.Get());
 				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 						driveControl.GetSetpoint(), addition,
@@ -324,7 +359,17 @@ public:
 
 			}
 			while (joy1.GetRawButton(4) == 1) {
-				driveControl.SetSetpoint(0);
+				if (driveControl.GetSetpoint() < 0.) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() + (10. * incrementer
+									/ 3.));
+				} else if (driveControl.GetSetpoint() > 0.) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() - (10. * incrementer
+									/ 3.));
+				}
+
+				//driveControl.SetSetpoint(0);
 				leftTest.Set(rightTest.Get());
 				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 						driveControl.GetSetpoint(), addition,
@@ -335,7 +380,17 @@ public:
 						rightTest.GetOutputVoltage());
 			}
 			while (joy1.GetRawButton(5) == 1) {
-				driveControl.SetSetpoint(length);
+				if (driveControl.GetSetpoint() < length) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() + (10. * incrementer
+									/ 3.));
+				} else if (driveControl.GetSetpoint() > length) {
+					driveControl.SetSetpoint(
+							driveControl.GetSetpoint() - (10. * incrementer
+									/ 3.));
+				}
+
+				//driveControl.SetSetpoint(length);
 				leftTest.Set(rightTest.Get());
 				printf("Setpoint: %f Addition: %f ncoderDist: %f\n",
 						driveControl.GetSetpoint(), addition,
@@ -376,6 +431,12 @@ public:
 		 */
 		autoHome();
 		//driveControl.Enable(); 
+		
+		//0.15663
+		//That is the deadband in inches, double for full deadband, over quarter of inch 
+		
+		
+		driveControl.SetSetpoint(12.5);
 		while (IsEnabled()) {
 
 			printf("Distance: %f\t Ticks?: %d\n P: %f\t I: %f\n",
@@ -385,6 +446,7 @@ public:
 					rightTest.GetOutputCurrent(), rightTest.GetOutputVoltage());
 			printf("Switch 1: %d \t Switch 2: %d \n", opticalTest1.Get(),
 					opticalTest2.Get());
+			printf("ERROR: %f\n", driveControl.GetError()); 
 		}
 
 	}

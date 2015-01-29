@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -24,6 +25,9 @@ public class TKOHardware
 	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor comp = null;
 	protected static BuiltInAccelerometer acc = null;
+	
+	protected static CANTalon lift = null;
+	protected static Encoder liftEnc = null;
 
 	public TKOHardware()
 	{
@@ -72,8 +76,17 @@ public class TKOHardware
 		
 		if (acc == null)
 			acc = new BuiltInAccelerometer();
+		
+		if (lift == null)
+			lift = new CANTalon(Definitions.LIFT_TALON_ID);
 
+		if (liftEnc == null)
+			liftEnc = new Encoder(Definitions.LIFT_ENCODER_A, Definitions.LIFT_ENCODER_B);
+		
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_CONTROL_MODE);
+	
+		// TODO this is pretty ghetto
+		lift.changeControlMode(CANTalon.ControlMode.PercentVbus);
 	}
 
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
@@ -149,8 +162,28 @@ public class TKOHardware
 		
 		if (acc != null)
 			acc = null;
+		
+		if (lift != null)
+			lift = null;
+		
+		if (liftEnc != null)
+			liftEnc = null;
 	}
 
+	public static synchronized Encoder getLiftEncoder() throws TKOException
+	{
+		if (liftEnc == null)
+			throw new TKOException("LIFT ENCODER IS NULL");
+		return liftEnc;
+	}
+	
+	public static synchronized CANTalon getLiftTalon() throws TKOException
+	{
+		if (lift == null)
+			throw new TKOException("LIFT TALON IS NULL");
+		return lift;
+	}
+	
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
 	{
 		if (num > Definitions.NUM_DRIVE_TALONS)

@@ -27,6 +27,11 @@ public class Definitions
 	{ 0, 1, 2, 3 };
 	public static final int[] DRIVE_TALON_ID =
 	{ 0, 1, 2, 3 };
+	
+	public static final int LIFT_TALON_ID = 5;
+	public static final int LIFT_ENCODER_A = 0;
+	public static final int LIFT_ENCODER_B = 1;
+	
 	// public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	// public static final double[] DRIVE_MULTIPLIER =
 	// { 7., 7., -7., -7. };

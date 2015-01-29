@@ -6,6 +6,9 @@ package org.usfirst.team1351.robot.main;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CANTalon.ControlMode;
+
 public class Definitions
 {
 	public static final int NUM_DRIVE_TALONS = 4;
@@ -24,11 +27,24 @@ public class Definitions
 	{ 0, 1, 2, 3 };
 	public static final int[] DRIVE_TALON_ID =
 	{ 0, 1, 2, 3 };
+	
+	public static final int LIFT_TALON_ID = 5;
+	public static final int LIFT_ENCODER_A = 0;
+	public static final int LIFT_ENCODER_B = 1;
+	
 	// public static final double[] DRIVE_MULTIPLIER = {1., 1., -1., -1.};
 	// public static final double[] DRIVE_MULTIPLIER =
 	// { 7., 7., -7., -7. };
+	public static final double DRIVE_P = 4.;
+	public static final double DRIVE_I = 0.01;
+	public static final double DRIVE_D = 0;
 	public static final double[] DRIVE_MULTIPLIER =
-	{ 1., 1., -1., -1. };
+	{ -1., -1., 1., 1. };
+	public static final double DRIVE_MULTIPLIER_LEFT = DRIVE_MULTIPLIER[0];
+	public static final double DRIVE_MULTIPLIER_RIGHT = DRIVE_MULTIPLIER[2];
+	public static final double MAX_CURRENT_LEFT = 10.;
+	public static final double MAX_CURRENT_RIGHT = 10.;
+
 	public static final double[] TALON_CURRENT_TIMEOUT =
 	{ 100, 100, 100, 100 };
 	public static final long[] CURRENT_TIMEOUT_LENGTH =
@@ -36,6 +52,7 @@ public class Definitions
 
 	public static final int DEF_DATA_REPORTING_THREAD_WAIT = 250;
 	public static final int PCM_ID = 0;
+	public static final ControlMode DRIVE_TALONS_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static ArrayList<String> threadNames = new ArrayList<String>();
 	public static HashMap<String, Integer> threadPriorities;
 
@@ -53,6 +70,8 @@ public class Definitions
 			return Thread.NORM_PRIORITY + 1;
 		case "gripper":
 			return Thread.NORM_PRIORITY - 1;
+		case "conveyor":
+			return Thread.NORM_PRIORITY - 2;
 
 		default:
 			return Thread.NORM_PRIORITY;

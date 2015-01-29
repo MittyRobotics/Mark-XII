@@ -6,10 +6,13 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -20,7 +23,11 @@ public class TKOHardware
 	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
 	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
-	protected static Compressor comp = new Compressor(Definitions.PCM_ID);
+	protected static Compressor comp = null;
+	protected static BuiltInAccelerometer acc = null;
+	
+	protected static CANTalon lift = null;
+	protected static Encoder liftEnc = null;
 
 	public TKOHardware()
 	{
@@ -66,14 +73,29 @@ public class TKOHardware
 		
 		if (comp == null)
 			comp = new Compressor(Definitions.PCM_ID);
+		
+		if (acc == null)
+			acc = new BuiltInAccelerometer();
+		
+		if (lift == null)
+			lift = new CANTalon(Definitions.LIFT_TALON_ID);
 
-		configTalons(10., 0., 0.);
+		if (liftEnc == null)
+			liftEnc = new Encoder(Definitions.LIFT_ENCODER_A, Definitions.LIFT_ENCODER_B);
+		
+		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_CONTROL_MODE);
+	
+		// TODO this is pretty ghetto
+		lift.changeControlMode(CANTalon.ControlMode.PercentVbus);
 	}
 
-	public static synchronized void configTalons(double p, double I, double d)
+	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
+			drive[i].delete();
+			drive[i] = null;
+			drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
 			if (drive[i] != null)
 			{
 				if (i == 1 || i == 3)
@@ -82,7 +104,11 @@ public class TKOHardware
 					drive[i].set(i - 1);
 				} else
 				{
-					drive[i].changeControlMode(CANTalon.ControlMode.PercentVbus);
+					if (!(mode instanceof CANTalon.ControlMode))
+						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
+					drive[i].changeControlMode(mode);
+					drive[i].setPID(p, I, d);
+					drive[i].enableControl();
 				}
 			}
 		}
@@ -92,7 +118,7 @@ public class TKOHardware
 		drive[3].reverseOutput(false);*/
 	}
 
-	public static synchronized void setAll(double setTarget)
+	public static synchronized void setAllDriveTalons(double setTarget)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
@@ -133,8 +159,31 @@ public class TKOHardware
 			comp.free();
 			comp = null;
 		}
+		
+		if (acc != null)
+			acc = null;
+		
+		if (lift != null)
+			lift = null;
+		
+		if (liftEnc != null)
+			liftEnc = null;
 	}
 
+	public static synchronized Encoder getLiftEncoder() throws TKOException
+	{
+		if (liftEnc == null)
+			throw new TKOException("LIFT ENCODER IS NULL");
+		return liftEnc;
+	}
+	
+	public static synchronized CANTalon getLiftTalon() throws TKOException
+	{
+		if (lift == null)
+			throw new TKOException("LIFT TALON IS NULL");
+		return lift;
+	}
+	
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
 	{
 		if (num > Definitions.NUM_DRIVE_TALONS)
@@ -185,6 +234,20 @@ public class TKOHardware
 		return drive;
 	}
 
+	public static synchronized CANTalon getLeftDrive() throws TKOException
+	{
+		if (drive[0] == null)
+			throw new TKOException("NULL LEFT DRIVE TALON");
+		return drive[0];
+	}
+	
+	public static synchronized CANTalon getRightDrive() throws TKOException
+	{
+		if (drive[2] == null)
+			throw new TKOException("NULL LEFT DRIVE TALON");
+		return drive[2];
+	}
+
 	public static synchronized Joystick[] getJoysticks() throws TKOException
 	{
 		if (stick == null)
@@ -197,5 +260,12 @@ public class TKOHardware
 		if (piston == null)
 			throw new TKOException("NULL PISTON ARRAY");
 		return piston;
+	}
+	
+	public static synchronized BuiltInAccelerometer getAcc() throws TKOException
+	{
+		if (acc == null)
+			throw new TKOException("NULL ACCELEROMETER OBJECT");
+		return acc;
 	}
 }

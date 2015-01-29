@@ -3,7 +3,6 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
-import edu.wpi.first.wpilibj.CANJaguar;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -162,10 +161,18 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			}
 			try
 			{
+				SmartDashboard.putNumber("Accelerometer X", TKOHardware.getAcc().getX());
+				SmartDashboard.putNumber("Accelerometer Y", TKOHardware.getAcc().getY());
+				SmartDashboard.putNumber("Accelerometer Z", TKOHardware.getAcc().getZ());
+				inst.addMessage("accX: " + TKOHardware.getAcc().getX());
+				inst.addMessage("accY: " + TKOHardware.getAcc().getY());
+				inst.addMessage("accZ: " + TKOHardware.getAcc().getZ());
+				
 				SmartDashboard.putNumber("EncLeft", TKOHardware.getDriveTalon(0).getPosition());
 				SmartDashboard.putNumber("EncRight", TKOHardware.getDriveTalon(2).getPosition());
 				for (CANTalon motor : TKOHardware.getDriveTalons())
 				{
+					int id = motor.getDeviceID();
 					// TODO Check if motors are null
 					if (motor == null)
 						continue;
@@ -173,6 +180,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
 					inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
+					SmartDashboard.putNumber("Temperature Jag " + id, motor.getTemp());
+					SmartDashboard.putNumber("Out_Current Jag " + id, motor.getOutputCurrent());
+					SmartDashboard.putNumber("Out_Voltage Jag " + id, motor.getOutputVoltage());
+					SmartDashboard.putNumber("In_Voltage Jag " + id, motor.getBusVoltage());
 				}
 			} catch (Exception e)
 			{
@@ -194,7 +205,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		SmartDashboard.putNumber("IValTested", currentITested);
 		SmartDashboard.putNumber("DValTested", currentDTested);
 		try
-		{
+		{			
 			for (CANTalon motor : TKOHardware.getDriveTalons())
 			{
 				if (motor == null)

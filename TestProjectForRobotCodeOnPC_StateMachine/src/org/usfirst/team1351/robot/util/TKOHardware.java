@@ -8,6 +8,7 @@ import org.usfirst.team1351.robot.main.Definitions;
 
 import us.vadweb.wrapper.wpilib.CANTalon;
 import us.vadweb.wrapper.wpilib.Joystick;
+import us.vadweb.wrapper.wpilib.DoubleSolenoid;
 
 public class TKOHardware
 {

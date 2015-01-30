@@ -5,7 +5,7 @@ import org.usfirst.team1351.robot.statemachineex.StateEnum;
 import org.usfirst.team1351.robot.statemachineex.IStateFunction;
 import org.usfirst.team1351.robot.statemachineex.StateMachine;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import us.vadweb.wrapper.wpilib.DoubleSolenoid;
 
 public class PistonExtend implements IStateFunction {
 

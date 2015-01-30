@@ -9,7 +9,7 @@ import org.usfirst.team1351.robot.statemachineex.states.ReadyToFire;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Joystick;
+import us.vadweb.wrapper.wpilib.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
 public class StateMachine {

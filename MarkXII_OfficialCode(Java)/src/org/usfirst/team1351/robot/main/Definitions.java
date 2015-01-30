@@ -14,13 +14,17 @@ public class Definitions
 	public static final int NUM_DRIVE_TALONS = 4;
 	public static final int NUM_JOYSTICKS = 4;
 
-	public static final int NUM_PISTONS = 1;
-	public static final int SHIFTER_A = 2;
+	// TODO replace BS values
+	public static final int NUM_PISTONS = 4;
+	public static final int SHIFTER_A = 2;			// drive train shifting piston
 	public static final int SHIFTER_B = 3;
-	public static final int LEFT_PISTON_SOLENOID_A = 0;
-	public static final int LEFT_PISTON_SOLENOID_B = 1;
-	public static final int RIGHT_PISTON_SOLENOID_A = 2;
-	public static final int RIGHT_PISTON_SOLENOID_B = 3;
+	public static final int GRIPPER_A = 4;			// gripper piston
+	public static final int GRIPPER_B = 5;
+	public static final int WHEELIE_L_A = 6;		// piston for left side of wheelie bar
+	public static final int WHEELIE_L_B = 7;
+	public static final int WHEELIE_R_A = 8;		// piston for right side of wheelie bar
+	public static final int WHEELIE_R_B = 9;
+	
 	public static final int NUM_SWITCHES = 4;
 
 	public static final int[] JOYSTICK_ID =

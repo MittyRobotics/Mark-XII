@@ -64,7 +64,7 @@ public class TKOGripper implements Runnable
 		try {
 			TKOHardware.getCompressor().start();
 			// TODO check that this is kReverse in all branches
-			TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -95,11 +95,11 @@ public class TKOGripper implements Runnable
 	 */
 	public synchronized void pistonControl() {
 		try {
-			if (TKOHardware.getJoystick(0).getRawButton(2)) {
-				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+			if (TKOHardware.getJoystick(2).getRawButton(2)) {
+				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
 			}
-			if (TKOHardware.getJoystick(0).getRawButton(3)) {
-				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+			if (TKOHardware.getJoystick(2).getRawButton(3)) {
+				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
 			}
 
 		} catch (Exception e) {

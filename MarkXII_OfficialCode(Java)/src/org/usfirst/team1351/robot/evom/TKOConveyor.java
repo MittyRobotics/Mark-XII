@@ -1,7 +1,11 @@
 package org.usfirst.team1351.robot.evom;
 
 import org.usfirst.team1351.robot.main.Definitions;
+import org.usfirst.team1351.robot.util.TKOException;
+import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
+
+import edu.wpi.first.wpilibj.CANTalon;
 
 /**
  * @author Vadim
@@ -67,6 +71,19 @@ public class TKOConveyor implements Runnable // implements Runnable is important
 		}
 	}
 
+	public void joystickControl()
+	{
+		try {
+			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.PercentVbus)
+				TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.PercentVbus);
+			
+			TKOHardware.getLiftTalon().set(TKOHardware.getJoystick(3).getY() * 0.4);
+		} catch (TKOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * The run method is what the thread actually calls once. The continual running of the thread loop is done by the while loop, controlled
 	 * by a safe boolean inside the TKOThread object. The wait is synchronized to make sure the thread safely sleeps.
@@ -80,15 +97,10 @@ public class TKOConveyor implements Runnable // implements Runnable is important
 			
 			while (conveyorThread.isThreadRunning())
 			{
-				System.out.println("THREAD RAN!");
-				/*
-				 * wait for joystick everywhere
-				 * 
-				 * THIS IS WHERE YOU PUT ALL OF YOUR CODEZ
-				 * Some way to manage our current position (both in encoder units and in levels) and maintain our target position
-				 * with PID ramping incremented in this loop
-				 * 
-				 */
+				// System.out.println("THREAD RAN!");
+				
+				joystickControl();
+				
 				synchronized (conveyorThread) // synchronized per the thread to make sure that we wait safely
 				{
 					conveyorThread.wait(100); // the wait time that the thread sleeps, in milliseconds

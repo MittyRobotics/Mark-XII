@@ -4,4 +4,6 @@ STICK 2
 
 Operator Controls:
 STICK 3
+- Button 2: open gripper
+- Button 3: close gripper
 STICK 4

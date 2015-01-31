@@ -66,7 +66,6 @@ public class MarkXII extends SampleRobot
 		CANTalon motor = null;
 		try
 		{
-			TKOHardware.getCompressor().start();
 			motor = TKOHardware.getLeftDrive();
 		} catch (TKOException e1)
 		{
@@ -83,14 +82,6 @@ public class MarkXII extends SampleRobot
 			System.out.println("Talon encoder val Index: " + motor.getPinStateQuadIdx());*/
 			//System.out.println("'Encoder' val: " + test.getDistance());
 			Timer.delay(0.25); // wait for a motor update time
-		}
-		
-		try
-		{
-			TKOHardware.getCompressor().stop();
-		} catch (TKOException e1)
-		{
-			e1.printStackTrace();
 		}
 
 		try

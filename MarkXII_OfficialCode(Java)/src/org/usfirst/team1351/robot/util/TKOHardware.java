@@ -63,7 +63,6 @@ public class TKOHardware
 				try
 				{
 					drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
-					drive[i].enableBrakeMode(false);
 				} catch (AllocationException | CANMessageNotFoundException e)
 				{
 					e.printStackTrace();
@@ -78,10 +77,10 @@ public class TKOHardware
 
 		if (piston[1] == null)
 			piston[1] = new DoubleSolenoid(Definitions.GRIPPER_A, Definitions.GRIPPER_B);
-		
+
 		if (piston[2] == null)
 			piston[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
-		
+
 		if (comp == null)
 			comp = new Compressor(Definitions.PCM_ID);
 
@@ -109,25 +108,20 @@ public class TKOHardware
 			drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
 			if (drive[i] != null)
 			{
-				if (i == 1 || i == 3)
-				{
-					drive[i].changeControlMode(CANTalon.ControlMode.Follower);
-					drive[i].set(i - 1);
-				} else if (i == 0)
-				{
-					drive[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-					drive[i].changeControlMode(CANTalon.ControlMode.Speed);
-					drive[i].reverseSensor(true);
-					drive[i].setPID(p, I, d);
-					drive[i].enableControl();
-				} else
-				{
-					if (!(mode instanceof CANTalon.ControlMode))
-						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
-					drive[i].changeControlMode(mode);
-					drive[i].setPID(p, I, d);
-					drive[i].enableControl();
-				}
+
+				drive[i].changeControlMode(CANTalon.ControlMode.Position);
+				drive[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
+				drive[i].reverseSensor(true);
+				drive[i].setPID(p, I, d);
+				drive[i].enableControl();
+
+				/*
+				 * if (i == 1 || i == 3) { drive[i].changeControlMode(CANTalon.ControlMode.Follower); drive[i].set(i - 1); } else { if
+				 * (!(mode instanceof CANTalon.ControlMode)) throw new
+				 * TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)"); drive[i].changeControlMode(mode);
+				 * drive[i].setPID(p, I, d); drive[i].enableControl(); } drive[i].enableBrakeMode(false);
+				 */
+
 			}
 		}
 		/*
@@ -203,7 +197,7 @@ public class TKOHardware
 
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
 	{
-		if (num > Definitions.NUM_DRIVE_TALONS)
+		if (num >= Definitions.NUM_DRIVE_TALONS)
 		{
 			throw new TKOException("Drive talon requested out of bounds");
 		}
@@ -215,7 +209,7 @@ public class TKOHardware
 
 	public static synchronized Joystick getJoystick(int num) throws TKOException
 	{
-		if (num > Definitions.NUM_JOYSTICKS)
+		if (num >= Definitions.NUM_JOYSTICKS)
 		{
 			throw new TKOException("Joystick requested out of bounds");
 		}
@@ -227,7 +221,7 @@ public class TKOHardware
 
 	public static synchronized DoubleSolenoid getPiston(int num) throws TKOException
 	{
-		if (num > Definitions.NUM_JOYSTICKS)
+		if (num >= Definitions.NUM_PISTONS)
 		{
 			throw new TKOException("Piston requested out of bounds");
 		}

@@ -10,6 +10,12 @@ import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
+import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalSource;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -24,7 +30,11 @@ import edu.wpi.first.wpilibj.Timer;
  * TODO Drive - access only drives 0/2?
  * TODO don't forget to turn on all the subsystems
  * TODO organize TKOHardware by the different things components will be used for, (array of arrays?)
- * 
+ * TODO figure out easy way to switch between drive modes
+ * 		TODO Maybe create a checker for what mode we are in, and have setVelocity, setPosition, etc. 
+ * 		TODO 2 Lift motors
+ * 		TODO right now TKOHardware talon control mode changing and managing it turbo ghetto
+ * TODO Do we need to destroy hardware pointers when we are done with operator control loop
  */
 public class MarkXII extends SampleRobot
 {
@@ -58,9 +68,11 @@ public class MarkXII extends SampleRobot
 		TKOGripper.getInstance().start();
 		TKODataReporting.getInstance().start();
 		
+		CANTalon motor = null;
 		try
 		{
 			TKOHardware.getCompressor().start();
+			motor = TKOHardware.getLeftDrive();
 		} catch (TKOException e1)
 		{
 			e1.printStackTrace();
@@ -68,6 +80,13 @@ public class MarkXII extends SampleRobot
 		
 		while (isOperatorControl() && isEnabled())
 		{
+			System.out.println("Distance: " + motor.getEncPosition());
+			System.out.println("Velocity: " + motor.getEncVelocity());
+			/*System.out.println("Raw encoder val: " + motor.getAnalogInRaw());
+			System.out.println("Talon encoder val A: " + motor.getPinStateQuadA());
+			System.out.println("Talon encoder val B: " + motor.getPinStateQuadB());
+			System.out.println("Talon encoder val Index: " + motor.getPinStateQuadIdx());*/
+			//System.out.println("'Encoder' val: " + test.getDistance());
 			Timer.delay(0.25); // wait for a motor update time
 		}
 		
@@ -100,5 +119,32 @@ public class MarkXII extends SampleRobot
 	 */
 	public void test()
 	{
+		System.out.println("Enabling teleop!");
+		TKOHardware.initObjects();
+		TKOLogger.getInstance().start();
+		TKODataReporting.getInstance().start();
+		
+		while (isTest() && isEnabled())
+		{
+			try
+			{
+				TKOHardware.getLeftDrive().set(500);
+			} catch (TKOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		try
+		{
+			TKODataReporting.getInstance().stop();
+			TKODataReporting.getInstance().dataReportThread.join();
+			TKOLogger.getInstance().stop();
+			TKOLogger.getInstance().loggerThread.join();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

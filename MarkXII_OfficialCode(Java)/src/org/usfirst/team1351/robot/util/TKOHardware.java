@@ -25,7 +25,7 @@ public class TKOHardware
 	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor comp = null;
 	protected static BuiltInAccelerometer acc = null;
-	
+
 	protected static CANTalon lift = null;
 	protected static Encoder liftEnc = null;
 
@@ -59,6 +59,7 @@ public class TKOHardware
 				try
 				{
 					drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
+					drive[i].enableBrakeMode(false);
 				} catch (AllocationException | CANMessageNotFoundException e)
 				{
 					e.printStackTrace();
@@ -70,21 +71,21 @@ public class TKOHardware
 
 		if (piston[0] == null)
 			piston[0] = new DoubleSolenoid(Definitions.SHIFTER_A, Definitions.SHIFTER_B);
-		
+
 		if (comp == null)
 			comp = new Compressor(Definitions.PCM_ID);
-		
+
 		if (acc == null)
 			acc = new BuiltInAccelerometer();
-		
+
 		if (lift == null)
 			lift = new CANTalon(Definitions.LIFT_TALON_ID);
 
 		if (liftEnc == null)
 			liftEnc = new Encoder(Definitions.LIFT_ENCODER_A, Definitions.LIFT_ENCODER_B);
-		
+
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_CONTROL_MODE);
-	
+
 		// TODO this is pretty ghetto
 		lift.changeControlMode(CANTalon.ControlMode.PercentVbus);
 	}
@@ -102,6 +103,13 @@ public class TKOHardware
 				{
 					drive[i].changeControlMode(CANTalon.ControlMode.Follower);
 					drive[i].set(i - 1);
+				} else if (i == 0)
+				{
+					drive[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
+					drive[i].changeControlMode(CANTalon.ControlMode.Speed);
+					drive[i].reverseSensor(true);
+					drive[i].setPID(p, I, d);
+					drive[i].enableControl();
 				} else
 				{
 					if (!(mode instanceof CANTalon.ControlMode))
@@ -112,10 +120,9 @@ public class TKOHardware
 				}
 			}
 		}
-		/*drive[0].reverseOutput(true);
-		drive[1].reverseOutput(false);
-		drive[2].reverseOutput(false);
-		drive[3].reverseOutput(false);*/
+		/*
+		 * drive[0].reverseOutput(true); drive[1].reverseOutput(false); drive[2].reverseOutput(false); drive[3].reverseOutput(false);
+		 */
 	}
 
 	public static synchronized void setAllDriveTalons(double setTarget)
@@ -159,13 +166,13 @@ public class TKOHardware
 			comp.free();
 			comp = null;
 		}
-		
+
 		if (acc != null)
 			acc = null;
-		
+
 		if (lift != null)
 			lift = null;
-		
+
 		if (liftEnc != null)
 			liftEnc = null;
 	}
@@ -176,14 +183,14 @@ public class TKOHardware
 			throw new TKOException("LIFT ENCODER IS NULL");
 		return liftEnc;
 	}
-	
+
 	public static synchronized CANTalon getLiftTalon() throws TKOException
 	{
 		if (lift == null)
 			throw new TKOException("LIFT TALON IS NULL");
 		return lift;
 	}
-	
+
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
 	{
 		if (num > Definitions.NUM_DRIVE_TALONS)
@@ -219,7 +226,7 @@ public class TKOHardware
 		else
 			throw new TKOException("Piston " + (num) + "(array value) is null");
 	}
-	
+
 	public static synchronized Compressor getCompressor() throws TKOException
 	{
 		if (comp == null)
@@ -240,7 +247,7 @@ public class TKOHardware
 			throw new TKOException("NULL LEFT DRIVE TALON");
 		return drive[0];
 	}
-	
+
 	public static synchronized CANTalon getRightDrive() throws TKOException
 	{
 		if (drive[2] == null)
@@ -261,7 +268,7 @@ public class TKOHardware
 			throw new TKOException("NULL PISTON ARRAY");
 		return piston;
 	}
-	
+
 	public static synchronized BuiltInAccelerometer getAcc() throws TKOException
 	{
 		if (acc == null)

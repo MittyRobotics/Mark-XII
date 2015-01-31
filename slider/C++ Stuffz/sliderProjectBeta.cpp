@@ -269,7 +269,7 @@ public:
 		float i = 0.001;
 		//		leftTest.SetVoltageRampRate(12.);
 		//		rightTest.SetVoltageRampRate(12.);
-		driveControl.SetPID(p, i, 0.0); //P is 0.2, I is 0, incrementer is 1.250, distance is 3.0
+		driveControl.SetPID(p, i, 0.0); //P is 0.2, I is 0, incrementer is 1.250, distance is 3.0 CHANGE: 4.0 p, .2 i, ,125 increment, 3.001 distance
 		driveControl.Enable();
 		rightTest.ConfigSoftPositionLimits(0, 940);
 		incrementer = driverStation->GetAnalogIn(3);
@@ -439,9 +439,10 @@ public:
 		autoHome();
 		//driveControl.Enable();
 
-		//0.15663
-		//That is the deadband in inches, double for full deadband, over quarter of inch
-
+		/*
+		0.15663
+		That is the deadband in inches, double for full deadband, over quarter of inch
+        */
 
 		driveControl.SetSetpoint(12.5);
 		while (IsEnabled()) {

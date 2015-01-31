@@ -153,16 +153,74 @@ public class TKOHardware
 					talonModes[i] = mode;
 				}
 				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
-				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_MODE[i]);
+				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_OUTPUT_MODE[i]);
 			}
 		}
 
 	}
 
-	private static void configLiftTalons(double liftP, double liftI, double liftD, ControlMode liftTalonsNormalControlMode)
+	private static synchronized void configLiftTalons(double liftP, double liftI, double liftD, ControlMode liftTalonsNormalControlMode)
 	{
-		// TODO Auto-generated method stub
+		for (int i = 0; i < Definitions.NUM_LIFT_TALONS; i++)
+		{
+			liftTalons[i].delete();
+			liftTalons[i] = null;
+			liftTalons[i] = new CANTalon(Definitions.LIFT_TALON_ID[i]);
+			talonModes[Definitions.NUM_DRIVE_TALONS + i] = null;
+			if (liftTalons[i] != null)
+			{
+				if (i == 1 || i == 3) // if follower
+				{
+					liftTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
+					liftTalons[i].set(i - 1); // set to follow the CANTalon with id i - 1;
+					talonModes[Definitions.NUM_DRIVE_TALONS + i] = CANTalon.ControlMode.Follower;
+				}
+				else
+				// if not follower
+				{
+					if (!(liftTalonsNormalControlMode instanceof CANTalon.ControlMode))
+						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
+					// TODO not needed if specified in args
 
+					liftTalons[i].changeControlMode(liftTalonsNormalControlMode);
+					liftTalons[i].setFeedbackDevice(Definitions.LIFT_ENCODER_TYPE);
+					liftTalons[i].setPID(liftP, liftI, liftD);
+					talonModes[Definitions.NUM_DRIVE_TALONS + i] = liftTalonsNormalControlMode;
+				}
+				liftTalons[i].enableBrakeMode(Definitions.LIFT_BRAKE_MODE[i]);
+				liftTalons[i].reverseOutput(Definitions.LIFT_REVERSE_OUTPUT_MODE[i]);
+			}
+		}
+	}
+	
+	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException
+	{
+		if (target == null)
+			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
+		if (newMode == target.getControlMode())
+			return;
+
+		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
+			liftTalons[target.getDeviceID()].setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
+
+		target.changeControlMode(newMode);
+		talonModes[target.getDeviceID()] = newMode;
+	}
+
+	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode, double newP, double newI, double newD)
+			throws TKOException
+	{
+		if (target == null)
+			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
+		if (newMode == target.getControlMode())
+			return;
+
+		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
+			liftTalons[target.getDeviceID()].setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
+
+		target.changeControlMode(newMode);
+		target.setPID(newP, newI, newD);
+		talonModes[target.getDeviceID()] = newMode;
 	}
 
 	/**

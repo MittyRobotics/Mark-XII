@@ -32,10 +32,15 @@ public class Definitions
 	public static final int[] LIFT_TALON_ID =
 	{ 4, 5 };
 
-	public static final boolean[] DRIVE_REVERSE_MODE =
+	public static final boolean[] DRIVE_REVERSE_OUTPUT_MODE =
 	{ true, false, false, false };
 	public static final boolean[] DRIVE_BRAKE_MODE =
 	{ false, false, false, false };
+
+	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
+	{ true, false };
+	public static final boolean[] LIFT_BRAKE_MODE =
+	{ false, false };
 
 	public static final double DRIVE_P = 4.;
 	public static final double DRIVE_I = 0.01;
@@ -46,15 +51,19 @@ public class Definitions
 	public static final double LIFT_D = 0;
 
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
-	public static final CANTalon.ControlMode LIFT_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final CANTalon.FeedbackDevice DRIVE_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
+	
+	public static final CANTalon.ControlMode LIFT_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Position;
+	public static final CANTalon.FeedbackDevice LIFT_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
+
+	public static final CANTalon.FeedbackDevice DEF_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
 
 	public static final double[] DRIVE_MULTIPLIER =
 	{ -1., -1., 1., 1. };
 	public static final double DRIVE_MULTIPLIER_LEFT = DRIVE_MULTIPLIER[0];
 	public static final double DRIVE_MULTIPLIER_RIGHT = DRIVE_MULTIPLIER[2];
 
-	public static final double MAX_CURRENT_LEFT = 10.;
+	public static final double MAX_CURRENT_LEFT = 10.; //used for current driving
 	public static final double MAX_CURRENT_RIGHT = 10.;
 
 	public static final double[] TALON_CURRENT_TIMEOUT =

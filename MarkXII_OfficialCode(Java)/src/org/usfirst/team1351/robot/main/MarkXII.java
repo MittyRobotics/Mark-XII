@@ -22,37 +22,56 @@ import edu.wpi.first.wpilibj.Timer;
  * Port/rewrite Autonomous Atoms/Molecules?
  * TODO global current checker/safety manager loop in TKOHardware for each jag?
  * TODO Thread priorities
- * TODO Drive - access only drives 0/2?
+ * TODO Drive - access only drives 0/2? - COMPLETE/NEEDS TESTING
  * TODO don't forget to turn on all the subsystems
- * TODO organize TKOHardware by the different things components will be used for, (array of arrays?)
- * TODO figure out easy way to switch between drive modes
- * 		TODO Maybe create a checker for what mode we are in, and have setVelocity, setPosition, etc. 
- * 		TODO 2 Lift motors
- * 		TODO right now TKOHardware talon control mode changing and managing it turbo ghetto
+ * TODO organize TKOHardware by the different things components will be used for, (array of arrays?) - COMPLETE/NEEDS TESTING
+ * TODO figure out easy way to switch between drive modes - COMPLETE/NEEDS TESTING
+ * 		TODO Maybe create a checker for what mode we are in, and have setVelocity, setPosition, etc. - COMPLETE/NEEDS TESTING
+ * 		TODO 2 Lift motors - COMPLETE/NEEDS TESTING
+ * 		TODO right now TKOHardware talon control mode changing and managing it turbo ghetto - COMPLETE/NEEDS TESTING
  * TODO Do we need to destroy hardware pointers when we are done with operator control loop
- * TODO Test the TKOException writing to log file
+ * TODO Test the TKOException writing to log file - COMPLETE/NEEDS TESTING
+ * 
+ * TODO SATURDAY REQUIREMENTS
+ 
+ All manual
+
+ lift running with .Set pid for later honoring limit switches
+ Use the lift in manual mode (as in using the .set method on the can talon for moving the lift without pid). 
+ Pid can happen after we can verify that the lift works
+ Driving
+ Grabber open and close
+ wheelie bar up and down
+
+ Get working
+ drive up to a bin/trash can
+ pickup
+ and drive around
+
+ Also need to ask Lead mentors for more time on Saturday
+
  */
 public class MarkXII extends SampleRobot
 {
 
 	public MarkXII()
 	{
-		
+
 	}
-	
+
 	public void robotInit()
 	{
-		
+
 	}
-	
+
 	public void disabled()
 	{
-		
+
 	}
 
 	public void autonomous()
 	{
-		
+
 	}
 
 	public void operatorControl()
@@ -63,25 +82,27 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
-		
+
 		CANTalon motor = null;
 		try
 		{
 			motor = TKOHardware.getLeftDrive();
-		} catch (TKOException e1)
+		}
+		catch (TKOException e1)
 		{
 			e1.printStackTrace();
 		}
-		
+
 		while (isOperatorControl() && isEnabled())
 		{
 			System.out.println("Distance: " + motor.getEncPosition());
 			System.out.println("Velocity: " + motor.getEncVelocity());
-			/*System.out.println("Raw encoder val: " + motor.getAnalogInRaw());
-			System.out.println("Talon encoder val A: " + motor.getPinStateQuadA());
-			System.out.println("Talon encoder val B: " + motor.getPinStateQuadB());
-			System.out.println("Talon encoder val Index: " + motor.getPinStateQuadIdx());*/
-			//System.out.println("'Encoder' val: " + test.getDistance());
+			/*
+			 * System.out.println("Raw encoder val: " + motor.getAnalogInRaw()); System.out.println("Talon encoder val A: " +
+			 * motor.getPinStateQuadA()); System.out.println("Talon encoder val B: " + motor.getPinStateQuadB());
+			 * System.out.println("Talon encoder val Index: " + motor.getPinStateQuadIdx());
+			 */
+			// System.out.println("'Encoder' val: " + test.getDistance());
 			Timer.delay(0.25); // wait for a motor update time
 		}
 
@@ -95,7 +116,8 @@ public class MarkXII extends SampleRobot
 			TKODrive.getInstance().driveThread.join();
 			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
-		} catch (InterruptedException e)
+		}
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
@@ -110,13 +132,14 @@ public class MarkXII extends SampleRobot
 		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
 		TKODataReporting.getInstance().start();
-		
+
 		while (isTest() && isEnabled())
 		{
 			try
 			{
 				TKOHardware.getLeftDrive().set(500);
-			} catch (TKOException e)
+			}
+			catch (TKOException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -129,7 +152,8 @@ public class MarkXII extends SampleRobot
 			TKODataReporting.getInstance().dataReportThread.join();
 			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
-		} catch (InterruptedException e)
+		}
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}

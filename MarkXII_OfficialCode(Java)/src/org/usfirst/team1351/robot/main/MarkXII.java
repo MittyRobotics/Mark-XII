@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.Timer;
  * 		TODO right now TKOHardware talon control mode changing and managing it turbo ghetto - COMPLETE/NEEDS TESTING
  * TODO Do we need to destroy hardware pointers when we are done with operator control loop
  * TODO Test the TKOException writing to log file - COMPLETE/NEEDS TESTING
+ * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
  * 
  * TODO SATURDAY REQUIREMENTS
  

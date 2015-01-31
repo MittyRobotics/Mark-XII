@@ -9,6 +9,7 @@ public class TKORuntimeException extends RuntimeException
 	public TKORuntimeException(String message)
 	{
 		super(message);
+		System.out.println("RUNTIME EXCEPTION: " + message);
 		recordMessage(message);
 	}
 

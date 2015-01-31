@@ -72,6 +72,13 @@ public class TKOHardware
 		if (piston[0] == null)
 			piston[0] = new DoubleSolenoid(Definitions.SHIFTER_A, Definitions.SHIFTER_B);
 
+		if (piston[1] == null)
+			piston[1] = new DoubleSolenoid(Definitions.GRIPPER_A, Definitions.GRIPPER_B);
+		if (piston[2] == null)
+			piston[2] = new DoubleSolenoid(Definitions.WHEELIE_L_A, Definitions.WHEELIE_L_B);
+		if (piston[3] == null)
+			piston[3] = new DoubleSolenoid(Definitions.WHEELIE_R_A, Definitions.WHEELIE_R_B);
+		
 		if (comp == null)
 			comp = new Compressor(Definitions.PCM_ID);
 

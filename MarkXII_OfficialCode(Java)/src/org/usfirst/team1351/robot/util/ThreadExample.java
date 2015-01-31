@@ -8,7 +8,7 @@ import org.usfirst.team1351.robot.main.Definitions;
  * have memory corruption / other problems.
  * 
  * @author Vadim
- * @version 01/17/15
+ * @version 01/21/15
  */
 public class ThreadExample implements Runnable // implements Runnable is important to make this class support the Thread (run method)
 {

@@ -9,6 +9,7 @@ public class TKOException extends Exception
 	public TKOException(String message)
 	{
 		super(message);
+		System.out.println("EXCEPTION: " + message);
 		recordMessage(message);
 	}
 

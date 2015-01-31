@@ -173,9 +173,6 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 				for (CANTalon motor : TKOHardware.getDriveTalons())
 				{
 					int id = motor.getDeviceID();
-					// TODO Check if motors are null
-					if (motor == null)
-						continue;
 					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemp());
 					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());

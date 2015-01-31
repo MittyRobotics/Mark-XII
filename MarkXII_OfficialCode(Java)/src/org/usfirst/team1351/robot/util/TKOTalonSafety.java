@@ -55,7 +55,7 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 		if (!exampleThread.isAlive() && m_Instance != null)
 		{
 			exampleThread = new TKOThread(m_Instance);
-			exampleThread.setPriority(Definitions.getPriority("threadExample"));
+			exampleThread.setPriority(Definitions.getPriority("talonSafety"));
 		}
 		if (!exampleThread.isThreadRunning())
 		{

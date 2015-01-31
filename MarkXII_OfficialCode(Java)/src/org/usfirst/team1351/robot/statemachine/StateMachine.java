@@ -6,6 +6,7 @@
 package org.usfirst.team1351.robot.statemachine;
 
 import org.usfirst.team1351.robot.statemachine.states.*;
+import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.main.Definitions;
 
@@ -13,6 +14,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+
+// TODO replace all the BS values for everything
 
 public class StateMachine
 {
@@ -34,19 +37,16 @@ public class StateMachine
 
 	static IStateFunction states[] = new IStateFunction[StateEnum.NUM_STATES.getValue() + 1];
 
-	/*public static final int DONE_FIRING = 2;
-	public static final int PISTON_RETRACTED = 1;
-	public static final int LATCH_LOCKED_PISTON_RETRACTED = 5;
-	public static final int CONST_READY_TO_FIRE = 14;
-
 	public static final float PISTON_RETRACT_TIMEOUT = 15.f;
-	public static final float LATCH_LOCK_FORWARD_TIMEOUT = 10.f;
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
-	public static final float LATCH_UNLOCK_REVERSE_TIMEOUT = 10.f;
-	public static final float POST_SHOOT_WAIT_TIME = 1.f;
-	public static final float SHOOT_ROLLER_PRERUN_TIME = 15.f;
+	public static final float WAIT_FOR_RC_TIMEOUT = 15.f;
+
+	public static final int READY_FOR_RC = 99; // PISTON_RETRACTED
+	public static final int RC_FOUND = 98;
+	public static final int PISTON_EXTENDED = 97;
+	public static final int CRATE_FOUND = 96;
 	
-	static float m_lastSensorStringPrint = 0.0f;
+	/*static float m_lastSensorStringPrint = 0.0f;
 	static boolean m_armCanMove = false;
 	static boolean m_hasSetPneumatics = false;
 	static boolean m_forceFire = false;
@@ -55,20 +55,27 @@ public class StateMachine
 	public StateMachine()	// used to take a Joystick as a parameter
 	{
 		m_timer = new Timer();
-		
-		// TODO replace BS values
-		m_crateLeft = TKOHardware.getSwitch(0);
-		m_crateRight = TKOHardware.getSwitch(1);
-		m_gripper = TKOHardware.getSwitch(2);
-		m_pistonRetract_L = TKOHardware.getSwitch(3);
-		m_pistonExtend_L = TKOHardware.getSwitch(4);
-		m_pistonRetract_R = TKOHardware.getSwitch(5);
-		m_pistonExtend_R = TKOHardware.getSwitch(6);
-		
-		// TODO stick 4 for state machine actions, stick 3 for manual control?
-		m_evomStick = TKOHardware.getJoystick(3);
-		
-		m_gripperPiston = TKOHardware.getPiston(1);
+
+		try
+		{
+			m_crateLeft = TKOHardware.getSwitch(0);
+			m_crateRight = TKOHardware.getSwitch(1);
+			m_gripper = TKOHardware.getSwitch(2);
+			m_pistonRetract_L = TKOHardware.getSwitch(3);
+			m_pistonExtend_L = TKOHardware.getSwitch(4);
+			m_pistonRetract_R = TKOHardware.getSwitch(5);
+			m_pistonExtend_R = TKOHardware.getSwitch(6);
+			
+			// TODO stick 4 for state machine actions, stick 3 for manual control?
+			m_evomStick = TKOHardware.getJoystick(3);
+			
+			m_gripperPiston = TKOHardware.getPiston(1);
+			
+		} catch (TKOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		states[StateEnum.STATE_DECIDE_ACTION.getValue()] = new DecideAction();
 		states[StateEnum.STATE_OPEN_GRIPPER.getValue()] = new OpenGripper();
@@ -80,32 +87,19 @@ public class StateMachine
 		states[StateEnum.STATE_RESET_LIFT.getValue()] = new ResetLift();
 		states[StateEnum.STATE_ERR.getValue()] = new ErrorState();
 		
-		switch (getSensorData(data))
-		{
-		case DONE_FIRING:
-			data.curState = StateEnum.STATE_PISTON_RETRACT;
-			break;
-		case PISTON_RETRACTED:
-			data.curState = StateEnum.STATE_LATCH_LOCK;
-			break;
-		case LATCH_LOCKED_PISTON_RETRACTED:
-			data.curState = StateEnum.STATE_PISTON_EXTEND;
-			break;
-		case CONST_READY_TO_FIRE:
-			data.curState = StateEnum.STATE_READY_TO_FIRE;
-			break;
-		default:
-			data.curState = StateEnum.STATE_ERR;
-			break;
-		}
+		data.curState = StateEnum.STATE_DECIDE_ACTION;
 	}
 
 	public static int getSensorData(InstanceData id)
 	{
-		id.state[0] = (m_pistonRetract.get() == false);
-		id.state[1] = (m_pistonExtend.get() == false);
-		id.state[2] = (m_latchLock.get() == false);
-		id.state[3] = (m_isCocked.get() == false);
+		id.state[0] = (m_crateLeft.get() == false);
+		id.state[1] = (m_crateRight.get() == false);
+		id.state[2] = (m_gripper.get() == false);
+		id.state[3] = (m_pistonRetract_L.get() == false);
+		id.state[4] = (m_pistonExtend_L.get() == false);
+		id.state[5] = (m_pistonRetract_R.get() == false);
+		id.state[6] = (m_pistonExtend_R.get() == false);
+		
 		return createIntFromBoolArray(id);
 	}
 
@@ -127,20 +121,15 @@ public class StateMachine
 		return m_timer;
 	}
 
-	/*public static DoubleSolenoid getPistonSol()
+	public static DoubleSolenoid getGripperSol()
 	{
-		return m_pistonRetractExtend;
-	}
-
-	public static DoubleSolenoid getLatchSol()
-	{
-		return m_latchLockUnlock;
+		return m_gripperPiston;
 	}
 
 	public static Joystick getJoystick()
 	{
-		return m_triggerJoystick;
-	}*/
+		return m_evomStick;
+	}
 
 	public static StateEnum runState(StateEnum curState, InstanceData data)
 	{

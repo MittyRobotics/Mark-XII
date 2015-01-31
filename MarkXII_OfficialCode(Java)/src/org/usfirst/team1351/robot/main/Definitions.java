@@ -23,7 +23,7 @@ public class Definitions
 	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 5;
 
-	public static final int NUM_SWITCHES = 4;
+	public static final int NUM_SWITCHES = 2;
 
 	public static final int[] JOYSTICK_ID =
 	{ 0, 1, 2, 3 };
@@ -42,6 +42,9 @@ public class Definitions
 	public static final boolean[] LIFT_BRAKE_MODE =
 	{ false, false };
 
+	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 0;
+	public static final int LIFT_TOP_OPTICAL_SWITCH = 1;
+
 	public static final double DRIVE_P = 4.;
 	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
@@ -50,9 +53,11 @@ public class Definitions
 	public static final double LIFT_I = 0.01;
 	public static final double LIFT_D = 0;
 
+	public static final double LIFT_CALIBRATION_POWER = 0.3;
+
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final CANTalon.FeedbackDevice DRIVE_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
-	
+
 	public static final CANTalon.ControlMode LIFT_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Position;
 	public static final CANTalon.FeedbackDevice LIFT_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
 
@@ -63,7 +68,7 @@ public class Definitions
 	public static final double DRIVE_MULTIPLIER_LEFT = DRIVE_MULTIPLIER[0];
 	public static final double DRIVE_MULTIPLIER_RIGHT = DRIVE_MULTIPLIER[2];
 
-	public static final double MAX_CURRENT_LEFT = 10.; //used for current driving
+	public static final double MAX_CURRENT_LEFT = 10.; // used for current driving
 	public static final double MAX_CURRENT_RIGHT = 10.;
 
 	public static final double[] TALON_CURRENT_TIMEOUT =

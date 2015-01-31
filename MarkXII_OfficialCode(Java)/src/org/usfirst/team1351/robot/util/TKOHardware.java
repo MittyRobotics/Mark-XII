@@ -115,6 +115,12 @@ public class TKOHardware
 		if (pistonSolenoids[2] == null)
 			pistonSolenoids[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
 
+		if (limitSwitches[0] == null)
+			limitSwitches[0] = new DigitalInput(Definitions.LIFT_BOTTOM_OPTICAL_SWITCH);
+
+		if (limitSwitches[1] == null)
+			limitSwitches[1] = new DigitalInput(Definitions.LIFT_TOP_OPTICAL_SWITCH);
+
 		if (compressor == null)
 			compressor = new Compressor(Definitions.PCM_ID);
 
@@ -192,7 +198,7 @@ public class TKOHardware
 			}
 		}
 	}
-	
+
 	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException
 	{
 		if (target == null)
@@ -273,6 +279,14 @@ public class TKOHardware
 			{
 				pistonSolenoids[i].free();
 				pistonSolenoids[i] = null;
+			}
+		}
+		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
+		{
+			if (limitSwitches[i] != null)
+			{
+				limitSwitches[i].free();
+				limitSwitches[i] = null;
 			}
 		}
 		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
@@ -379,6 +393,34 @@ public class TKOHardware
 		if (talonModes[3] != CANTalon.ControlMode.Follower)
 			throw new TKOException("ERROR RIGHT DRIVE FOLLOWER TALON IS NOT UNITIALIZED; MODE IS UNSET!");
 		return driveTalons[2];
+	}
+
+	/**
+	 * IMPORTANT: This method is normally open. This function will return true when the lift is in the bottom, false whenever else. This is
+	 * opposite from the actual behavior of the optical limit switch.
+	 * 
+	 * @return
+	 * @throws TKOException
+	 */
+	public static synchronized boolean getLiftBottom() throws TKOException
+	{
+		if (limitSwitches[0] == null)
+			throw new TKOException("NULL BOTTOM LIMIT SWITCH");
+		return !limitSwitches[0].get();
+	}
+
+	/**
+	 * IMPORTANT: This method is normally open. This function will return true when the lift is in the bottom, false whenever else. This is
+	 * opposite from the actual behavior of the optical limit switch.
+	 * 
+	 * @return
+	 * @throws TKOException
+	 */
+	public static synchronized boolean getLiftTop() throws TKOException
+	{
+		if (limitSwitches[1] == null)
+			throw new TKOException("NULL TOP LIMIT SWITCH");
+		return !limitSwitches[1].get();
 	}
 
 	/**

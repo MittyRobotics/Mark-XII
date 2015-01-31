@@ -4,18 +4,13 @@
 package org.usfirst.team1351.robot.main;
 
 import org.usfirst.team1351.robot.drive.TKODrive;
-import org.usfirst.team1351.robot.evom.TKOGripper;
+import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalSource;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -65,7 +60,7 @@ public class MarkXII extends SampleRobot
 		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
-		TKOGripper.getInstance().start();
+		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
 		
 		CANTalon motor = null;
@@ -102,8 +97,8 @@ public class MarkXII extends SampleRobot
 		{
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
-			TKOGripper.getInstance().stop();
-			TKOGripper.getInstance().gripperThread.join();
+			TKOPneumatics.getInstance().stop();
+			TKOPneumatics.getInstance().pneuThread.join();
 			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
 			TKOLogger.getInstance().stop();

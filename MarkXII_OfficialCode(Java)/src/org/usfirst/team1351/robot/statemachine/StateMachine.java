@@ -41,10 +41,11 @@ public class StateMachine
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
 	public static final float WAIT_FOR_RC_TIMEOUT = 15.f;
 
-	public static final int READY_FOR_RC = 99; // PISTON_RETRACTED
-	public static final int RC_FOUND = 98;
-	public static final int PISTON_EXTENDED = 97;
-	public static final int CRATE_FOUND = 96;
+	public static final int PISTON_EXTENDED = 99;
+	public static final int READY_FOR_RC = 99;	// PISTON_RETRACTED
+	public static final int RC_FOUND = 99;	// piston still retracted
+	public static final int READY_TO_LIFT = 99;	// piston extended, trash can is in
+	public static final int CRATE_FOUND = 99;
 	
 	/*static float m_lastSensorStringPrint = 0.0f;
 	static boolean m_armCanMove = false;

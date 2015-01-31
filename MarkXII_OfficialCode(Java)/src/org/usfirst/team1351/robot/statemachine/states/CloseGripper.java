@@ -25,7 +25,7 @@ public class CloseGripper implements IStateFunction
 	    int sensors = StateMachine.getSensorData(data);
 
 	    int bs = 0;
-	    while (sensors != StateMachine.PISTON_EXTENDED && (sensors == bs))
+	    while (sensors != StateMachine.READY_TO_LIFT && (sensors == bs))
 	    {
 	    	if (StateMachine.getTimer().get() > StateMachine.PISTON_EXTEND_TIMEOUT)
 	    	{
@@ -37,7 +37,7 @@ public class CloseGripper implements IStateFunction
 	    StateMachine.getTimer().stop();
 	    StateMachine.getTimer().reset();
 
-	    if (sensors != StateMachine.PISTON_EXTENDED)
+	    if (sensors != StateMachine.READY_TO_LIFT)
 	    {
 	        return StateEnum.STATE_ERR;
 	    }

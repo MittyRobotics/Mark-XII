@@ -5,8 +5,6 @@ import org.usfirst.team1351.robot.statemachine.InstanceData;
 import org.usfirst.team1351.robot.statemachine.StateEnum;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-
 public class ReadyForRC implements IStateFunction
 {
 	@Override

@@ -90,8 +90,10 @@ public class TKODrive implements Runnable
 					rightMotorSpeed = -Math.max(-moveValue, -rotateValue);
 				}
 			}
-			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.PercentVbus);
-			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.PercentVbus);
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.PercentVbus, Definitions.DRIVE_P,
+					Definitions.DRIVE_I, Definitions.DRIVE_D);
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.PercentVbus, Definitions.DRIVE_P,
+					Definitions.DRIVE_I, Definitions.DRIVE_D);
 			setLeftRightMotorOutputsPercentVBus(leftMotorSpeed, rightMotorSpeed);
 		}
 		catch (TKOException e)
@@ -104,8 +106,10 @@ public class TKODrive implements Runnable
 	{
 		try
 		{
-			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Current, Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D);
-			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Current, Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D);
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Current, Definitions.DRIVE_P, Definitions.DRIVE_I,
+					Definitions.DRIVE_D);
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Current, Definitions.DRIVE_P,
+					Definitions.DRIVE_I, Definitions.DRIVE_D);
 			setLeftRightMotorOutputsCurrent(TKOHardware.getJoystick(0).getY(), TKOHardware.getJoystick(1).getY());
 		}
 		catch (TKOException e)
@@ -198,15 +202,16 @@ public class TKODrive implements Runnable
 		try
 		{
 			// boolean calibRan = false;
+			tankDrive();
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
-				if (TKOHardware.getJoystick(0).getRawButton(2))
-				// if (!calibRan)
-				{
-					PIDCurrentCalibration();
-					// calibRan = true;
-				}
+				// if (TKOHardware.getJoystick(0).getRawButton(2))
+				// // if (!calibRan)
+				// {
+				// PIDCurrentCalibration();
+				// // calibRan = true;
+				// }
 				if (TKOHardware.getJoystick(0).getRawButton(4))
 				{
 					// TODO make this not ghetto
@@ -218,8 +223,8 @@ public class TKODrive implements Runnable
 					// TODO make this not ghetto
 				}
 
-				tankDrive();
-				// currentModeTankDrive();
+				//tankDrive();
+				currentModeTankDrive();
 				synchronized (driveThread)
 				{
 					driveThread.wait(5);
@@ -303,8 +308,10 @@ public class TKODrive implements Runnable
 		try
 		{
 			// the change talon mode should only do anything if the mode is not already that which it is trying to set
-			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.PercentVbus); // TODO make sure this is efficient
-			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.PercentVbus);
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.PercentVbus, Definitions.DRIVE_P,
+					Definitions.DRIVE_I, Definitions.DRIVE_D); // TODO make sure this is efficient
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.PercentVbus, Definitions.DRIVE_P,
+					Definitions.DRIVE_I, Definitions.DRIVE_D);
 			setLeftRightMotorOutputsPercentVBus(TKOHardware.getJoystick(0).getY(), TKOHardware.getJoystick(1).getY());
 		}
 		catch (TKOException e)

@@ -199,19 +199,29 @@ public class TKOHardware
 		}
 	}
 
-	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException
-	{
-		if (target == null)
-			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
-		if (newMode == target.getControlMode())
-			return;
-
-		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
-			liftTalons[target.getDeviceID()].setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
-
-		target.changeControlMode(newMode);
-		talonModes[target.getDeviceID()] = newMode;
-	}
+//	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException
+//	{
+//		if (target == null)
+//			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
+//		if (newMode == target.getControlMode())
+//			return;
+//		
+//		int id = target.getDeviceID();		
+//		target.delete();
+//		target = null;
+//		target = new CANTalon(id);
+//		talonModes[id] = null;
+//		
+//		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
+//			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
+//		
+//		System.out.println(target.getP());
+//		System.out.println(target.getI());
+//		System.out.println(target.getD());
+//
+//		target.changeControlMode(newMode);
+//		talonModes[target.getDeviceID()] = newMode;
+//	}
 
 	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode, double newP, double newI, double newD)
 			throws TKOException
@@ -222,10 +232,15 @@ public class TKOHardware
 			return;
 
 		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
-			liftTalons[target.getDeviceID()].setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
-
+			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
+		
+		System.out.println(target.getP());
+		System.out.println(target.getI());
+		System.out.println(target.getD());
+		
 		target.changeControlMode(newMode);
 		target.setPID(newP, newI, newD);
+		target.enableControl();
 		talonModes[target.getDeviceID()] = newMode;
 	}
 

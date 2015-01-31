@@ -16,10 +16,10 @@ public class Definitions
 
 	// TODO replace BS values
 	public static final int NUM_PISTONS = 3; // number of piston, also is number of solenoids
-	public static final int SHIFTER_A = 0; // drive train shifting piston
-	public static final int SHIFTER_B = 1;
-	public static final int GRIPPER_A = 2; // gripper piston
-	public static final int GRIPPER_B = 3;
+	public static final int GRIPPER_A = 0; // gripper piston
+	public static final int GRIPPER_B = 1;
+	public static final int SHIFTER_A = 2; // drive train shifting piston
+	public static final int SHIFTER_B = 3;
 	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 5;
 

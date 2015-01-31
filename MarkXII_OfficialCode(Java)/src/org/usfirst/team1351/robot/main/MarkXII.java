@@ -34,7 +34,7 @@ import edu.wpi.first.wpilibj.Timer;
  * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
  * 
  * TODO SATURDAY REQUIREMENTS
- 
+
  All manual
 
  lift running with .Set pid for later honoring limit switches
@@ -134,17 +134,22 @@ public class MarkXII extends SampleRobot
 		TKOLogger.getInstance().start();
 		TKODataReporting.getInstance().start();
 
-		while (isTest() && isEnabled())
+		try
 		{
-			try
+			TKOHardware.getLeftDrive().setPosition(0);
+			while (isTest() && isEnabled())
 			{
-				TKOHardware.getLeftDrive().set(500);
+				TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, 0.5, 0.01, 0.);
+				TKOHardware.getLeftDrive().set(5000);
+				System.out.println("Current Pos: " + TKOHardware.getLeftDrive().getEncPosition());
+				System.out.println("Error: " + TKOHardware.getLeftDrive().getClosedLoopError());
 			}
-			catch (TKOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+		}
+		catch (TKOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		try
@@ -153,6 +158,7 @@ public class MarkXII extends SampleRobot
 			TKODataReporting.getInstance().dataReportThread.join();
 			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
+			TKOHardware.destroyObjects();
 		}
 		catch (InterruptedException e)
 		{

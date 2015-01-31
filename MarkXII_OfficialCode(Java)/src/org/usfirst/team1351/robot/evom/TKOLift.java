@@ -65,7 +65,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		{
 			CANTalon lmotor = TKOHardware.getLiftTalon();
 			currentPIDSetpoint = lmotor.getEncPosition();
-			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus);
+			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
 
 			while (!TKOHardware.getLiftTop())
 			{
@@ -97,7 +97,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.PercentVbus)
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
 
 			TKOHardware.getLiftTalon().enableLimitSwitch(true, true);
 			// TKOHardware.getLiftTalon().setForwardSoftLimit(forwardLimit);

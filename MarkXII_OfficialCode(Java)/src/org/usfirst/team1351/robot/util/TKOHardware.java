@@ -124,7 +124,7 @@ public class TKOHardware
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
 	}
-	
+
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
@@ -135,30 +135,18 @@ public class TKOHardware
 			talonModes[i] = null;
 			if (driveTalons[i] != null)
 			{
-				/*
-				driveTalons[i].changeControlMode(CANTalon.ControlMode.Position);
-				driveTalons[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-				driveTalons[i].reverseSensor(true);
-				driveTalons[i].setPID(p, I, d);
-				driveTalons[i].enableControl();
-				
-				motor = new CANTalon(1); // Initialize the CanTalonSRX on device 1.
-				motor.changeControlMode(CANTalon.ControlMode.Position);
-				motor.setFeedbackDevice(CANTalon.FeedbackDevice.AnalogPot);
-				motor.setPID(1.0, 0.0, 0.0);
-				*/
-	
-				if (i == 1 || i == 3) //if follower
+				if (i == 1 || i == 3) // if follower
 				{
 					driveTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
-					driveTalons[i].set(i - 1); //set to follow the CANTalon with id i - 1;
+					driveTalons[i].set(i - 1); // set to follow the CANTalon with id i - 1;
 					talonModes[i] = CANTalon.ControlMode.Follower;
 				}
-				else //if not follower
+				else
+				// if not follower
 				{
 					if (!(mode instanceof CANTalon.ControlMode))
 						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
-					
+
 					driveTalons[i].changeControlMode(mode);
 					driveTalons[i].setFeedbackDevice(Definitions.DRIVE_ENCODER_TYPE);
 					driveTalons[i].setPID(p, I, d);
@@ -171,48 +159,20 @@ public class TKOHardware
 
 	}
 
-	/*public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
-	{
-		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
-		{
-			driveTalons[i].delete();
-			driveTalons[i] = null;
-			driveTalons[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
-			if (driveTalons[i] != null)
-			{
-
-				driveTalons[i].changeControlMode(CANTalon.ControlMode.Position);
-				driveTalons[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-				driveTalons[i].reverseSensor(true);
-				driveTalons[i].setPID(p, I, d);
-				driveTalons[i].enableControl();
-
-				if (i == 1 || i == 3)
-				{
-					driveTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
-					driveTalons[i].set(i - 1);
-				}
-				else
-				{
-					if (!(mode instanceof CANTalon.ControlMode))
-						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
-					driveTalons[i].changeControlMode(mode);
-					driveTalons[i].setPID(p, I, d);
-					driveTalons[i].enableControl();
-				}
-				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
-				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_MODE[i]);
-			}
-		}
-
-	}*/
-
 	private static void configLiftTalons(double liftP, double liftI, double liftD, ControlMode liftTalonsNormalControlMode)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * Sets *ALL* drive Talons to given value. CAUTION WHEN USING THIS METHOD, DOES NOT CARE ABOUT FOLLOWER TALONS. Intended for PID Tuning
+	 * loop ONLY.
+	 * 
+	 * @deprecated Try not to use this method. It is very prone to introducing errors. Use getLeftDrive() and getRightDrive() or
+	 *             getDriveTalon(int n) instead, unless you know what you are doing.
+	 * @param double setTarget - Value to set for all the talons
+	 */
 	public static synchronized void setAllDriveTalons(double setTarget)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
@@ -257,6 +217,10 @@ public class TKOHardware
 				pistonSolenoids[i] = null;
 			}
 		}
+		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
+		{
+			talonModes[i] = null;
+		}
 		if (compressor != null)
 		{
 			compressor.free();
@@ -289,6 +253,8 @@ public class TKOHardware
 		{
 			if (driveTalons[num].getControlMode() == CANTalon.ControlMode.Follower)
 				throw new TKOException("WARNING CANNOT ACCESS FOLLOWER TALON!");
+			else if (talonModes[num] == null)
+				throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE UNSET!");
 			else
 				return driveTalons[num];
 		}
@@ -300,6 +266,12 @@ public class TKOHardware
 	{
 		if (liftTalons[0] == null || liftTalons[1] == null)
 			throw new TKOException("LIFT TALON IS NULL");
+
+		if (talonModes[Definitions.NUM_DRIVE_TALONS + 0] == null)
+			throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE IS UNSET!");
+		if (talonModes[Definitions.NUM_DRIVE_TALONS + 1] != CANTalon.ControlMode.Follower)
+			throw new TKOException("ERROR LIFT FOLLOWER TALON IS NOT UNITIALIZED; MODE IS UNSET!");
+
 		return liftTalons[0];
 	}
 
@@ -331,18 +303,33 @@ public class TKOHardware
 
 	public static synchronized CANTalon getLeftDrive() throws TKOException
 	{
-		if (driveTalons[0] == null)
+		if (driveTalons[0] == null || driveTalons[1] == null)
 			throw new TKOException("NULL LEFT DRIVE TALON");
+		if (talonModes[0] == null)
+			throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE IS UNSET!");
+		if (talonModes[1] != CANTalon.ControlMode.Follower)
+			throw new TKOException("ERROR LEFT DRIVE FOLLOWER TALON IS NOT UNITIALIZED; MODE IS UNSET!");
 		return driveTalons[0];
 	}
 
 	public static synchronized CANTalon getRightDrive() throws TKOException
 	{
-		if (driveTalons[2] == null)
+		if (driveTalons[2] == null || driveTalons[3] == null)
 			throw new TKOException("NULL LEFT DRIVE TALON");
+		if (talonModes[2] == null)
+			throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE IS UNSET!");
+		if (talonModes[3] != CANTalon.ControlMode.Follower)
+			throw new TKOException("ERROR RIGHT DRIVE FOLLOWER TALON IS NOT UNITIALIZED; MODE IS UNSET!");
 		return driveTalons[2];
 	}
 
+	/**
+	 * Try not to use this function; use getJoystick(int n) instead.
+	 * 
+	 * @deprecated Not very safe function. Lacks Joystick checks.
+	 * @return Joystick array
+	 * @throws TKOException
+	 */
 	public static synchronized Joystick[] getJoysticks() throws TKOException
 	{
 		if (joysticks == null)
@@ -350,6 +337,13 @@ public class TKOHardware
 		return joysticks;
 	}
 
+	/**
+	 * Try not to use this function; use getLeftDrive() and getRightDrive() instead.
+	 * 
+	 * @deprecated Not very safe function. Lacks Talon safety checks.
+	 * @return CANTalon array
+	 * @throws TKOException
+	 */
 	public static synchronized CANTalon[] getDriveTalons() throws TKOException
 	{
 		if (driveTalons == null)
@@ -357,6 +351,13 @@ public class TKOHardware
 		return driveTalons;
 	}
 
+	/**
+	 * Try not to use this function; use getPiston(int n) instead.
+	 * 
+	 * @deprecated Not very safe function. Lacks DoubleSolenoid safety checks.
+	 * @return DoubleSolenoid array
+	 * @throws TKOException
+	 */
 	public static synchronized DoubleSolenoid[] getPistons() throws TKOException
 	{
 		if (pistonSolenoids == null)

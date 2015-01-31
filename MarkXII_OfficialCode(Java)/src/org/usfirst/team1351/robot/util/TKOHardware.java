@@ -43,6 +43,10 @@ public class TKOHardware
 		{
 			piston[i] = null;
 		}
+		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
+		{
+			limitSwitch[i] = null;
+		}
 	}
 
 	public static synchronized void initObjects()
@@ -74,10 +78,9 @@ public class TKOHardware
 
 		if (piston[1] == null)
 			piston[1] = new DoubleSolenoid(Definitions.GRIPPER_A, Definitions.GRIPPER_B);
+		
 		if (piston[2] == null)
-			piston[2] = new DoubleSolenoid(Definitions.WHEELIE_L_A, Definitions.WHEELIE_L_B);
-		if (piston[3] == null)
-			piston[3] = new DoubleSolenoid(Definitions.WHEELIE_R_A, Definitions.WHEELIE_R_B);
+			piston[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
 		
 		if (comp == null)
 			comp = new Compressor(Definitions.PCM_ID);

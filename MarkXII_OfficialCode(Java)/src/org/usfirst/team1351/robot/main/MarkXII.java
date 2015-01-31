@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.Timer;
  * 		TODO 2 Lift motors
  * 		TODO right now TKOHardware talon control mode changing and managing it turbo ghetto
  * TODO Do we need to destroy hardware pointers when we are done with operator control loop
+ * TODO Test the TKOException writing to log file
  */
 public class MarkXII extends SampleRobot
 {

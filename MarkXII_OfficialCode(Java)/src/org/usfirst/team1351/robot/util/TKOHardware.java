@@ -12,58 +12,92 @@ import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
 
 public class TKOHardware
 {
-	protected static CANTalon drive[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
-	protected static Joystick stick[] = new Joystick[Definitions.NUM_JOYSTICKS];
-	protected static DoubleSolenoid piston[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
-	protected static DigitalInput limitSwitch[] = new DigitalInput[Definitions.NUM_SWITCHES];
-	protected static Compressor comp = null;
-	protected static BuiltInAccelerometer acc = null;
+	// TODO Switch initialization
+	/*
+	 * For monitoring the control mode of the talons: Once a follower is created, it should never be accessed
+	 */
+	protected static Joystick joysticks[] = new Joystick[Definitions.NUM_JOYSTICKS];
+	protected static CANTalon driveTalons[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
+	protected static CANTalon liftTalons[] = new CANTalon[Definitions.NUM_LIFT_TALONS];
+	protected static DoubleSolenoid pistonSolenoids[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
+	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
+	protected static Compressor compressor;
+	protected static BuiltInAccelerometer acc;
 
-	protected static CANTalon lift = null;
-	protected static Encoder liftEnc = null;
+	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
+			+ Definitions.NUM_LIFT_TALONS]; // encompasses all talons
 
 	public TKOHardware()
 	{
 		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
-			stick[i] = null;
+			joysticks[i] = null;
 		}
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
-			drive[i] = null;
+			driveTalons[i] = null;
+		}
+		for (int i = 0; i < Definitions.NUM_LIFT_TALONS; i++)
+		{
+			liftTalons[i] = null;
 		}
 		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
 		{
-			piston[i] = null;
+			pistonSolenoids[i] = null;
 		}
 		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
 		{
-			limitSwitch[i] = null;
+			limitSwitches[i] = null;
 		}
+		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
+		{
+			talonModes[i] = null;
+		}
+		compressor = null;
+		acc = null;
 	}
 
 	public static synchronized void initObjects()
 	{
+		// TODO maybe destroy objects before initializing them?
 		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
-			if (stick[i] == null)
-				stick[i] = new Joystick(Definitions.JOYSTICK_ID[i]);
+			if (joysticks[i] == null)
+				joysticks[i] = new Joystick(Definitions.JOYSTICK_ID[i]);
 		}
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
-			if (drive[i] == null)
+			if (driveTalons[i] == null)
 			{
 				try
 				{
-					drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
-				} catch (AllocationException | CANMessageNotFoundException e)
+					driveTalons[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
+					talonModes[i] = null; // null means not initialized
+				}
+				catch (AllocationException | CANMessageNotFoundException e)
+				{
+					e.printStackTrace();
+					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
+					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
+				}
+			}
+		}
+		for (int i = 0; i < Definitions.NUM_LIFT_TALONS; i++)
+		{
+			if (liftTalons[i] == null)
+			{
+				try
+				{
+					liftTalons[i] = new CANTalon(Definitions.LIFT_TALON_ID[i]);
+					talonModes[Definitions.NUM_DRIVE_TALONS + i] = null; // null means not initialized
+				}
+				catch (AllocationException | CANMessageNotFoundException e)
 				{
 					e.printStackTrace();
 					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
@@ -72,70 +106,120 @@ public class TKOHardware
 			}
 		}
 
-		if (piston[0] == null)
-			piston[0] = new DoubleSolenoid(Definitions.SHIFTER_A, Definitions.SHIFTER_B);
+		if (pistonSolenoids[0] == null)
+			pistonSolenoids[0] = new DoubleSolenoid(Definitions.SHIFTER_A, Definitions.SHIFTER_B);
 
-		if (piston[1] == null)
-			piston[1] = new DoubleSolenoid(Definitions.GRIPPER_A, Definitions.GRIPPER_B);
+		if (pistonSolenoids[1] == null)
+			pistonSolenoids[1] = new DoubleSolenoid(Definitions.GRIPPER_A, Definitions.GRIPPER_B);
 
-		if (piston[2] == null)
-			piston[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
+		if (pistonSolenoids[2] == null)
+			pistonSolenoids[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
 
-		if (comp == null)
-			comp = new Compressor(Definitions.PCM_ID);
+		if (compressor == null)
+			compressor = new Compressor(Definitions.PCM_ID);
 
 		if (acc == null)
 			acc = new BuiltInAccelerometer();
 
-		if (lift == null)
-			lift = new CANTalon(Definitions.LIFT_TALON_ID);
-
-		if (liftEnc == null)
-			liftEnc = new Encoder(Definitions.LIFT_ENCODER_A, Definitions.LIFT_ENCODER_B);
-
-		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_CONTROL_MODE);
-
-		// TODO this is pretty ghetto
-		lift.changeControlMode(CANTalon.ControlMode.PercentVbus);
+		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
+		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
 	}
-
+	
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
-			drive[i].delete();
-			drive[i] = null;
-			drive[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
-			if (drive[i] != null)
+			driveTalons[i].delete();
+			driveTalons[i] = null;
+			driveTalons[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
+			talonModes[i] = null;
+			if (driveTalons[i] != null)
 			{
-
-				drive[i].changeControlMode(CANTalon.ControlMode.Position);
-				drive[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-				drive[i].reverseSensor(true);
-				drive[i].setPID(p, I, d);
-				drive[i].enableControl();
-
 				/*
-				 * if (i == 1 || i == 3) { drive[i].changeControlMode(CANTalon.ControlMode.Follower); drive[i].set(i - 1); } else { if
-				 * (!(mode instanceof CANTalon.ControlMode)) throw new
-				 * TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)"); drive[i].changeControlMode(mode);
-				 * drive[i].setPID(p, I, d); drive[i].enableControl(); } drive[i].enableBrakeMode(false);
-				 */
-
+				driveTalons[i].changeControlMode(CANTalon.ControlMode.Position);
+				driveTalons[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
+				driveTalons[i].reverseSensor(true);
+				driveTalons[i].setPID(p, I, d);
+				driveTalons[i].enableControl();
+				
+				motor = new CANTalon(1); // Initialize the CanTalonSRX on device 1.
+				motor.changeControlMode(CANTalon.ControlMode.Position);
+				motor.setFeedbackDevice(CANTalon.FeedbackDevice.AnalogPot);
+				motor.setPID(1.0, 0.0, 0.0);
+				*/
+	
+				if (i == 1 || i == 3) //if follower
+				{
+					driveTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
+					driveTalons[i].set(i - 1); //set to follow the CANTalon with id i - 1;
+					talonModes[i] = CANTalon.ControlMode.Follower;
+				}
+				else //if not follower
+				{
+					if (!(mode instanceof CANTalon.ControlMode))
+						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
+					
+					driveTalons[i].changeControlMode(mode);
+					driveTalons[i].setFeedbackDevice(Definitions.DRIVE_ENCODER_TYPE);
+					driveTalons[i].setPID(p, I, d);
+					talonModes[i] = mode;
+				}
+				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
+				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_MODE[i]);
 			}
 		}
-		/*
-		 * drive[0].reverseOutput(true); drive[1].reverseOutput(false); drive[2].reverseOutput(false); drive[3].reverseOutput(false);
-		 */
+
+	}
+
+	/*public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
+	{
+		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
+		{
+			driveTalons[i].delete();
+			driveTalons[i] = null;
+			driveTalons[i] = new CANTalon(Definitions.DRIVE_TALON_ID[i]);
+			if (driveTalons[i] != null)
+			{
+
+				driveTalons[i].changeControlMode(CANTalon.ControlMode.Position);
+				driveTalons[i].setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
+				driveTalons[i].reverseSensor(true);
+				driveTalons[i].setPID(p, I, d);
+				driveTalons[i].enableControl();
+
+				if (i == 1 || i == 3)
+				{
+					driveTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
+					driveTalons[i].set(i - 1);
+				}
+				else
+				{
+					if (!(mode instanceof CANTalon.ControlMode))
+						throw new TKORuntimeException("CODE ERROR! Wrong control mode used (jag vs talon)");
+					driveTalons[i].changeControlMode(mode);
+					driveTalons[i].setPID(p, I, d);
+					driveTalons[i].enableControl();
+				}
+				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
+				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_MODE[i]);
+			}
+		}
+
+	}*/
+
+	private static void configLiftTalons(double liftP, double liftI, double liftD, ControlMode liftTalonsNormalControlMode)
+	{
+		// TODO Auto-generated method stub
+
 	}
 
 	public static synchronized void setAllDriveTalons(double setTarget)
 	{
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
-			if (drive[i] != null)
+			if (driveTalons[i] != null)
 			{
-				drive[i].set(setTarget);
+				driveTalons[i].set(setTarget);
 			}
 		}
 	}
@@ -144,67 +228,43 @@ public class TKOHardware
 	{
 		for (int i = 0; i < Definitions.NUM_JOYSTICKS; i++)
 		{
-			if (stick[i] != null)
+			if (joysticks[i] != null)
 			{
-				stick[i] = null;
+				joysticks[i] = null;
 			}
 		}
 		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 		{
-			if (drive[i] != null)
+			if (driveTalons[i] != null)
 			{
-				drive[i].delete();
-				drive[i] = null;
+				driveTalons[i].delete();
+				driveTalons[i] = null;
+			}
+		}
+		for (int i = 0; i < Definitions.NUM_LIFT_TALONS; i++)
+		{
+			if (liftTalons[i] != null)
+			{
+				liftTalons[i].delete();
+				liftTalons[i] = null;
 			}
 		}
 		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
 		{
-			if (piston[i] != null)
+			if (pistonSolenoids[i] != null)
 			{
-				piston[i].free();
-				piston[i] = null;
+				pistonSolenoids[i].free();
+				pistonSolenoids[i] = null;
 			}
 		}
-		if (comp != null)
+		if (compressor != null)
 		{
-			comp.free();
-			comp = null;
+			compressor.free();
+			compressor = null;
 		}
 
 		if (acc != null)
 			acc = null;
-
-		if (lift != null)
-			lift = null;
-
-		if (liftEnc != null)
-			liftEnc = null;
-	}
-
-	public static synchronized Encoder getLiftEncoder() throws TKOException
-	{
-		if (liftEnc == null)
-			throw new TKOException("LIFT ENCODER IS NULL");
-		return liftEnc;
-	}
-
-	public static synchronized CANTalon getLiftTalon() throws TKOException
-	{
-		if (lift == null)
-			throw new TKOException("LIFT TALON IS NULL");
-		return lift;
-	}
-
-	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
-	{
-		if (num >= Definitions.NUM_DRIVE_TALONS)
-		{
-			throw new TKOException("Drive talon requested out of bounds");
-		}
-		if (drive[num] != null)
-			return drive[num];
-		else
-			throw new TKOException("Drive talon " + (num) + "(array value) is null");
 	}
 
 	public static synchronized Joystick getJoystick(int num) throws TKOException
@@ -213,10 +273,34 @@ public class TKOHardware
 		{
 			throw new TKOException("Joystick requested out of bounds");
 		}
-		if (stick[num] != null)
-			return stick[num];
+		if (joysticks[num] != null)
+			return joysticks[num];
 		else
 			throw new TKOException("Joystick " + (num) + "(array value) is null");
+	}
+
+	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
+	{
+		if (num >= Definitions.NUM_DRIVE_TALONS)
+		{
+			throw new TKOException("Drive talon requested out of bounds");
+		}
+		if (driveTalons[num] != null)
+		{
+			if (driveTalons[num].getControlMode() == CANTalon.ControlMode.Follower)
+				throw new TKOException("WARNING CANNOT ACCESS FOLLOWER TALON!");
+			else
+				return driveTalons[num];
+		}
+		else
+			throw new TKOException("Drive talon " + (num) + "(array value) is null");
+	}
+
+	public static synchronized CANTalon getLiftTalon() throws TKOException
+	{
+		if (liftTalons[0] == null || liftTalons[1] == null)
+			throw new TKOException("LIFT TALON IS NULL");
+		return liftTalons[0];
 	}
 
 	public static synchronized DoubleSolenoid getPiston(int num) throws TKOException
@@ -225,52 +309,17 @@ public class TKOHardware
 		{
 			throw new TKOException("Piston requested out of bounds");
 		}
-		if (piston[num] != null)
-			return piston[num];
+		if (pistonSolenoids[num] != null)
+			return pistonSolenoids[num];
 		else
 			throw new TKOException("Piston " + (num) + "(array value) is null");
 	}
 
 	public static synchronized Compressor getCompressor() throws TKOException
 	{
-		if (comp == null)
+		if (compressor == null)
 			throw new TKOException("NULL COMPRESSOR");
-		return comp;
-	}
-
-	public static synchronized CANTalon[] getDriveTalons() throws TKOException
-	{
-		if (drive == null)
-			throw new TKOException("NULL DRIVE ARRAY");
-		return drive;
-	}
-
-	public static synchronized CANTalon getLeftDrive() throws TKOException
-	{
-		if (drive[0] == null)
-			throw new TKOException("NULL LEFT DRIVE TALON");
-		return drive[0];
-	}
-
-	public static synchronized CANTalon getRightDrive() throws TKOException
-	{
-		if (drive[2] == null)
-			throw new TKOException("NULL LEFT DRIVE TALON");
-		return drive[2];
-	}
-
-	public static synchronized Joystick[] getJoysticks() throws TKOException
-	{
-		if (stick == null)
-			throw new TKOException("NULL STICK ARRAY");
-		return stick;
-	}
-
-	public static synchronized DoubleSolenoid[] getPistons() throws TKOException
-	{
-		if (piston == null)
-			throw new TKOException("NULL PISTON ARRAY");
-		return piston;
+		return compressor;
 	}
 
 	public static synchronized BuiltInAccelerometer getAcc() throws TKOException
@@ -279,4 +328,40 @@ public class TKOHardware
 			throw new TKOException("NULL ACCELEROMETER OBJECT");
 		return acc;
 	}
+
+	public static synchronized CANTalon getLeftDrive() throws TKOException
+	{
+		if (driveTalons[0] == null)
+			throw new TKOException("NULL LEFT DRIVE TALON");
+		return driveTalons[0];
+	}
+
+	public static synchronized CANTalon getRightDrive() throws TKOException
+	{
+		if (driveTalons[2] == null)
+			throw new TKOException("NULL LEFT DRIVE TALON");
+		return driveTalons[2];
+	}
+
+	public static synchronized Joystick[] getJoysticks() throws TKOException
+	{
+		if (joysticks == null)
+			throw new TKOException("NULL STICK ARRAY");
+		return joysticks;
+	}
+
+	public static synchronized CANTalon[] getDriveTalons() throws TKOException
+	{
+		if (driveTalons == null)
+			throw new TKOException("NULL DRIVE ARRAY");
+		return driveTalons;
+	}
+
+	public static synchronized DoubleSolenoid[] getPistons() throws TKOException
+	{
+		if (pistonSolenoids == null)
+			throw new TKOException("NULL PISTON ARRAY");
+		return pistonSolenoids;
+	}
+
 }

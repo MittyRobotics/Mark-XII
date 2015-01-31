@@ -7,3 +7,5 @@ STICK 3
 - Button 2: open gripper
 - Button 3: close gripper
 STICK 4
+- Button 2: lower wheelie bar
+- Button 3: raise wheelie bar

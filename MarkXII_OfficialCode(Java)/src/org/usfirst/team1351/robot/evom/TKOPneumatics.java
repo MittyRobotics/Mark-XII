@@ -29,22 +29,22 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
  * By now, it should be obvious that the naming convention is to use TKO[name].
  * Runnable is used by any class executed in a thread.
  */
-public class TKOGripper implements Runnable
+public class TKOPneumatics implements Runnable
 {
 	/**
 	 * Refer to ThreadExample.java in robot.util for a detailed explanation.
 	 */
-	public TKOThread gripperThread = null;
-	private static TKOGripper m_Instance = null;
+	public TKOThread pneuThread = null;
+	private static TKOPneumatics m_Instance = null;
 
-	protected TKOGripper() {
+	protected TKOPneumatics() {
 
 	}
 
-	public static synchronized TKOGripper getInstance() {
-		if (TKOGripper.m_Instance == null) {
-			m_Instance = new TKOGripper();
-			m_Instance.gripperThread = new TKOThread(m_Instance);
+	public static synchronized TKOPneumatics getInstance() {
+		if (TKOPneumatics.m_Instance == null) {
+			m_Instance = new TKOPneumatics();
+			m_Instance.pneuThread = new TKOThread(m_Instance);
 		}
 		return m_Instance;
 	}
@@ -54,37 +54,39 @@ public class TKOGripper implements Runnable
 	 * We must first start the compressor, and then we open the "claw" by setting the piston to retracted.
 	 */
 	public void start() {
-		System.out.println("Starting gripper task");
-		if (!gripperThread.isAlive() && m_Instance != null) {
-			gripperThread = new TKOThread(m_Instance);
-			gripperThread.setPriority(Definitions.getPriority("gripper"));
+		System.out.println("Starting pneumatics task");
+		if (!pneuThread.isAlive() && m_Instance != null) {
+			pneuThread = new TKOThread(m_Instance);
+			pneuThread.setPriority(Definitions.getPriority("gripper"));
 		}
-		if (!gripperThread.isThreadRunning())
-			gripperThread.setThreadRunning(true);
+		if (!pneuThread.isThreadRunning())
+			pneuThread.setThreadRunning(true);
 		try {
 			TKOHardware.getCompressor().start();
 			// TODO check that this is kReverse in all branches
 			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(3).set(DoubleSolenoid.Value.kReverse);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		System.out.println("Started gripper task");
+		System.out.println("Started pneumatics task");
 	}
 
 	/**
 	 * Inside the stop method, we must stop the compressor as well.
 	 */
 	public void stop() {
-		System.out.println("Stopping gripper task");
-		if (gripperThread.isThreadRunning())
-			gripperThread.setThreadRunning(false);
+		System.out.println("Stopping pneumatics task");
+		if (pneuThread.isThreadRunning())
+			pneuThread.setThreadRunning(false);
 		try {
 			TKOHardware.getCompressor().stop();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Stopped gripper task");
+		System.out.println("Stopped pneumatics task");
 	}
 
 	/**
@@ -101,7 +103,16 @@ public class TKOGripper implements Runnable
 			if (TKOHardware.getJoystick(2).getRawButton(3)) {
 				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
 			}
-
+			if (TKOHardware.getJoystick(3).getRawButton(2)) {
+				TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
+				TKOHardware.getPiston(3).set(DoubleSolenoid.Value.kForward);
+			}
+			if (TKOHardware.getJoystick(3).getRawButton(3)) {
+				TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+				TKOHardware.getPiston(3).set(DoubleSolenoid.Value.kReverse);
+				
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -110,12 +121,12 @@ public class TKOGripper implements Runnable
 	@Override
 	public void run() {
 		try {
-			while (gripperThread.isThreadRunning()) {
+			while (pneuThread.isThreadRunning()) {
 
 				pistonControl();
 
-				synchronized (gripperThread) {
-					gripperThread.wait(5);
+				synchronized (pneuThread) {
+					pneuThread.wait(5);
 				}
 			}
 		} catch (Exception e) {

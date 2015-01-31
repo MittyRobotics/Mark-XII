@@ -1,15 +1,15 @@
 #include "WPILib.h"
 #include "Definitions.h"
 
-/* 
- * 4.0 p, .2 i, ,125 increment, 3.001 distance 
+/*
+ * 4.0 p, .2 i, ,125 increment, 3.001 distance
  * 2.0, .01, .03, 3.001
- * Code for usage on the test bed. 
+ * Code for usage on the test bed.
  * This code is for the testing of CANJaguars, Physical and Optical Limit Switches, and Encoders, as well as motors via the CANJaguars
  * Ports must be declared, otherwise, the values are mostly garbage, and the code shouldn't run properly
  * Have fun?
- * Last edited by Ishan Shah on 28 Jan 2015
- * 
+ * Last edited by Shreyas Vaidya on 31 January 2015
+ *
  * Look into setTolerance methods for the PIDController object to fix the errors Fairley gave me
  */
 class RobotDemo: public SimpleRobot {
@@ -45,9 +45,9 @@ public:
 				driveControl(0, 0, 0, &ncoder, &rightTest), joy1(1)
 
 	{
-		//PLEASE SET VALUES FOR THESE!!!  
+		//PLEASE SET VALUES FOR THESE!!!
 		//Like, make sure you set some before running, otherwise bad things will happen
-		//BTW, these don't actually do anything, they are just very useful for reference. 
+		//BTW, these don't actually do anything, they are just very useful for reference.
 		rightJaguarPort = 1;
 		leftJaguarPort = 4;
 		opticalSwitchPort1 = 7;
@@ -56,16 +56,16 @@ public:
 		aChannel = 1;
 		bChannel = 2;
 		driverStation = DriverStation::GetInstance();
-		ncoder.SetDistancePerPulse(0.027); //Change this later, if possible, based on requirements and later calculations 
+		ncoder.SetDistancePerPulse(0.027); //Change this later, if possible, based on requirements and later calculations
 		/*
 		 *Recalculate this value every time you change the end hardware
-		 *Utilize gear ratios to calculate the distance per pulse first, corroborate your work by actually measuring and stuff. 
+		 *Utilize gear ratios to calculate the distance per pulse first, corroborate your work by actually measuring and stuff.
 		 *Place that value here, and have great fun
 		 */
 	}
 
 	void RobotInit() {
-		//rightTest.enableDeadbandElimination(true); 
+		//rightTest.enableDeadbandElimination(true);
 	}
 
 	void Disabled() {
@@ -86,7 +86,14 @@ public:
 		driveControl.SetSetpoint(ncoder.GetDistance());
 		driveControl.Disable();
 		bool check = false;
-		//Make it so if the flag is triggered,, it moves back 
+		//Make it so if the flag is triggered,, it moves back
+		/*
+		for (opticalTest1 == true || opticalTest2 == true){
+            driveControl.SetSetpoint(471);
+		};
+		Okay, so make sure that the parameters in the for statement are correct, as I did not know how to make and if (the optical limit switches are true)
+		My thought process was that we could move the grey thing to the middle if the flag is triggered
+		*/
 		while (!check) {
 			rightTest.Set(-.25);
 			leftTest.Set(rightTest.Get());
@@ -108,7 +115,7 @@ public:
 				driveControl.SetSetpoint(ncoder.GetDistance());
 				rightTest.Set(0);
 				leftTest.Set(0);
-				//Throw error if off by too much. 
+				//Throw error if off by too much.
 			}
 		}
 		//driveControl.SetSetpoint(100); //100 increments above the original
@@ -164,7 +171,7 @@ public:
 		}
 	}
 	//test stuff
-	void goForwardTest(float incrementer, double conversion) { //Please forgive the horrid naming convention. Please. 
+	void goForwardTest(float incrementer, double conversion) { //Please forgive the horrid naming convention. Please.
 		while (ncoder.GetDistance() <= 800 && IsEnabled()) {
 			driveControl.SetSetpoint(driveControl.GetSetpoint() + incrementer);
 			leftTest.Set(rightTest.Get());
@@ -230,7 +237,7 @@ public:
 				goBackward(incrementer);
 				goForward(incrementer);
 				if (opticalTest1.Get() == 0 || opticalTest2.Get() == 0) {
-					driveControl.Disable(); //Should make this timed ,, 5 sec? 
+					driveControl.Disable(); //Should make this timed ,, 5 sec?
 				}
 			}
 
@@ -250,7 +257,7 @@ public:
 	;
 
 	/**
-	 * Runs the motors with arcade steering. 
+	 * Runs the motors with arcade steering.
 	 */
 	void OperatorControl() {
 		printf("Starting calibrating\n");
@@ -262,7 +269,7 @@ public:
 		float i = 0.001;
 		//		leftTest.SetVoltageRampRate(12.);
 		//		rightTest.SetVoltageRampRate(12.);
-		driveControl.SetPID(p, i, 0.0); //P is 0.2, I is 0, incrementer is 1.250, distance is 3.0 
+		driveControl.SetPID(p, i, 0.0); //P is 0.2, I is 0, incrementer is 1.250, distance is 3.0
 		driveControl.Enable();
 		rightTest.ConfigSoftPositionLimits(0, 940);
 		incrementer = driverStation->GetAnalogIn(3);
@@ -430,12 +437,12 @@ public:
 		 }
 		 */
 		autoHome();
-		//driveControl.Enable(); 
-		
+		//driveControl.Enable();
+
 		//0.15663
-		//That is the deadband in inches, double for full deadband, over quarter of inch 
-		
-		
+		//That is the deadband in inches, double for full deadband, over quarter of inch
+
+
 		driveControl.SetSetpoint(12.5);
 		while (IsEnabled()) {
 
@@ -446,7 +453,7 @@ public:
 					rightTest.GetOutputCurrent(), rightTest.GetOutputVoltage());
 			printf("Switch 1: %d \t Switch 2: %d \n", opticalTest1.Get(),
 					opticalTest2.Get());
-			printf("ERROR: %f\n", driveControl.GetError()); 
+			printf("ERROR: %f\n", driveControl.GetError());
 		}
 
 	}
@@ -454,9 +461,3 @@ public:
 
 START_ROBOT_CLASS(RobotDemo)
 ;
-
-/*
- * Requirements: 
- * 
- */
-

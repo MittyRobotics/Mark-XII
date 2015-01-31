@@ -5,6 +5,7 @@ package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
+import org.usfirst.team1351.robot.statemachine.StateEnum;
 
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
@@ -26,7 +27,7 @@ public class TKOHardware
 	protected static CANTalon driveTalons[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
 	protected static CANTalon liftTalons[] = new CANTalon[Definitions.NUM_LIFT_TALONS];
 	protected static DoubleSolenoid pistonSolenoids[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
-	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
+	protected static DigitalInput switches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
 
@@ -53,7 +54,7 @@ public class TKOHardware
 		}
 		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
 		{
-			limitSwitches[i] = null;
+			switches[i] = null;
 		}
 		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
 		{
@@ -115,12 +116,14 @@ public class TKOHardware
 		if (pistonSolenoids[2] == null)
 			pistonSolenoids[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
 
-		if (limitSwitches[0] == null)
-			limitSwitches[0] = new DigitalInput(Definitions.LIFT_BOTTOM_OPTICAL_SWITCH);
-
-		if (limitSwitches[1] == null)
-			limitSwitches[1] = new DigitalInput(Definitions.LIFT_TOP_OPTICAL_SWITCH);
-
+		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
+		{
+			if (switches[i] == null)
+			{
+				switches[i] = new DigitalInput(Definitions.SWITCH_ID[i]);
+			}
+		}
+		
 		if (compressor == null)
 			compressor = new Compressor(Definitions.PCM_ID);
 
@@ -298,10 +301,10 @@ public class TKOHardware
 		}
 		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
 		{
-			if (limitSwitches[i] != null)
+			if (switches[i] != null)
 			{
-				limitSwitches[i].free();
-				limitSwitches[i] = null;
+				switches[i].free();
+				switches[i] = null;
 			}
 		}
 		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
@@ -318,6 +321,18 @@ public class TKOHardware
 			acc = null;
 	}
 
+	public static synchronized DigitalInput getSwitch(int num) throws TKOException
+	{
+		if (num >= Definitions.NUM_SWITCHES)
+		{
+			throw new TKOException("Switch requested out of bounds");
+		}
+		if (switches[num] != null)
+			return switches[num];
+		else
+			throw new TKOException("Switch " + (num) + "(array value) is null");
+	}
+	
 	public static synchronized Joystick getJoystick(int num) throws TKOException
 	{
 		if (num >= Definitions.NUM_JOYSTICKS)
@@ -419,9 +434,9 @@ public class TKOHardware
 	 */
 	public static synchronized boolean getLiftBottom() throws TKOException
 	{
-		if (limitSwitches[0] == null)
+		if (switches[0] == null)
 			throw new TKOException("NULL BOTTOM LIMIT SWITCH");
-		return !limitSwitches[0].get();
+		return !switches[0].get();
 	}
 
 	/**
@@ -433,9 +448,9 @@ public class TKOHardware
 	 */
 	public static synchronized boolean getLiftTop() throws TKOException
 	{
-		if (limitSwitches[1] == null)
+		if (switches[1] == null)
 			throw new TKOException("NULL TOP LIMIT SWITCH");
-		return !limitSwitches[1].get();
+		return !switches[1].get();
 	}
 
 	/**

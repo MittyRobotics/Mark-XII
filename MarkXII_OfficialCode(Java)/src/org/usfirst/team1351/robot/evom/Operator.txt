@@ -9,3 +9,7 @@ STICK 3
 STICK 4
 - Button 2: lower wheelie bar
 - Button 3: raise wheelie bar
+
+Piston 0: drive train shift
+Piston 1: gripper
+Piston 2: wheelie

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Definitions
 {
@@ -23,8 +24,11 @@ public class Definitions
 	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 5;
 
-	public static final int NUM_SWITCHES = 2;
-
+	public static final int NUM_SWITCHES = 9; // 7 for state machine + 2 for gripper top/bottom
+	
+	public static final int SWITCH_ID[] =
+	{ 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	
 	public static final int[] JOYSTICK_ID =
 	{ 0, 1, 2, 3 };
 	public static final int[] DRIVE_TALON_ID =
@@ -41,9 +45,6 @@ public class Definitions
 	{ true, false };
 	public static final boolean[] LIFT_BRAKE_MODE =
 	{ false, false };
-
-	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 0;
-	public static final int LIFT_TOP_OPTICAL_SWITCH = 1;
 
 	public static final double DRIVE_P = 4.;
 	public static final double DRIVE_I = 0.01;

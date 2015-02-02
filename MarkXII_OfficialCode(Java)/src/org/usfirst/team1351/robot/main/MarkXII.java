@@ -4,6 +4,7 @@
 package org.usfirst.team1351.robot.main;
 
 import org.usfirst.team1351.robot.drive.TKODrive;
+import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKODataReporting;
@@ -83,6 +84,7 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
+		TKOLift.getInstance().start();
 
 		CANTalon motor = null;
 		try
@@ -109,6 +111,7 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
+			TKOLift.getInstance().stop();
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
 			TKOPneumatics.getInstance().stop();

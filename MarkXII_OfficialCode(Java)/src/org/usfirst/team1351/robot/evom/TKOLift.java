@@ -7,6 +7,7 @@ import org.usfirst.team1351.robot.util.TKORuntimeException;
 import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * @author Vadim
@@ -63,19 +64,22 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		try
 		{
+			System.out.println("STARTING LIFT CALIBRATION");
 			CANTalon lmotor = TKOHardware.getLiftTalon();
 			currentPIDSetpoint = lmotor.getEncPosition();
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
 
-			while (!TKOHardware.getLiftTop())
+			while (!TKOHardware.getLiftTop() && DriverStation.getInstance().isEnabled())
 			{
+//				System.out.println("HASNT REACHED TOP");
 				lmotor.set(Definitions.LIFT_CALIBRATION_POWER);
 			}
 			lmotor.set(0);
 			softTop = lmotor.getPosition();
 
-			while (!TKOHardware.getLiftTop())
+			while (!TKOHardware.getLiftBottom() && DriverStation.getInstance().isEnabled())
 			{
+//				System.out.println("HASNT REACHED BOTTOM");
 				lmotor.set(-Definitions.LIFT_CALIBRATION_POWER);
 			}
 			lmotor.set(0);
@@ -83,6 +87,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
 			setStartPosition();
+			System.out.println("DONE CALIBRATING");
 		}
 		catch (TKOException e)
 		{
@@ -96,6 +101,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		try
 		{
+			System.out.println("Manual joystick lift drive");
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.PercentVbus)
 				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
 
@@ -206,6 +212,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				// TODO while we have to go up a level, don't let user go up again?
 				// TODO maybe need to keep a separate targetLevel variable
 				// do we need to update level int first?
+				System.out.println("LIFT THREAD RUNNING");
 				validate();
 				// updateTarget();
 				completeManualJoystickControl();

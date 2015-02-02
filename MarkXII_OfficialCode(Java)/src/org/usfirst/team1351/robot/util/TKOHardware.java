@@ -160,6 +160,7 @@ public class TKOHardware
 				}
 				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
 				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_OUTPUT_MODE[i]);
+				driveTalons[i].setVoltageRampRate(96.);
 			}
 		}
 
@@ -175,10 +176,10 @@ public class TKOHardware
 			talonModes[Definitions.NUM_DRIVE_TALONS + i] = null;
 			if (liftTalons[i] != null)
 			{
-				if (i == 1 || i == 3) // if follower
+				if (Definitions.NUM_DRIVE_TALONS + i == 5) // if follower
 				{
 					liftTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
-					liftTalons[i].set(i - 1); // set to follow the CANTalon with id i - 1;
+					liftTalons[i].set(Definitions.NUM_DRIVE_TALONS + i - 1); // set to follow the CANTalon with id i - 1;
 					talonModes[Definitions.NUM_DRIVE_TALONS + i] = CANTalon.ControlMode.Follower;
 				}
 				else
@@ -230,6 +231,8 @@ public class TKOHardware
 			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
 		if (newMode == target.getControlMode())
 			return;
+		
+		System.out.println("!!!! CHANGED TALON MODE !!!! " + target.getDeviceID());
 
 		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
 			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);

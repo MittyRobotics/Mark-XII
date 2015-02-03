@@ -31,7 +31,6 @@ public class TKOHardware
 	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
-	protected static Encoder encoders[] = new Encoder[Definitions.NUM_ENCODERS];
 	protected static Gyro gyro;
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
@@ -65,10 +64,6 @@ public class TKOHardware
 		}
 		compressor = null;
 		acc = null;
-		for (int i = 0; i < Definitions.NUM_ENCODERS; i++)
-		{
-			encoders[i] = null;
-		}
 		gyro = null;
 	}
 
@@ -139,12 +134,6 @@ public class TKOHardware
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
 	
-		if (encoders[0] == null)
-			encoders[0] = new Encoder(Definitions.LIFT_ENC_A, Definitions.LIFT_ENC_B);
-		if (encoders[1] == null)
-			encoders[1] = new Encoder(Definitions.DRIVE_LEFT_A, Definitions.DRIVE_LEFT_B);	
-		if (encoders[2] == null)
-			encoders[2] = new Encoder(Definitions.DRIVE_RIGHT_A, Definitions.DRIVE_RIGHT_B);
 			
 		if (gyro == null)
 			gyro = new Gyro(Definitions.GYRO_ID);
@@ -340,15 +329,6 @@ public class TKOHardware
 		if (acc != null)
 			acc = null;
 		
-		for (int i = 0; i < Definitions.NUM_ENCODERS; i++)
-		{
-			if (encoders[i] != null)
-			{
-				encoders[i].free();
-				encoders[i] = null;
-			}
-		}
-		
 		if (gyro != null)
 		{
 			gyro.free();
@@ -362,25 +342,6 @@ public class TKOHardware
 		if (gyro == null)
 			throw new TKOException("Gyro is null");
 		return gyro;
-	}
-
-	public static synchronized Encoder getLiftEnc() throws TKOException
-	{
-		if (encoders[0] == null)
-			throw new TKOException("Lift encoder (index 0) is null");
-		return encoders[0];
-	}
-	
-	public static synchronized Encoder getEncoder(int num) throws TKOException
-	{
-		if (num >= Definitions.NUM_ENCODERS)
-		{
-			throw new TKOException("Encoder requested out of bounds");
-		}
-		if (encoders[num] != null)
-			return encoders[num];
-		else
-			throw new TKOException("Encoder " + (num) + "(array value) is null");
 	}
 
 	public static synchronized Joystick getJoystick(int num) throws TKOException
@@ -543,6 +504,12 @@ public class TKOHardware
 		if (pistonSolenoids == null)
 			throw new TKOException("NULL PISTON ARRAY");
 		return pistonSolenoids;
+	}
+
+	public static Encoder getEncoder(int i) throws TKOException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

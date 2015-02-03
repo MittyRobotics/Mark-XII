@@ -34,6 +34,8 @@ import edu.wpi.first.wpilibj.Timer;
  * TODO Test the TKOException writing to log file - COMPLETE/NEEDS TESTING
  * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
  * 
+ * TODO Figure out why the talon initialization is sometimes slow...
+ * 
  * TODO SATURDAY REQUIREMENTS
 
  All manual
@@ -98,8 +100,8 @@ public class MarkXII extends SampleRobot
 
 		while (isOperatorControl() && isEnabled())
 		{
-			System.out.println("Distance: " + motor.getEncPosition());
-			System.out.println("Velocity: " + motor.getEncVelocity());
+			//System.out.println("Distance: " + motor.getEncPosition());
+			//System.out.println("Velocity: " + motor.getEncVelocity());
 			/*
 			 * System.out.println("Raw encoder val: " + motor.getAnalogInRaw()); System.out.println("Talon encoder val A: " +
 			 * motor.getPinStateQuadA()); System.out.println("Talon encoder val B: " + motor.getPinStateQuadB());

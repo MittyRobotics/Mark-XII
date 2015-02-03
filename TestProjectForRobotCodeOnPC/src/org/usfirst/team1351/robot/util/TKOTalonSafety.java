@@ -8,19 +8,19 @@ import org.usfirst.team1351.robot.main.Definitions;
  * have memory corruption / other problems.
  * 
  * @author Vadim
- * @version 01/21/15
+ * @version 01/17/15
  */
-public class ThreadExample implements Runnable // implements Runnable is important to make this class support the Thread (run method)
+public class TKOTalonSafety implements Runnable // implements Runnable is important to make this class support the Thread (run method)
 {
 	/*
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
 	public TKOThread exampleThread = null;
-	private static ThreadExample m_Instance = null;
+	private static TKOTalonSafety m_Instance = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
-	protected ThreadExample()
+	protected TKOTalonSafety()
 	{
 
 	}
@@ -29,11 +29,11 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 * This function makes the class a singleton, so that there can only be one instance of the class even though the class is not static
 	 * This is needed for the Thread to work properly.
 	 */
-	public static synchronized ThreadExample getInstance()
+	public static synchronized TKOTalonSafety getInstance()
 	{
 		if (m_Instance == null)
 		{
-			m_Instance = new ThreadExample();
+			m_Instance = new TKOTalonSafety();
 			m_Instance.exampleThread = new TKOThread(m_Instance);
 		}
 		return m_Instance;
@@ -48,13 +48,14 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 	 * 
 	 * @category
 	 
+	 
 	 */
 	public void start()
 	{
 		if (!exampleThread.isAlive() && m_Instance != null)
 		{
 			exampleThread = new TKOThread(m_Instance);
-			exampleThread.setPriority(Definitions.getPriority("threadExample"));
+			exampleThread.setPriority(Definitions.getPriority("talonSafety"));
 		}
 		if (!exampleThread.isThreadRunning())
 		{
@@ -74,6 +75,26 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 		}
 	}
 
+	public void checkCurrent()
+	{
+		try
+		{
+			for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++) //TODO maybe not just drive talons, all talons
+			{
+				double current = TKOHardware.getDriveTalon(i).getOutputCurrent();
+				if (current > Definitions.TALON_CURRENT_TIMEOUT[i])
+				{
+					TKOHardware.getDriveTalon(i).disableControl();
+					Thread.sleep(Definitions.CURRENT_TIMEOUT_LENGTH[i]);
+					TKOHardware.getDriveTalon(i).enableControl();
+				}
+			}
+		} catch (Exception e)
+		{
+
+		}
+	}
+
 	/**
 	 * The run method is what the thread actually calls once. The continual running of the thread loop is done by the while loop, controlled
 	 * by a safe boolean inside the TKOThread object. The wait is synchronized to make sure the thread safely sleeps.
@@ -86,12 +107,12 @@ public class ThreadExample implements Runnable // implements Runnable is importa
 			while (exampleThread.isThreadRunning())
 			{
 				System.out.println("THREAD RAN!");
-				/*
-				 * THIS IS WHERE YOU PUT ALL OF YOUR CODEZ
-				 */
+
+				checkCurrent();
+
 				synchronized (exampleThread) // synchronized per the thread to make sure that we wait safely
 				{
-					exampleThread.wait(100); // the wait time that the thread sleeps, in milliseconds
+					exampleThread.wait(20); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (Exception e)

@@ -224,7 +224,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				// TODO maybe need to keep a separate targetLevel variable
 				// do we need to update level int first?
 				// System.out.println("LIFT THREAD RUNNING");
-				validate();
+				// validate();
 				updateTarget();
 				// completeManualJoystickControl();
 
@@ -344,9 +344,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					currentPIDSetpoint -= Definitions.LIFT_PID_INCREMENTER;
 				}
 			}
-			//TKOHardware.getLiftTalon().set(currentPIDSetpoint);
+			TKOHardware.getLiftTalon().set(currentPIDSetpoint);
 			System.out.println("Lift talon set to: " + currentPIDSetpoint);
-			System.out.println("ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
 		}
 		catch (TKOException e)
 		{

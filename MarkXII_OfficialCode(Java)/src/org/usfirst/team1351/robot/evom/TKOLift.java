@@ -109,7 +109,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// TKOHardware.getLiftTalon().setForwardSoftLimit(forwardLimit);
 			// TKOHardware.getLiftTalon().setReverseSoftLimit(reverseLimit); TODO use these
 
-			TKOHardware.getLiftTalon().set(TKOHardware.getJoystick(3).getY() * 0.4);
+			TKOHardware.getLiftTalon().set(TKOHardware.getJoystick(3).getY() * 0.2);
 		}
 		catch (TKOException e)
 		{
@@ -182,7 +182,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	private void init()
 	{
 		if (!calibrated)
-			calibrated = calibrate();
+			calibrated = true;//TODO calibrate();
 		if (level == -1) // TODO do we need to update level on enable/start?
 		{
 			calculateLevel(getEncoderPosition());

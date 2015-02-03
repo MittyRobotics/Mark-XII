@@ -26,8 +26,8 @@ public class DriveAtom extends Atom {
 			}
 		
 		try {
-			TKOHardware.getLeftEncoder().setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
-			TKOHardware.getRightEncoder().setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
+			TKOHardware.getEncoder(1).setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
+			TKOHardware.getEncoder(2).setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
 		} catch (TKOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -38,8 +38,8 @@ public class DriveAtom extends Atom {
 	public void execute()
 	{	
 		try {
-			while (TKOHardware.getLeftEncoder().get() < distance &&
-					TKOHardware.getRightEncoder().get() < distance)
+			while (TKOHardware.getEncoder(1).get() < distance &&
+					TKOHardware.getEncoder(2).get() < distance)
 			{
 				for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
 					TKOHardware.getDriveTalon(i).set(0.3);

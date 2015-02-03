@@ -10,10 +10,14 @@ import edu.wpi.first.wpilibj.CANTalon;
 
 public class Definitions
 {
+	public static final double DISTANCE_PER_PULSE = 0.;
+	public static final int GYRO_ID = 0;
+	
 	public static final int NUM_DRIVE_TALONS = 4;
 	public static final int NUM_LIFT_TALONS = 2;
 	public static final int NUM_JOYSTICKS = 4;
-
+	public static final int NUM_ENCODERS = 3;
+	
 	// TODO replace BS values
 	public static final int NUM_PISTONS = 3; // number of piston, also is number of solenoids
 	public static final int GRIPPER_A = 0; // gripper piston
@@ -22,6 +26,13 @@ public class Definitions
 	public static final int SHIFTER_B = 3;
 	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 5;
+	
+	public static final int LIFT_ENC_A = 0;
+	public static final int LIFT_ENC_B = 1;
+	public static final int DRIVE_LEFT_A = 2;
+	public static final int DRIVE_LEFT_B = 3;
+	public static final int DRIVE_RIGHT_A = 4;
+	public static final int DRIVE_RIGHT_B = 5;
 
 	public static final int NUM_SWITCHES = 2;
 

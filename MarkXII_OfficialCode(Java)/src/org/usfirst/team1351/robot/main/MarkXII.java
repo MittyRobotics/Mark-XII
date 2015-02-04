@@ -11,9 +11,11 @@ import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /*-----------TODO-------------
  * Write TKOLEDArduino lol rekt
@@ -134,8 +136,14 @@ public class MarkXII extends SampleRobot
 	 */
 	public void test()
 	{
-		System.out.println("Enabling teleop!");
-		TKOHardware.initObjects();
+		System.out.println("Enabling test!");
+		AnalogInput test = new AnalogInput(3);
+		while (isTest() && isEnabled())
+		{
+			System.out.println("V: " + test.getVoltage());
+			SmartDashboard.putNumber("A Voltage", test.getVoltage());
+		}
+		/*TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
 		TKODataReporting.getInstance().start();
 
@@ -168,6 +176,6 @@ public class MarkXII extends SampleRobot
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 	}
 }

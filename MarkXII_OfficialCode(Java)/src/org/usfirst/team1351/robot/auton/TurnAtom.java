@@ -41,7 +41,7 @@ public class TurnAtom extends Atom
 	
 	public void execute()
 	{
-		try
+		/*try
 		{
 			while (TKOHardware.getGyro().getAngle() < angle)
 			{
@@ -58,6 +58,6 @@ public class TurnAtom extends Atom
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 }

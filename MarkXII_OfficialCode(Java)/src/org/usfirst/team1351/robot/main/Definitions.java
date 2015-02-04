@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.CANTalon;
 public class Definitions
 {
 	public static final double DISTANCE_PER_PULSE = 0.;
-	public static final int GYRO_ID = 0;
 	
 	public static final int NUM_DRIVE_TALONS = 4;
 	public static final int NUM_LIFT_TALONS = 2;
@@ -27,7 +26,11 @@ public class Definitions
 	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 5;
 
-	public static final int NUM_SWITCHES = 2;
+	public static final int CRATE_L_ID = 6;
+	public static final int CRATE_R_ID = 7;
+	
+    public static final int NUM_SWITCHES = 7; // 5 for state machine + 2 for gripper top/bottom
+	public static final int NUM_ANALOG = 2; // crate left and crate right
 
 	public static final int[] JOYSTICK_ID =
 	{ 0, 1, 2, 3 };

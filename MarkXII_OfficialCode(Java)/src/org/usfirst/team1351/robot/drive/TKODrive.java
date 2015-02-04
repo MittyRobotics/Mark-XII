@@ -8,6 +8,7 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class TKODrive implements Runnable
@@ -51,21 +52,43 @@ public class TKODrive implements Runnable
 			driveThread.setThreadRunning(false);
 		System.out.println("Stopped drive task");
 	}
-	
-	public synchronized void setLeftRightMotorOutputs(double left, double right)
+
+	public synchronized void setLeftRightMotorOutputsPercentVBus(double left, double right)
 	{
 		try
 		{
-			if (TKOHardware.getDriveTalon(0).getControlMode() == CANTalon.ControlMode.PercentVbus)
-				TKOHardware.getDriveTalon(0).set(left);
+			if (TKOHardware.getLeftDrive().getControlMode() == CANTalon.ControlMode.PercentVbus)
+				TKOHardware.getLeftDrive().set(Definitions.DRIVE_MULTIPLIER[0] * left);
 			else
-				throw new TKOException("CANTALON NOT IN PERCENT VBUS: " + TKOHardware.getDriveTalon(0).getDeviceID());
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.PercentVbus);
 
-			if (TKOHardware.getDriveTalon(2).getControlMode() == CANTalon.ControlMode.PercentVbus)
-				TKOHardware.getDriveTalon(2).set(right);
+			if (TKOHardware.getRightDrive().getControlMode() == CANTalon.ControlMode.PercentVbus)
+				TKOHardware.getRightDrive().set(Definitions.DRIVE_MULTIPLIER[2] * right);
 			else
-				throw new TKOException("CANTALON NOT IN PERCENT VBUS: " + TKOHardware.getDriveTalon(2).getDeviceID());
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.PercentVbus);
 
+		} catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void setLeftRightMotorOutputsCurrent(double leftCurrent, double rightCurrent)
+	{
+		try
+		{
+			if (TKOHardware.getLeftDrive().getControlMode() == CANTalon.ControlMode.Current)
+				TKOHardware.getLeftDrive().set(Definitions.DRIVE_MULTIPLIER_LEFT * Definitions.MAX_CURRENT_LEFT * leftCurrent);
+			else
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.Current);
+
+			if (TKOHardware.getRightDrive().getControlMode() == CANTalon.ControlMode.Current)
+				TKOHardware.getRightDrive().set(Definitions.DRIVE_MULTIPLIER_RIGHT * Definitions.MAX_CURRENT_RIGHT * rightCurrent);
+			else
+				TKOHardware.configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_P, CANTalon.ControlMode.Current);
+
+<<<<<<< HEAD
+=======
 			System.out.println("Drive 0 Get " + TKOHardware.getDriveTalon(0).get());
 			System.out.println("Drive 1 Get " + TKOHardware.getDriveTalon(1).get());
 			System.out.println("Drive 2 Get " + TKOHardware.getDriveTalon(2).get());
@@ -74,6 +97,7 @@ public class TKODrive implements Runnable
 			System.out.println("Encoder R Get " + TKOHardware.getRightEncoder().get());
 			System.out.println();
 			
+>>>>>>> 56074ee859d1aabfcb88f1e57997f1311ab909ee
 		} catch (TKOException e)
 		{
 			e.printStackTrace();
@@ -84,7 +108,7 @@ public class TKODrive implements Runnable
 	{
 		try
 		{
-			setLeftRightMotorOutputs(TKOHardware.getJoystick(0).getY(), TKOHardware.getJoystick(1).getY());
+			setLeftRightMotorOutputsPercentVBus(TKOHardware.getJoystick(0).getY(), TKOHardware.getJoystick(1).getY());
 		} catch (TKOException e)
 		{
 			e.printStackTrace();
@@ -144,7 +168,18 @@ public class TKODrive implements Runnable
 				}
 			}
 
-			setLeftRightMotorOutputs(leftMotorSpeed, rightMotorSpeed);
+			setLeftRightMotorOutputsPercentVBus(leftMotorSpeed, rightMotorSpeed);
+		} catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void currentModeTankDrive()
+	{
+		try
+		{
+			setLeftRightMotorOutputsCurrent(TKOHardware.getJoystick(0).getY(), TKOHardware.getJoystick(1).getY());
 		} catch (TKOException e)
 		{
 			e.printStackTrace();
@@ -169,8 +204,8 @@ public class TKODrive implements Runnable
 				System.out.println("Initialing objects");
 				TKOHardware.initObjects();
 				System.out.println("Configuring jaguars");
-				TKOHardware.configTalons(p, i, d);
-				TKOHardware.setAll(0.);
+				TKOHardware.configDriveTalons(p, i, d, CANTalon.ControlMode.Current);
+				TKOHardware.setAllDriveTalons(0.);
 				System.out.println("Done with all, starting commands");
 				// Thread.sleep(250);
 				TKOLogger.getInstance().addData("Pval", p, null, -1);
@@ -178,7 +213,7 @@ public class TKODrive implements Runnable
 				TKODataReporting.getInstance().startCollectingDriveData(p, i, d); // stops regular data collection
 				System.out.println("Starting set commands");
 				Thread.sleep(1500);
-				for (int j = 0; j < Definitions.NUM_DRIVE_TALONS; j++)
+				for (int j = 0; j < Definitions.NUM_DRIVE_TALONS; j += 2)
 				{
 					TKOHardware.getDriveTalon(j).set(Definitions.DRIVE_MULTIPLIER[j]);
 					if (p < 10)
@@ -235,11 +270,21 @@ public class TKODrive implements Runnable
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
-				if (TKOHardware.getJoystick(0).getRawButton(5))
+				if (TKOHardware.getJoystick(0).getRawButton(2))
 				// if (!calibRan)
 				{
 					PIDCurrentCalibration();
 					// calibRan = true;
+				}
+				if (TKOHardware.getJoystick(0).getRawButton(4))
+				{
+					// TODO make this not ghetto
+					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+				}
+				if (TKOHardware.getJoystick(0).getRawButton(5))
+				{
+					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+					// TODO make this not ghetto
 				}
 
 				tankDrive();

@@ -17,6 +17,12 @@ import edu.wpi.first.wpilibj.Timer;
 
 // TODO replace all the BS values for everything
 
+/*
+ * 0b |  CL |  CR |  GS |  LE |	 LR	|  RE |	 RR	|
+ * 0b |  64 |  32 |  16 |   8 |   4 |   2 |   1 |
+ *
+ */
+
 public class StateMachine
 {
 	static Timer m_timer;
@@ -41,10 +47,13 @@ public class StateMachine
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
 	public static final float WAIT_FOR_RC_TIMEOUT = 15.f;
 
-	public static final int PISTON_EXTENDED = 99;
-	public static final int READY_FOR_RC = 99;	// PISTON_RETRACTED
-	public static final int RC_FOUND = 99;	// piston still retracted
-	public static final int READY_TO_LIFT = 99;	// piston extended, trash can is in
+	// 0b |  CL |  CR |  GS |  LE |	 LR	|  RE |	 RR	|
+	// 0b |     |     |     |   8 |     |   2 |     |
+	public static final int PISTON_EXTENDED = 10;
+	
+	public static final int READY_FOR_RC = 99;	// piston retracted
+	public static final int RC_FOUND = 99;	// piston still retracted AND gripper switch
+	public static final int READY_TO_LIFT = 99;	// piston extended AND trash can is in
 	public static final int CRATE_FOUND = 99;
 	
 	/*static float m_lastSensorStringPrint = 0.0f;

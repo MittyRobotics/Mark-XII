@@ -6,6 +6,7 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.ControlMode;
@@ -13,7 +14,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -31,7 +31,8 @@ public class TKOHardware
 	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
-	protected static Gyro gyro;
+//	protected static Gyro gyro;
+	protected static AnalogInput analog[] = new AnalogInput[Definitions.NUM_ANALOG];
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
 			+ Definitions.NUM_LIFT_TALONS]; // encompasses all talons
@@ -64,7 +65,10 @@ public class TKOHardware
 		}
 		compressor = null;
 		acc = null;
-		gyro = null;
+		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
+		{
+			analog[i] = null;
+		}
 	}
 
 	public static synchronized void initObjects()
@@ -133,11 +137,11 @@ public class TKOHardware
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
-	
 			
-		if (gyro == null)
-			gyro = new Gyro(Definitions.GYRO_ID);
-			
+		if (analog[0] == null)
+			analog[0] = new AnalogInput(Definitions.CRATE_L_ID);
+		if (analog[1] == null)
+			analog[1] = new AnalogInput(Definitions.CRATE_R_ID);
 	}
 
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
@@ -328,22 +332,29 @@ public class TKOHardware
 
 		if (acc != null)
 			acc = null;
-		
-		if (gyro != null)
+
+		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
 		{
-			gyro.free();
-			gyro = null;
+			if (analog[i] != null)
+			{
+				analog[i].free();
+				analog[i] = null;
+			}
 		}
-		
 	}
 
-	public static synchronized Gyro getGyro() throws TKOException
+	public static synchronized AnalogInput getAnalog(int num) throws TKOException
 	{
-		if (gyro == null)
-			throw new TKOException("Gyro is null");
-		return gyro;
+		if (num >= Definitions.NUM_ANALOG)
+		{
+			throw new TKOException("Analog input requested out of bounds");
+		}
+		if (analog[num] != null)
+			return analog[num];
+		else
+			throw new TKOException("Analog input " + (num) + "(array value) is null");
 	}
-
+	
 	public static synchronized Joystick getJoystick(int num) throws TKOException
 	{
 		if (num >= Definitions.NUM_JOYSTICKS)

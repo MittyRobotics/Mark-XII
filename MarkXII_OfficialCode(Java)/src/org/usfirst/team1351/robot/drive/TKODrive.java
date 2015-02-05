@@ -39,7 +39,7 @@ public class TKODrive implements Runnable
 		try
 		{
 			double moveValue = TKOHardware.getJoystick(0).getY();
-			double rotateValue = TKOHardware.getJoystick(1).getY();
+			double rotateValue = TKOHardware.getJoystick(1).getX();
 			double leftMotorSpeed;
 			double rightMotorSpeed;
 
@@ -224,7 +224,8 @@ public class TKODrive implements Runnable
 				}
 
 				//tankDrive();
-				currentModeTankDrive();
+				arcadeDrive();
+				//currentModeTankDrive();
 				synchronized (driveThread)
 				{
 					driveThread.wait(5);

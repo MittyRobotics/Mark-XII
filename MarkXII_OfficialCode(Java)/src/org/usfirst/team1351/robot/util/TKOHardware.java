@@ -5,14 +5,15 @@ package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
-import org.usfirst.team1351.robot.statemachine.StateEnum;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -27,9 +28,11 @@ public class TKOHardware
 	protected static CANTalon driveTalons[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
 	protected static CANTalon liftTalons[] = new CANTalon[Definitions.NUM_LIFT_TALONS];
 	protected static DoubleSolenoid pistonSolenoids[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
-	protected static DigitalInput switches[] = new DigitalInput[Definitions.NUM_SWITCHES];
+	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
+//	protected static Gyro gyro;
+	protected static AnalogInput analog[] = new AnalogInput[Definitions.NUM_ANALOG];
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
 			+ Definitions.NUM_LIFT_TALONS]; // encompasses all talons
@@ -54,7 +57,7 @@ public class TKOHardware
 		}
 		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
 		{
-			switches[i] = null;
+			limitSwitches[i] = null;
 		}
 		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
 		{
@@ -62,6 +65,10 @@ public class TKOHardware
 		}
 		compressor = null;
 		acc = null;
+		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
+		{
+			analog[i] = null;
+		}
 	}
 
 	public static synchronized void initObjects()
@@ -116,14 +123,12 @@ public class TKOHardware
 		if (pistonSolenoids[2] == null)
 			pistonSolenoids[2] = new DoubleSolenoid(Definitions.WHEELIE_A, Definitions.WHEELIE_B);
 
-		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
-		{
-			if (switches[i] == null)
-			{
-				switches[i] = new DigitalInput(Definitions.SWITCH_ID[i]);
-			}
-		}
-		
+		if (limitSwitches[0] == null)
+			limitSwitches[0] = new DigitalInput(Definitions.LIFT_BOTTOM_OPTICAL_SWITCH);
+
+		if (limitSwitches[1] == null)
+			limitSwitches[1] = new DigitalInput(Definitions.LIFT_TOP_OPTICAL_SWITCH);
+
 		if (compressor == null)
 			compressor = new Compressor(Definitions.PCM_ID);
 
@@ -132,6 +137,11 @@ public class TKOHardware
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
+			
+		if (analog[0] == null)
+			analog[0] = new AnalogInput(Definitions.CRATE_L_ID);
+		if (analog[1] == null)
+			analog[1] = new AnalogInput(Definitions.CRATE_R_ID);
 	}
 
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
@@ -163,6 +173,7 @@ public class TKOHardware
 				}
 				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
 				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_OUTPUT_MODE[i]);
+				driveTalons[i].setVoltageRampRate(96.);
 			}
 		}
 
@@ -178,10 +189,10 @@ public class TKOHardware
 			talonModes[Definitions.NUM_DRIVE_TALONS + i] = null;
 			if (liftTalons[i] != null)
 			{
-				if (i == 1 || i == 3) // if follower
+				if (Definitions.NUM_DRIVE_TALONS + i == 5) // if follower
 				{
 					liftTalons[i].changeControlMode(CANTalon.ControlMode.Follower);
-					liftTalons[i].set(i - 1); // set to follow the CANTalon with id i - 1;
+					liftTalons[i].set(Definitions.NUM_DRIVE_TALONS + i - 1); // set to follow the CANTalon with id i - 1;
 					talonModes[Definitions.NUM_DRIVE_TALONS + i] = CANTalon.ControlMode.Follower;
 				}
 				else
@@ -233,6 +244,8 @@ public class TKOHardware
 			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
 		if (newMode == target.getControlMode())
 			return;
+		
+		System.out.println("!!!! CHANGED TALON MODE !!!! " + target.getDeviceID());
 
 		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
 			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
@@ -301,10 +314,10 @@ public class TKOHardware
 		}
 		for (int i = 0; i < Definitions.NUM_SWITCHES; i++)
 		{
-			if (switches[i] != null)
+			if (limitSwitches[i] != null)
 			{
-				switches[i].free();
-				switches[i] = null;
+				limitSwitches[i].free();
+				limitSwitches[i] = null;
 			}
 		}
 		for (int i = 0; i < (Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS); i++)
@@ -319,18 +332,27 @@ public class TKOHardware
 
 		if (acc != null)
 			acc = null;
+
+		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
+		{
+			if (analog[i] != null)
+			{
+				analog[i].free();
+				analog[i] = null;
+			}
+		}
 	}
 
-	public static synchronized DigitalInput getSwitch(int num) throws TKOException
+	public static synchronized AnalogInput getAnalog(int num) throws TKOException
 	{
-		if (num >= Definitions.NUM_SWITCHES)
+		if (num >= Definitions.NUM_ANALOG)
 		{
-			throw new TKOException("Switch requested out of bounds");
+			throw new TKOException("Analog input requested out of bounds");
 		}
-		if (switches[num] != null)
-			return switches[num];
+		if (analog[num] != null)
+			return analog[num];
 		else
-			throw new TKOException("Switch " + (num) + "(array value) is null");
+			throw new TKOException("Analog input " + (num) + "(array value) is null");
 	}
 	
 	public static synchronized Joystick getJoystick(int num) throws TKOException
@@ -434,9 +456,9 @@ public class TKOHardware
 	 */
 	public static synchronized boolean getLiftBottom() throws TKOException
 	{
-		if (switches[0] == null)
+		if (limitSwitches[0] == null)
 			throw new TKOException("NULL BOTTOM LIMIT SWITCH");
-		return !switches[0].get();
+		return !limitSwitches[0].get();
 	}
 
 	/**
@@ -448,9 +470,9 @@ public class TKOHardware
 	 */
 	public static synchronized boolean getLiftTop() throws TKOException
 	{
-		if (switches[1] == null)
+		if (limitSwitches[1] == null)
 			throw new TKOException("NULL TOP LIMIT SWITCH");
-		return !switches[1].get();
+		return !limitSwitches[1].get();
 	}
 
 	/**
@@ -493,6 +515,12 @@ public class TKOHardware
 		if (pistonSolenoids == null)
 			throw new TKOException("NULL PISTON ARRAY");
 		return pistonSolenoids;
+	}
+
+	public static Encoder getEncoder(int i) throws TKOException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

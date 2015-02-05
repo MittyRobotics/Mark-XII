@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Definitions
 {
+	public static final double DISTANCE_PER_PULSE = 0.;
+	
 	public static final int NUM_DRIVE_TALONS = 4;
 	public static final int NUM_LIFT_TALONS = 2;
 	public static final int NUM_JOYSTICKS = 4;
-
+	public static final int NUM_ENCODERS = 3;
+	
 	// TODO replace BS values
 	public static final int NUM_PISTONS = 3; // number of piston, also is number of solenoids
 	public static final int GRIPPER_A = 0; // gripper piston
@@ -24,11 +26,12 @@ public class Definitions
 	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 5;
 
-	public static final int NUM_SWITCHES = 9; // 7 for state machine + 2 for gripper top/bottom
+	public static final int CRATE_L_ID = 6;
+	public static final int CRATE_R_ID = 7;
 	
-	public static final int SWITCH_ID[] =
-	{ 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-	
+    public static final int NUM_SWITCHES = 7; // 5 for state machine + 2 for gripper top/bottom
+	public static final int NUM_ANALOG = 2; // crate left and crate right
+
 	public static final int[] JOYSTICK_ID =
 	{ 0, 1, 2, 3 };
 	public static final int[] DRIVE_TALON_ID =
@@ -46,6 +49,10 @@ public class Definitions
 	public static final boolean[] LIFT_BRAKE_MODE =
 	{ false, false };
 
+	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 0;
+	public static final int LIFT_TOP_OPTICAL_SWITCH = 1;
+	public static final double LIFT_PID_INCREMENTER = 1.;
+
 	public static final double DRIVE_P = 4.;
 	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
@@ -54,7 +61,7 @@ public class Definitions
 	public static final double LIFT_I = 0.01;
 	public static final double LIFT_D = 0;
 
-	public static final double LIFT_CALIBRATION_POWER = 0.3;
+	public static final double LIFT_CALIBRATION_POWER = 1.;
 
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final CANTalon.FeedbackDevice DRIVE_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;

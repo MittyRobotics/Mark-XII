@@ -519,6 +519,7 @@ public class TKOHardware
 
 	public static Encoder getEncoder(int i) throws TKOException
 	{
+		//TODO REMOVE THIS
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -224,9 +224,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				// TODO maybe need to keep a separate targetLevel variable
 				// do we need to update level int first?
 				// System.out.println("LIFT THREAD RUNNING");
-				validate();
-				updateTarget();
-				// completeManualJoystickControl();
+				System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+				//validate();
+				//updateTarget();
+				completeManualJoystickControl();
 
 				synchronized (conveyorThread) // synchronized per the thread to make sure that we wait safely
 				{

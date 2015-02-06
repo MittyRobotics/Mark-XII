@@ -267,7 +267,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				// do we need to update level int first?
 				// System.out.println("LIFT THREAD RUNNING");
 				System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
-				// validate();
+				validate();
 				// updateTarget();
 				completeManualJoystickControl();
 

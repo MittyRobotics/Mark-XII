@@ -1,5 +1,6 @@
 package org.usfirst.team1351.robot.util;
 
+import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
 /**
@@ -16,7 +17,7 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 	 * This creates an object of the TKOThread class, passing it the runnable of this class (ThreadExample) TKOThread is just a thread that
 	 * makes it easy to make using the thread safe
 	 */
-	public TKOThread exampleThread = null;
+	public TKOThread safetyCheckerThread = null;
 	private static TKOTalonSafety m_Instance = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
@@ -34,7 +35,7 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 		if (m_Instance == null)
 		{
 			m_Instance = new TKOTalonSafety();
-			m_Instance.exampleThread = new TKOThread(m_Instance);
+			m_Instance.safetyCheckerThread = new TKOThread(m_Instance);
 		}
 		return m_Instance;
 	}
@@ -52,14 +53,14 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 	 */
 	public void start()
 	{
-		if (!exampleThread.isAlive() && m_Instance != null)
+		if (!safetyCheckerThread.isAlive() && m_Instance != null)
 		{
-			exampleThread = new TKOThread(m_Instance);
-			exampleThread.setPriority(Definitions.getPriority("talonSafety"));
+			safetyCheckerThread = new TKOThread(m_Instance);
+			safetyCheckerThread.setPriority(Definitions.getPriority("talonSafety"));
 		}
-		if (!exampleThread.isThreadRunning())
+		if (!safetyCheckerThread.isThreadRunning())
 		{
-			exampleThread.setThreadRunning(true);
+			safetyCheckerThread.setThreadRunning(true);
 		}
 	}
 
@@ -69,9 +70,9 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 	 */
 	public void stop()
 	{
-		if (exampleThread.isThreadRunning())
+		if (safetyCheckerThread.isThreadRunning())
 		{
-			exampleThread.setThreadRunning(false);
+			safetyCheckerThread.setThreadRunning(false);
 		}
 	}
 
@@ -79,19 +80,28 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 	{
 		try
 		{
-			for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++) //TODO maybe not just drive talons, all talons
+			for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i+=2)
 			{
 				double current = TKOHardware.getDriveTalon(i).getOutputCurrent();
 				if (current > Definitions.TALON_CURRENT_TIMEOUT[i])
 				{
+					TKOLogger.getInstance().addMessage("DRIVE TALON CURRENT EXCEPTION: " + current + " AMPS " + TKOHardware.getDriveTalon(i).getDeviceID() + " ID");
 					TKOHardware.getDriveTalon(i).disableControl();
 					Thread.sleep(Definitions.CURRENT_TIMEOUT_LENGTH[i]);
 					TKOHardware.getDriveTalon(i).enableControl();
 				}
 			}
+			double current = TKOHardware.getLiftTalon().getOutputCurrent();
+			if (current > Definitions.TALON_CURRENT_TIMEOUT[Definitions.NUM_DRIVE_TALONS])
+			{
+				TKOLogger.getInstance().addMessage("LIFT TALON CURRENT EXCEPTION: " + current + " AMPS " + TKOHardware.getLiftTalon().getDeviceID() + " ID");
+				TKOHardware.getDriveTalon(Definitions.NUM_DRIVE_TALONS).disableControl();
+				Thread.sleep(Definitions.CURRENT_TIMEOUT_LENGTH[Definitions.NUM_DRIVE_TALONS]);
+				TKOHardware.getDriveTalon(Definitions.NUM_DRIVE_TALONS).enableControl();
+			}
 		} catch (Exception e)
 		{
-
+			e.printStackTrace();
 		}
 	}
 
@@ -104,15 +114,13 @@ public class TKOTalonSafety implements Runnable // implements Runnable is import
 	{
 		try
 		{
-			while (exampleThread.isThreadRunning())
+			while (safetyCheckerThread.isThreadRunning())
 			{
-				System.out.println("THREAD RAN!");
-
 				checkCurrent();
 
-				synchronized (exampleThread) // synchronized per the thread to make sure that we wait safely
+				synchronized (safetyCheckerThread) // synchronized per the thread to make sure that we wait safely
 				{
-					exampleThread.wait(20); // the wait time that the thread sleeps, in milliseconds
+					safetyCheckerThread.wait(20); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (Exception e)

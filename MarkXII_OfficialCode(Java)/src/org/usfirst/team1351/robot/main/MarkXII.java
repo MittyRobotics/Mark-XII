@@ -8,11 +8,10 @@ import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKODataReporting;
-import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -89,8 +88,9 @@ public class MarkXII extends SampleRobot
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
 		TKOLift.getInstance().start();
+		TKOTalonSafety.getInstance().start();
 
-		CANTalon motor = null;
+		/*CANTalon motor = null;
 		try
 		{
 			motor = TKOHardware.getLeftDrive();
@@ -98,24 +98,22 @@ public class MarkXII extends SampleRobot
 		catch (TKOException e1)
 		{
 			e1.printStackTrace();
-		}
+		}*/
 
 		while (isOperatorControl() && isEnabled())
 		{
-			//System.out.println("Distance: " + motor.getEncPosition());
-			//System.out.println("Velocity: " + motor.getEncVelocity());
-			/*
-			 * System.out.println("Raw encoder val: " + motor.getAnalogInRaw()); System.out.println("Talon encoder val A: " +
-			 * motor.getPinStateQuadA()); System.out.println("Talon encoder val B: " + motor.getPinStateQuadB());
-			 * System.out.println("Talon encoder val Index: " + motor.getPinStateQuadIdx());
-			 */
-			// System.out.println("'Encoder' val: " + test.getDistance());
+			//System.out.println("Distance: " + motor.getPosition());
+			//System.out.println("Velocity: " + motor.getVelocity());
+			
 			Timer.delay(0.25); // wait for a motor update time
 		}
 
 		try
 		{
+			TKOTalonSafety.getInstance().stop();
+			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
+			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
 			TKOPneumatics.getInstance().stop();

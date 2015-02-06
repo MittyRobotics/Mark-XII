@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.util.AllocationException;
 public class TKOHardware
 {
 	// TODO Switch initialization
+	// TODO write getSwitch(int) method
+	
 	/*
 	 * For monitoring the control mode of the talons: Once a follower is created, it should never be accessed
 	 */

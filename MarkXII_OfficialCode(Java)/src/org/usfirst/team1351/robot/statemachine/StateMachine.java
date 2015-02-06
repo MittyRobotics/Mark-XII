@@ -1,7 +1,5 @@
-/*
- * Last edited by Ben Kim
- * on 1/31/2015
- */
+// Last edited by Ben Kim
+// on 2/4/2015
 
 package org.usfirst.team1351.robot.statemachine;
 
@@ -15,20 +13,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
-// TODO replace all the BS values for everything
-
-/*
- * 0b |  CL |  CR |  GS |  LE |	 LR	|  RE |	 RR	|
- * 0b |  64 |  32 |  16 |   8 |   4 |   2 |   1 |
- *
- */
-
 public class StateMachine
 {
 	static Timer m_timer;
 	
-	static DigitalInput m_crateLeft;
-	static DigitalInput m_crateRight;
+//	static DigitalInput m_crateLeft;
+//	static DigitalInput m_crateRight;
+	
 	static DigitalInput m_gripper;
 	static DigitalInput m_pistonRetract_L;
 	static DigitalInput m_pistonExtend_L;
@@ -47,14 +38,25 @@ public class StateMachine
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
 	public static final float WAIT_FOR_RC_TIMEOUT = 15.f;
 
-	// 0b |  CL |  CR |  GS |  LE |	 LR	|  RE |	 RR	|
+	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
 	// 0b |     |     |     |   8 |     |   2 |     |
-	public static final int PISTON_EXTENDED = 10;
+	public static final int PISTON_EXTENDED = 10;		// goes to state: open gripper
 	
-	public static final int READY_FOR_RC = 99;	// piston retracted
-	public static final int RC_FOUND = 99;	// piston still retracted AND gripper switch
-	public static final int READY_TO_LIFT = 99;	// piston extended AND trash can is in
-	public static final int CRATE_FOUND = 99;
+	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
+	// 0b |     |     |     |     |   4 |     |   1 |
+	public static final int READY_FOR_RC = 5;			// goes to state: ready for rc
+	
+	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
+	// 0b |     |     |  16 |     |   4 |     |   1 |
+	public static final int RC_FOUND = 21;				// goes to state: close gripper
+	
+	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
+	// 0b |     |     |  16 |   8 |     |   2 |     |
+	public static final int READY_TO_LIFT = 26;			// goes to state: lift crate
+	
+	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
+	// 0b |  64 |  32 |  16 |   8 |     |   2 |     |
+	public static final int CRATE_FOUND = 122;			// goes to state: lift crate
 	
 	/*static float m_lastSensorStringPrint = 0.0f;
 	static boolean m_armCanMove = false;
@@ -68,8 +70,9 @@ public class StateMachine
 
 		try
 		{
-			m_crateLeft = TKOHardware.getSwitch(0);
-			m_crateRight = TKOHardware.getSwitch(1);
+//			m_crateLeft = TKOHardware.getSwitch(0);
+//			m_crateRight = TKOHardware.getSwitch(1);
+
 			m_gripper = TKOHardware.getSwitch(2);
 			m_pistonRetract_L = TKOHardware.getSwitch(3);
 			m_pistonExtend_L = TKOHardware.getSwitch(4);
@@ -104,6 +107,7 @@ public class StateMachine
 	{
 		id.state[0] = (m_crateLeft.get() == false);
 		id.state[1] = (m_crateRight.get() == false);
+		
 		id.state[2] = (m_gripper.get() == false);
 		id.state[3] = (m_pistonRetract_L.get() == false);
 		id.state[4] = (m_pistonExtend_L.get() == false);

@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
  * 
  * TODO Figure out why the talon initialization is sometimes slow...
+ * TODO Test TalonSafety
  * 
  * TODO SATURDAY REQUIREMENTS
 
@@ -67,12 +68,13 @@ public class MarkXII extends SampleRobot
 
 	public void robotInit()
 	{
-
+		System.out.println("-----WELCOME TO MARKXII 2015-----");
+		System.out.println("-----SYSTEM BOOT: " + Timer.getFPGATimestamp() + "-----");
 	}
 
 	public void disabled()
 	{
-
+		System.out.println("ROBOT DISABLED!");
 	}
 
 	public void autonomous()
@@ -89,7 +91,7 @@ public class MarkXII extends SampleRobot
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
 		TKOLift.getInstance().start();
-		//TKOTalonSafety.getInstance().start();
+		TKOTalonSafety.getInstance().start();
 
 		/*CANTalon motor = null;
 		try
@@ -121,8 +123,8 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			//TKOTalonSafety.getInstance().stop();
-			//TKOTalonSafety.getInstance().safetyCheckerThread.join();
+			TKOTalonSafety.getInstance().stop();
+			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();

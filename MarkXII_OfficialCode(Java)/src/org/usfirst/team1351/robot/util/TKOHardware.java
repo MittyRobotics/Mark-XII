@@ -139,9 +139,7 @@ public class TKOHardware
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
 			
 		if (analog[0] == null)
-			analog[0] = new AnalogInput(Definitions.CRATE_L_ID);
-		if (analog[1] == null)
-			analog[1] = new AnalogInput(Definitions.CRATE_R_ID);
+			analog[0] = new AnalogInput(Definitions.CRATE_SENSOR_ID);
 	}
 
 	public static synchronized void configDriveTalons(double p, double I, double d, ControlMode mode)
@@ -209,6 +207,8 @@ public class TKOHardware
 				}
 				liftTalons[i].enableBrakeMode(Definitions.LIFT_BRAKE_MODE[i]);
 				liftTalons[i].reverseOutput(Definitions.LIFT_REVERSE_OUTPUT_MODE[i]);
+				liftTalons[i].setExpiration(10000.);
+				liftTalons[i].setSafetyEnabled(false);
 			}
 		}
 	}
@@ -245,9 +245,8 @@ public class TKOHardware
 		if (newMode == target.getControlMode())
 			return;
 		
-		System.out.println("!!!! CHANGED TALON MODE !!!! " + target.getDeviceID());
 
-		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
+		//if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
 			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
 		
 		System.out.println(target.getP());
@@ -258,6 +257,8 @@ public class TKOHardware
 		target.setPID(newP, newI, newD);
 		target.enableControl();
 		talonModes[target.getDeviceID()] = newMode;
+		
+		System.out.println("!!!! CHANGED TALON MODE !!!! " + target.getDeviceID());
 	}
 
 	/**
@@ -353,6 +354,16 @@ public class TKOHardware
 			return analog[num];
 		else
 			throw new TKOException("Analog input " + (num) + "(array value) is null");
+	}
+	
+	public static double getCrateDistance() throws TKOException
+	{
+		return getAnalog(0).getVoltage() * Definitions.INCHES_PER_VOLT;
+	}
+	
+	public static boolean cratePresent() throws TKOException
+	{
+		return (getCrateDistance() < Definitions.CRATE_DISTANCE_THRESHOLD);
 	}
 	
 	public static synchronized Joystick getJoystick(int num) throws TKOException

@@ -9,6 +9,7 @@ import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * @author Vadim
@@ -42,7 +43,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	private double softBottom, softTop;
 	private int currentPIDSetpoint;
 
-	private static final int oneLevel = 100; // TODO tick increments or quantifiable units?
+	private static final int oneLevel = 5000; // TODO tick increments or quantifiable units?
 	private static final int minLevel = 0; // zero based
 	private static final int maxLevel = 3; // 4th crate
 
@@ -86,23 +87,27 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			currentPIDSetpoint = lmotor.getEncPosition();
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I,
 					Definitions.LIFT_D);
-
-			while (!TKOHardware.getLiftTop() && DriverStation.getInstance().isEnabled())
-			{
-				// System.out.println("HASNT REACHED TOP");
-				lmotor.set(Definitions.LIFT_CALIBRATION_POWER);
-			}
-			lmotor.set(0);
-			softTop = lmotor.getPosition();
+			TKOHardware.getLiftTalon().reverseOutput(true);
 
 			while (!TKOHardware.getLiftBottom() && DriverStation.getInstance().isEnabled())
 			{
 				// System.out.println("HASNT REACHED BOTTOM");
+				lmotor.set(Definitions.LIFT_CALIBRATION_POWER);
+			}
+			lmotor.set(0);
+			lmotor.setPosition(0);
+			softBottom = lmotor.getPosition();
+			Timer.delay(.1);
+
+			while (!TKOHardware.getLiftTop() && DriverStation.getInstance().isEnabled())
+			{
+				// System.out.println("HASNT REACHED TOP");
 				lmotor.set(-Definitions.LIFT_CALIBRATION_POWER);
 			}
 			lmotor.set(0);
-			softBottom = lmotor.getPosition();
+			softTop = lmotor.getPosition();
 
+			lmotor.setSafetyEnabled(false);
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
 			setStartPosition();
 			System.out.println("DONE CALIBRATING");
@@ -234,7 +239,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	private void init()
 	{
 		if (!calibrated)
-			calibrated = true;// TODO calibrate();
+			calibrated = calibrate();
 		if (level == -1) // TODO do we need to update level on enable/start?
 		{
 			level = calculateLevel(getEncoderPosition());
@@ -267,9 +272,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				// do we need to update level int first?
 				// System.out.println("LIFT THREAD RUNNING");
 				System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+				//System.out.println("Crate: " + TKOHardware.getCrateDistance());
 				validate();
-				// updateTarget();
-				completeManualJoystickControl();
+				updateTarget();
+				//completeManualJoystickControl();
 
 				synchronized (conveyorThread) // synchronized per the thread to make sure that we wait safely
 				{
@@ -285,7 +291,16 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public void setStartPosition()
 	{
-		goToLevel(minLevel);
+		try
+		{
+			currentPIDSetpoint = (int) TKOHardware.getLiftTalon().getPosition();
+		}
+		catch (TKOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		goToLevel(2);
 		// TODO reset to start position?
 	}
 
@@ -352,8 +367,14 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
+			{
+				//TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.Position);
 				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, Definitions.LIFT_P,
 						Definitions.LIFT_I, Definitions.LIFT_D);
+				TKOHardware.getLiftTalon().enableControl();
+				System.out.println("!!!!CHANGED LIFT TALON MODE");
+			}
+			
 
 			if (currentAction == Action.ASCENDING) // while ascending and not above the target
 			{
@@ -371,7 +392,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					currentPIDSetpoint += Definitions.LIFT_PID_INCREMENTER;
 				}
 				else
+				{
+					currentPIDSetpoint = (int)getSoftTop();
 					throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MAX");
+				}
 			}
 			else if (currentAction == Action.DESCENDING)
 			{
@@ -389,9 +413,12 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					currentPIDSetpoint -= Definitions.LIFT_PID_INCREMENTER;
 				}
 				else
-					throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MIN");
+				{
+					currentPIDSetpoint = (int)getSoftBottom();
+					//throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MIN");
+				}
 			}
-			// TKOHardware.getLiftTalon().set(currentPIDSetpoint);
+			TKOHardware.getLiftTalon().set(currentPIDSetpoint);
 			System.out.println("Lift talon set to: " + currentPIDSetpoint);
 			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
 		}

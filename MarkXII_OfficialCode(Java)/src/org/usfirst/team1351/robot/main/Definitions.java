@@ -20,12 +20,12 @@ public class Definitions
 	
 	// TODO replace BS values
 	public static final int NUM_PISTONS = 3; // number of piston, also is number of solenoids
-	public static final int GRIPPER_A = 0; // gripper piston
-	public static final int GRIPPER_B = 1;
+	public static final int GRIPPER_A = 6; // gripper piston
+	public static final int GRIPPER_B = 7;
 	public static final int SHIFTER_A = 2; // drive train shifting piston
 	public static final int SHIFTER_B = 3;
-	public static final int WHEELIE_A = 4; // piston for left side of wheelie bar
-	public static final int WHEELIE_B = 5;
+	public static final int WHEELIE_A = 0; // piston for left side of wheelie bar
+	public static final int WHEELIE_B = 1;
 
 	public static final int CRATE_SENSOR_ID = 3;
 	
@@ -49,6 +49,7 @@ public class Definitions
 	public static final boolean[] LIFT_BRAKE_MODE =
 	{ false, false };
 
+	public static final int LIFT_GRIPPER_SWITCH = 2;
 	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 1;
 	public static final int LIFT_TOP_OPTICAL_SWITCH = 0;
 	public static final double LIFT_PID_INCREMENTER = 100.;
@@ -57,11 +58,11 @@ public class Definitions
 	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
 
-	public static final double LIFT_P = 5.;
+	public static final double LIFT_P = 2.5;
 	public static final double LIFT_I = 0.01;
 	public static final double LIFT_D = 0;
 
-	public static final double LIFT_CALIBRATION_POWER = .3;
+	public static final double LIFT_CALIBRATION_POWER = .4;
 
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final CANTalon.FeedbackDevice DRIVE_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;

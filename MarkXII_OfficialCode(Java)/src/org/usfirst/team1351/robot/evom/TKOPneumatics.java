@@ -35,7 +35,16 @@ public class TKOPneumatics implements Runnable
 
 	protected TKOPneumatics()
 	{
-
+		try
+		{
+			TKOHardware.getCompressor().start();
+			// TODO check that this is kReverse in all branches
+			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public static synchronized TKOPneumatics getInstance()
@@ -62,17 +71,7 @@ public class TKOPneumatics implements Runnable
 		}
 		if (!pneuThread.isThreadRunning())
 			pneuThread.setThreadRunning(true);
-		try
-		{
-			TKOHardware.getCompressor().start();
-			// TODO check that this is kReverse in all branches
-			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
+		
 		System.out.println("Started pneumatics task");
 	}
 

@@ -4,7 +4,8 @@ public enum Action
 {
 	DONE(0),
 	ASCENDING(1),
-	DESCENDING(2);
+	DESCENDING(2),
+	THINKING(3);
 	
 	private int value;
 	

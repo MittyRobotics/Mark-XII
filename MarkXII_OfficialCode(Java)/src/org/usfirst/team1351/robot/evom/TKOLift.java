@@ -48,7 +48,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		return m_Instance;
 	}
 
-	private TKOThread conveyorThread = null;
+	public TKOThread conveyorThread = null;
 	private static TKOLift m_Instance = null;
 
 	private int level;
@@ -59,7 +59,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final int oneLevel = 4750; // TODO tick increments or quantifiable units?
+	public static final int oneLevel = 4750;
 	public static final int minLevel = 0; // zero based
 	public static final int maxLevel = 3; // 4th crate
 	public static final int startLevel = 0;
@@ -213,13 +213,27 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public void goDown()
 	{
 		if (currentAction == Action.DONE)
+		{
+			if (level == minLevel)
+			{
+				goToTrashcanPickup(); //TODO THIS IS PROBABLY A REALLY BAD IDEA
+				return;
+			}
 			goDown(1);
+		}
 	}
 
 	public void goDown(int n)
 	{
 		if (currentAction == Action.DONE)
+		{
+			if (level == minLevel)
+			{
+				goToTrashcanPickup(); //TODO THIS IS PROBABLY A REALLY BAD IDEA
+				return;
+			}
 			goToLevel(this.level - n);
+		}
 	}
 
 	public void goToFullPosition()
@@ -338,7 +352,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public void goToTrashcanPickup()
 	{
-		if (currentAction == Action.DONE) // TODO bad idea?
+		if (currentAction == Action.DONE)
 		{
 			operation = Operation.CUSTOM_POSITION;
 			customPositionTarget = trashcanPickupPosition;
@@ -347,8 +361,15 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public void goUp()
 	{
-		if (currentAction == Action.DONE) // TODO bad idea?
+		if (currentAction == Action.DONE)
+		{
+			if (level == maxLevel)
+			{
+				goToFullPosition(); //TODO THIS IS PROBABLY A REALLY BAD IDEA
+				return;
+			}
 			goUp(1);
+		}
 	}
 
 	public void goUp(int n)
@@ -363,7 +384,14 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		 * possible (3 - to level 1) (will levels be 1 or 0 based... :( )
 		 */
 		if (currentAction == Action.DONE)
+		{
+			if (level == maxLevel)
+			{
+				goToTrashcanPickup(); //TODO THIS IS PROBABLY A REALLY BAD IDEA
+				return;
+			}
 			goToLevel(this.level + n);
+		}
 	}
 
 	private void init()

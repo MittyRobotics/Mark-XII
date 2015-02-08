@@ -48,6 +48,8 @@ public class Definitions
 	{ true, false };
 	public static final boolean[] LIFT_BRAKE_MODE =
 	{ false, false };
+	
+	public static final int LIFT_CONTROL_STICK = 3;
 
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 1;
@@ -58,11 +60,11 @@ public class Definitions
 	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
 
-	public static final double LIFT_P = 2.5;
-	public static final double LIFT_I = 0.01;
+	public static final double LIFT_P = 2.0;
+	public static final double LIFT_I = 0.02;
 	public static final double LIFT_D = 0;
 
-	public static final double LIFT_CALIBRATION_POWER = .4;
+	public static final double LIFT_CALIBRATION_POWER = .5;
 
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final CANTalon.FeedbackDevice DRIVE_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;

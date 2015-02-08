@@ -6,7 +6,6 @@ package org.usfirst.team1351.robot.main;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
 
 public class Definitions

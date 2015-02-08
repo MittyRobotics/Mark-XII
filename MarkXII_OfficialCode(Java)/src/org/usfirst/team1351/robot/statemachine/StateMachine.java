@@ -44,7 +44,7 @@ public class StateMachine
 	
 	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
 	// 0b |     |     |     |     |   4 |     |   1 |
-	public static final int READY_FOR_RC = 5;			// goes to state: ready for rc
+	public static final int PISTON_RETRACTED = 5;			// goes to state: ready for rc
 	
 	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
 	// 0b |     |     |  16 |     |   4 |     |   1 |

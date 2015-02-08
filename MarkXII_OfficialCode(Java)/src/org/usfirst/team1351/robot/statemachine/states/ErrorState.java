@@ -8,6 +8,7 @@ public class ErrorState implements IStateFunction
 {
 	public StateEnum doState(InstanceData data)
 	{
+		System.out.println("ERROR STATE");
 		return StateEnum.STATE_ERR;
 	}
 }

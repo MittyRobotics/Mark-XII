@@ -8,7 +8,6 @@ import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKODataReporting;
-import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
@@ -90,8 +89,8 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
-		TKOLift.getInstance().start();
 		TKOTalonSafety.getInstance().start();
+		TKOLift.getInstance().start();
 
 		/*CANTalon motor = null;
 		try
@@ -109,8 +108,7 @@ public class MarkXII extends SampleRobot
 			//System.out.println("Velocity: " + motor.getVelocity());
 			/*try
 			{
-				System.out.println("Bot: " + TKOHardware.getLiftBottom());
-				System.out.println("Top: " + TKOHardware.getLiftTop());
+				System.out.println("Gripper: " + TKOHardware.getLiftGripper());
 			}
 			catch (TKOException e)
 			{
@@ -118,7 +116,7 @@ public class MarkXII extends SampleRobot
 				e.printStackTrace();
 			}*/
 			
-			Timer.delay(0.25); // wait for a motor update time
+			Timer.delay(0.1); // wait for a motor update time
 		}
 
 		try

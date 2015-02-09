@@ -130,6 +130,9 @@ public class TKOHardware
 
 		if (limitSwitches[1] == null)
 			limitSwitches[1] = new DigitalInput(Definitions.LIFT_TOP_OPTICAL_SWITCH);
+		
+		if (limitSwitches[2] == null)
+			limitSwitches[2] = new DigitalInput(Definitions.LIFT_GRIPPER_SWITCH);
 
 		if (compressor == null)
 			compressor = new Compressor(Definitions.PCM_ID);
@@ -345,6 +348,20 @@ public class TKOHardware
 			}
 		}
 	}
+	
+	public static synchronized DigitalInput getSwitch(int num) throws TKOException
+	{
+		if (num >= Definitions.NUM_SWITCHES)
+		{
+			throw new TKOException("Digital input requested out of bounds");
+		}
+		if (limitSwitches[num] != null)
+		{			
+			return limitSwitches[num];
+		}
+		else
+			throw new TKOException("Digital input " + (num) + "(array value) is null");
+	}
 
 	public static synchronized AnalogInput getAnalog(int num) throws TKOException
 	{
@@ -458,6 +475,13 @@ public class TKOHardware
 		if (talonModes[3] != CANTalon.ControlMode.Follower)
 			throw new TKOException("ERROR RIGHT DRIVE FOLLOWER TALON IS NOT UNITIALIZED; MODE IS UNSET!");
 		return driveTalons[2];
+	}
+	
+	public static synchronized boolean getLiftGripper() throws TKOException
+	{
+		if (limitSwitches[2] == null)
+			throw new TKOException("NULL BOTTOM LIMIT SWITCH");
+		return !limitSwitches[2].get();
 	}
 
 	/**

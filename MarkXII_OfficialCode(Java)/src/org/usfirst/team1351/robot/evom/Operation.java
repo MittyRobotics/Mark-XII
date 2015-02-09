@@ -1,15 +1,14 @@
 package org.usfirst.team1351.robot.evom;
 
-public enum Action
+public enum Operation
 {
-	DONE(0),
-	ASCENDING(1),
-	DESCENDING(2),
-	THINKING(3);
+	MANUAL_VBUS(0),
+	PID_CRATES(1),
+	CUSTOM_POSITION(2);
 	
 	private int value;
 	
-	Action (int val)
+	Operation (int val)
 	{
 		value = val;
 	}

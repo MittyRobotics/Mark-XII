@@ -346,6 +346,20 @@ public class TKOHardware
 			}
 		}
 	}
+	
+	public static synchronized DigitalInput getSwitch(int num) throws TKOException
+	{
+		if (num >= Definitions.NUM_SWITCHES)
+		{
+			throw new TKOException("Digital input requested out of bounds");
+		}
+		if (limitSwitches[num] != null)
+		{			
+			return limitSwitches[num];
+		}
+		else
+			throw new TKOException("Digital input " + (num) + "(array value) is null");
+	}
 
 	public static synchronized AnalogInput getAnalog(int num) throws TKOException
 	{

@@ -9,7 +9,6 @@ import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOGripper;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKODataReporting;
-import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -86,26 +85,9 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOGripper.getInstance().start();
 		TKODataReporting.getInstance().start();
-		
-		try
-		{
-			TKOHardware.getCompressor().start();
-		} catch (TKOException e1)
-		{
-			e1.printStackTrace();
-		}
-		
 		while (isOperatorControl() && isEnabled())
 		{
 			Timer.delay(0.25); // wait for a motor update time
-		}
-		
-		try
-		{
-			TKOHardware.getCompressor().stop();
-		} catch (TKOException e1)
-		{
-			e1.printStackTrace();
 		}
 
 		try

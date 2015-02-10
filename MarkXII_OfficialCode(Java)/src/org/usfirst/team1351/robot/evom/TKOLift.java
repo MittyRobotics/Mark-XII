@@ -13,23 +13,29 @@ import edu.wpi.first.wpilibj.Timer;
 
 /**
  * @author Vadim
- * @version 01/31/15
+ * @version 02/09/15
  * 
- *          TODO We may need to figure out how to shutdown properly TODO What happens if disabled while calibrating
- * 
+ *          TODO We may need to figure out how to shutdown properly 
+ *           
  *          BUGS
  * 
  *          TODO Cannot go up with fourth crate on the ground, needs to go up about half a level from that point
  * 
- *          TODO Sometimes need to press go up to go down
+ *          TODO Sometimes need to press go up to go down; sometimes pressing up or down does nothing
  * 
  *          TODO On lift start, calculateLevel sometimes doesnt work. Also fails after trashcan pickup, gets confused
  * 
  *          TODO From trashcan level - going to next level up, skips a level
  * 
  *          TODO Going down from level 3-2-0 skips a level
- * 
- *          TODO Gets stuck on thinking
+ *          
+ *          TODO What happens if pressing goDown on trashcan level? Same with goToFullPosition() and goUp() 
+ *          
+ *          TODO level variable needs to be reset when pressing goUp?
+ *          
+ *          TODO Test code with lift encoder unplugged; what happens?
+ *          
+ *          TODO Test validation, validate for above^?
  */
 
 public class TKOLift implements Runnable // implements Runnable is important to make this class support the Thread (run method)
@@ -223,7 +229,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			System.out.println("SHOULD BE GOING DOWN");
 			if (level == minLevel)
 			{
-				goToTrashcanPickup(); // TODO THIS IS PROBABLY A REALLY BAD IDEA
+				goToTrashcanPickup();
 				return;
 			}
 			System.out.println("GOING DOWN A LEVEL");
@@ -237,7 +243,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		{
 			if (level == minLevel)
 			{
-				goToTrashcanPickup(); // TODO THIS IS PROBABLY A REALLY BAD IDEA
+				goToTrashcanPickup();
 				return;
 			}
 			goToLevel(this.level - n);
@@ -400,7 +406,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		{
 			if (level == maxLevel)
 			{
-				goToFullPosition(); // TODO THIS IS PROBABLY A REALLY BAD IDEA
+				goToFullPosition();
 				return;
 			}
 			goUp(1);
@@ -608,7 +614,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public synchronized void updateCrateLevelTarget()
 	{
 		int target = oneLevel * level + bottomOffset;
-		goToPosition(target, currentAction); // TODO is it bad we don't check currentAction?
+		goToPosition(target, currentAction); // TODO is it bad we don't check currentAction here?
 	}
 
 	public synchronized void updateCustomPositionTarget()
@@ -653,7 +659,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		goToPosition(customPositionTarget, currentAction);
 	}
 
-	private void validate() throws TKOException
+	private void validate() throws TKOException //TODO Test
 	{
 		// TKOHardware.getLiftTalon().enableLimitSwitch(true, true);
 		// TKOHardware.getLiftTalon().setForwardSoftLimit(forwardLimit);

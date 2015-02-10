@@ -59,11 +59,11 @@ public class Definitions
 	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
 
-	public static final double LIFT_P = 2.0;
-	public static final double LIFT_I = 0.02;
+	public static final double LIFT_P = 3.0;
+	public static final double LIFT_I = 0.0;
 	public static final double LIFT_D = 0;
 
-	public static final double LIFT_CALIBRATION_POWER = .5;
+	public static final double LIFT_CALIBRATION_POWER = .4;
 
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final CANTalon.FeedbackDevice DRIVE_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;

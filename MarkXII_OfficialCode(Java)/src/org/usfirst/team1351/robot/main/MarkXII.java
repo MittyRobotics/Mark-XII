@@ -89,7 +89,7 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
-		TKOTalonSafety.getInstance().start();
+		//TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 
 		/*CANTalon motor = null;
@@ -121,8 +121,8 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			TKOTalonSafety.getInstance().stop();
-			TKOTalonSafety.getInstance().safetyCheckerThread.join();
+			//TKOTalonSafety.getInstance().stop();
+			//TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();

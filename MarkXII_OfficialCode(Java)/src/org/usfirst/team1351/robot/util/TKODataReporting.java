@@ -149,6 +149,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	public void record()
 	{
 		if (collectingDefaultData)
@@ -206,6 +207,7 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void collectDriveData()
 	{
 		TKOLogger inst = TKOLogger.getInstance();

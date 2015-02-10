@@ -226,13 +226,13 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		if (currentAction == Action.DONE)
 		{
-			System.out.println("SHOULD BE GOING DOWN");
+			//System.out.println("SHOULD BE GOING DOWN");
 			if (level == minLevel)
 			{
 				goToTrashcanPickup();
 				return;
 			}
-			System.out.println("GOING DOWN A LEVEL");
+			//System.out.println("GOING DOWN A LEVEL");
 			goDown(1);
 		}
 	}
@@ -355,8 +355,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						_currentAction = Action.DONE;
 						// done ascending
 					}
-					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
-					System.out.println("TarPos: " + position);
+					//System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
+					//System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
 				}
 				else if (currentPIDSetpoint >= getSoftBottom())
@@ -619,7 +619,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public synchronized void updateCustomPositionTarget()
 	{
-		System.out.println("UPDATE CUSTOM POSITION");
+		//System.out.println("UPDATE CUSTOM POSITION");
 		currentAction = Action.THINKING;
 
 		if (customPositionTarget < softBottom)
@@ -640,7 +640,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				&& customPositionTarget >= (getEncoderPosition() - encoderThreshold))
 		{
 			currentAction = Action.DONE;
-			System.out.println("CLOSE ENOUGH TO THE TARGET");
+			//System.out.println("CLOSE ENOUGH TO THE TARGET");
 			return;
 		}
 
@@ -653,9 +653,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			System.out.println("Done? Though this should not really be the case?");
 			currentAction = Action.DONE;
 		}
-		System.out.println("CUSTOM POSITION: " + customPositionTarget);
-		System.out.println("ACTION: " + currentAction);
-		System.out.println("ENC: " + getEncoderPosition());
+//		System.out.println("CUSTOM POSITION: " + customPositionTarget);
+//		System.out.println("ACTION: " + currentAction);
+//		System.out.println("ENC: " + getEncoderPosition());
 		goToPosition(customPositionTarget, currentAction);
 	}
 

@@ -65,18 +65,19 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final int oneLevel = 4850; // TODO 4750 before
-	public static final int minLevel = 0; // zero based
-	public static final int maxLevel = 3; // 4th crate
-	public static final int startLevel = 0;
-	public static final int bottomOffset = 4515;
-	public static final int softBottomOffset = 0; // safety offset
-	public static final int softTopOffset = 100; // safety offset
-	public static final int encoderThreshold = 100;
+	public static final short oneLevel = 4850; // TODO 4750 before
+	public static final byte minLevel = 0; // zero based
+	public static final byte maxLevel = 3; // 4th crate
+	public static final byte startLevel = 0;
+	public static final short bottomOffset = 4515;
+	public static final short softBottomOffset = 0; // safety offset
+	public static final short softTopOffset = 100; // safety offset
+	public static final short encoderThreshold = 100;
+	public static final short liftThreadSleep = 50; //used to be 20
 	
-	public static final int trashcanPickupPosition = softBottomOffset;
-	public static final int fullOfCratesPosition = (int) (3.6 * oneLevel + bottomOffset);
-	public static final int dropOffsetDistance = (int) (0.5 * oneLevel);
+	public static final short trashcanPickupPosition = softBottomOffset;
+	public static final short fullOfCratesPosition = (short) (3.6 * oneLevel + bottomOffset);
+	public static final short dropOffsetDistance = (short) (0.5 * oneLevel);
 
 	private boolean manualEnabled = true;
 
@@ -496,6 +497,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						if (!TKOHardware.cratePresent())
 							goToDropCrates();
 					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(6))
+					{
+						operation = Operation.MANUAL_VBUS;
+					}
 				}
 
 				if (!calibrated)
@@ -513,7 +518,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 				synchronized (conveyorThread) // synchronized per the thread to make sure that we wait safely
 				{
-					conveyorThread.wait(20); // the wait time that the thread sleeps, in milliseconds
+					conveyorThread.wait(liftThreadSleep); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		}

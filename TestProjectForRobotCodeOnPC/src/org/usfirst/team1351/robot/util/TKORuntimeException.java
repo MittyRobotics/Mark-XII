@@ -2,14 +2,14 @@ package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.logger.TKOLogger;
 
-public class TKOException extends Exception
+public class TKORuntimeException extends RuntimeException
 {
 	private static final long serialVersionUID = -2332222109657661651L;
 	
-	public TKOException(String message)
+	public TKORuntimeException(String message)
 	{
 		super(message);
-		System.out.println("EXCEPTION: " + message);
+		System.out.println("RUNTIME EXCEPTION: " + message);
 		recordMessage(message);
 	}
 

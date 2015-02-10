@@ -1,6 +1,7 @@
 package org.usfirst.team1351.robot.statemachine.states;
 
 import org.usfirst.team1351.robot.evom.TKOLift;
+import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.statemachine.IStateFunction;
 import org.usfirst.team1351.robot.statemachine.InstanceData;
 import org.usfirst.team1351.robot.statemachine.StateEnum;
@@ -16,6 +17,8 @@ public class DecideAction implements IStateFunction
 	public StateEnum doState(InstanceData data)
 	{
 		System.out.println("Entering DecideAction state");
+		
+		TKOPneumatics.getInstance().notManual();
 		
 		int cur = StateMachine.createIntFromBoolArray(data);
 

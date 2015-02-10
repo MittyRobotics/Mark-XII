@@ -1,6 +1,9 @@
 Driver Controls:
 STICK 1
+- Button 4: shift forward
+- Button 5: shift reverse
 STICK 2
+- 
 
 Operator Controls:
 STICK 3
@@ -9,6 +12,10 @@ STICK 3
 STICK 4
 - Button 2: lower wheelie bar
 - Button 3: raise wheelie bar
+- Button 4: lower lift one level
+- Button 5: raise lift one level
+- Button 8: go to RC pickup position
+- Button 9: go to highest position
 
 Piston 0: drive train shift
 Piston 1: gripper

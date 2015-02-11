@@ -6,6 +6,8 @@ package org.usfirst.team1351.robot.statemachine;
 import org.usfirst.team1351.robot.statemachine.states.*;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOThread;
+import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -13,21 +15,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
-public class StateMachine
-{
+public class StateMachine implements Runnable
+{	
+	// TODO add analog inputs but make them act as digital inputs
 	static Timer m_timer;
-	
-//	static DigitalInput m_crateLeft;
-//	static DigitalInput m_crateRight;
-	
-	static DigitalInput m_gripper;
-	static DigitalInput m_pistonRetract_L;
-	static DigitalInput m_pistonExtend_L;
-	static DigitalInput m_pistonRetract_R;
-	static DigitalInput m_pistonExtend_R;
-	
+	static DigitalInput m_gripper, m_pistonRetract_L, m_pistonExtend_L, m_pistonRetract_R, m_pistonExtend_R;
 	static Joystick m_evomStick;
-
 	static DoubleSolenoid m_gripperPiston;
 
 	private InstanceData data = new InstanceData();
@@ -36,43 +29,33 @@ public class StateMachine
 
 	public static final float PISTON_RETRACT_TIMEOUT = 15.f;
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
-	public static final float WAIT_FOR_RC_TIMEOUT = 15.f;
 
-	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	// 0b |     |     |     |   8 |     |   2 |     |
+	// refer to other states for detailed bit maps
 	public static final int PISTON_EXTENDED = 10;		// goes to state: open gripper
-	
-	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	// 0b |     |     |     |     |   4 |     |   1 |
-	public static final int PISTON_RETRACTED = 5;			// goes to state: ready for rc
-	
-	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	// 0b |     |     |  16 |     |   4 |     |   1 |
+	public static final int PISTON_RETRACTED = 5;		// goes to state: ready for rc
 	public static final int RC_FOUND = 21;				// goes to state: close gripper
-	
-	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	// 0b |     |     |  16 |   8 |     |   2 |     |
 	public static final int READY_TO_LIFT = 26;			// goes to state: lift crate
-	
-	// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	// 0b |  64 |  32 |  16 |   8 |     |   2 |     |
 	public static final int CRATE_FOUND = 122;			// goes to state: lift crate
 	
-	/*static float m_lastSensorStringPrint = 0.0f;
-	static boolean m_armCanMove = false;
-	static boolean m_hasSetPneumatics = false;
-	static boolean m_forceFire = false;
-	static boolean m_autonFired = false;*/
+	public TKOThread stateThread = null;
+	private static StateMachine m_Instance = null;
 	
-	public StateMachine()	// used to take a Joystick as a parameter
+	public static synchronized StateMachine getInstance()
+	{
+		if (m_Instance == null)
+		{
+			m_Instance = new StateMachine();
+			m_Instance.stateThread = new TKOThread(m_Instance);
+		}
+		return m_Instance;
+	}
+	
+	protected StateMachine()
 	{
 		m_timer = new Timer();
 
 		try
 		{
-//			m_crateLeft = TKOHardware.getSwitch(0);
-//			m_crateRight = TKOHardware.getSwitch(1);
-
 			m_gripper = TKOHardware.getSwitch(2);
 			m_pistonRetract_L = TKOHardware.getSwitch(3);
 			m_pistonExtend_L = TKOHardware.getSwitch(4);
@@ -105,9 +88,8 @@ public class StateMachine
 
 	public static int getSensorData(InstanceData id)
 	{
-		id.state[0] = (m_crateLeft.get() == false);
-		id.state[1] = (m_crateRight.get() == false);
-		
+		id.state[0] = false; //(m_crateLeft.get() == false);
+		id.state[1] = false; //(m_crateRight.get() == false);		
 		id.state[2] = (m_gripper.get() == false);
 		id.state[3] = (m_pistonRetract_L.get() == false);
 		id.state[4] = (m_pistonExtend_L.get() == false);
@@ -149,5 +131,53 @@ public class StateMachine
 	{
 		return states[curState.getValue()].doState(data);
 	}
+	
+	public static synchronized boolean getGripperSwitch() throws TKOException
+	{
+		if (m_gripper == null)
+			throw new TKOException("NULL GRIPPER SWITCH");
+		return !m_gripper.get();
+	}
 
+	public synchronized void start()
+	{
+		System.out.println("Starting state machine task");
+		if (!stateThread.isAlive() && m_Instance != null)
+		{
+			stateThread = new TKOThread(m_Instance);
+//			stateThread.setPriority(Definitions.getPriority("gripper"));
+		}
+		if (!stateThread.isThreadRunning())
+			stateThread.setThreadRunning(true);
+		
+		System.out.println("Started state machine task");
+	}
+
+
+	public synchronized void stop()
+	{
+		System.out.println("Stopping state machine task");
+		if (stateThread.isThreadRunning())
+			stateThread.setThreadRunning(false);
+		System.out.println("Stopped state machine task");
+	}
+	
+	public void run()
+	{
+		try
+		{
+			while (stateThread.isThreadRunning())
+			{
+				// what goes here?
+				
+				synchronized (stateThread)
+				{
+					stateThread.wait(10);	// how long is this wait?
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

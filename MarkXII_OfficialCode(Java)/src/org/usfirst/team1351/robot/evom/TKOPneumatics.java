@@ -11,6 +11,7 @@ package org.usfirst.team1351.robot.evom;
  * You'll notice that Eclipse will neatly collapse these lines. Expand it by clicking the plus on the left.
  */
 import org.usfirst.team1351.robot.main.Definitions;
+import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
@@ -109,10 +110,17 @@ public class TKOPneumatics implements Runnable
 	 * TKOException. Joystick input is simple here: one button extends the piston, the other retracts it.
 	 * 
 	 */
+	
 	public synchronized void pistonControl()
 	{
 		try
 		{
+			if (StateMachine.getGripperSwitch())
+			{
+				System.out.println("Gripper switch activated, closing gripper");
+				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
+			}
+			
 			if (manualEnabled)
 			{
 				if (TKOHardware.getJoystick(2).getRawButton(2))
@@ -147,7 +155,7 @@ public class TKOPneumatics implements Runnable
 		{
 			while (pneuThread.isThreadRunning())
 			{
-				pistonControl();	
+				pistonControl();
 
 				synchronized (pneuThread)
 				{

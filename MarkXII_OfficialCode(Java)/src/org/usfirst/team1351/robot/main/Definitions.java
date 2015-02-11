@@ -53,7 +53,7 @@ public class Definitions
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 1;
 	public static final int LIFT_TOP_OPTICAL_SWITCH = 0;
-	public static final double LIFT_PID_INCREMENTER = 100.;
+	public static final double LIFT_PID_INCREMENTER = 10.;
 
 	public static final double DRIVE_P = 4.;
 	public static final double DRIVE_I = 0.01;

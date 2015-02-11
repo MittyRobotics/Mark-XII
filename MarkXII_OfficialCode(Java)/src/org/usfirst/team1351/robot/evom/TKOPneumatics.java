@@ -32,6 +32,7 @@ public class TKOPneumatics implements Runnable
 	 */
 	public TKOThread pneuThread = null;
 	private static TKOPneumatics m_Instance = null;
+	private boolean manualEnabled = true;
 
 	protected TKOPneumatics()
 	{
@@ -92,6 +93,16 @@ public class TKOPneumatics implements Runnable
 		}
 		System.out.println("Stopped pneumatics task");
 	}
+	
+	public void setManual()
+	{
+		manualEnabled = true;
+	}
+	
+	public void notManual()
+	{
+		manualEnabled = false;
+	}
 
 	/**
 	 * The pistonControl() method runs continuously in the run() method. The try-catch loop exists since getPiston(i) can throw a
@@ -102,13 +113,16 @@ public class TKOPneumatics implements Runnable
 	{
 		try
 		{
-			if (TKOHardware.getJoystick(2).getRawButton(2))
+			if (manualEnabled)
 			{
-				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-			}
-			if (TKOHardware.getJoystick(2).getRawButton(3))
-			{
-				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
+				if (TKOHardware.getJoystick(2).getRawButton(2))
+				{
+					TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
+				}
+				if (TKOHardware.getJoystick(2).getRawButton(3))
+				{
+					TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
+				}
 			}
 			if (TKOHardware.getJoystick(3).getRawButton(2))
 			{
@@ -133,7 +147,7 @@ public class TKOPneumatics implements Runnable
 		{
 			while (pneuThread.isThreadRunning())
 			{
-				pistonControl();
+				pistonControl();	
 
 				synchronized (pneuThread)
 				{

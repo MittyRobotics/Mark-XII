@@ -41,7 +41,7 @@ public class TKOPneumatics implements Runnable
 			TKOHardware.getCompressor().start();
 			// TODO check that this is kReverse in all branches
 			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
 		} catch (Exception e)
 		{
 			e.printStackTrace();

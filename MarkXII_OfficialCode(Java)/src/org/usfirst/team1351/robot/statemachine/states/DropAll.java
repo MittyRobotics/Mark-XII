@@ -50,7 +50,7 @@ public class DropAll implements IStateFunction
 			{
 				double pos = TKOLift.getInstance().getEncoderPosition();
 				TKOLift.getInstance().updateCustomPositionTarget();
-				TKOLift.getInstance().goToPosition(position);
+				TKOLift.getInstance().goToPosition((int) pos);
 				Timer.delay(1.);
 				lvl--;
 				//pos -= TKOLift.getInstance().oneLevel;

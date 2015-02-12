@@ -451,6 +451,11 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		return false;
 	}
 
+        public void PIDTune()
+        {
+
+        }
+
 	/**
 	 * The run method is what the thread actually calls once. The continual running of the thread loop is done by the while loop, controlled
 	 * by a safe boolean inside the TKOThread object. The wait is synchronized to make sure the thread safely sleeps.

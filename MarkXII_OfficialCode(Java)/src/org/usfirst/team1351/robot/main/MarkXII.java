@@ -7,6 +7,7 @@ import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
+import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
@@ -36,7 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
  * 
  * TODO Figure out why the talon initialization is sometimes slow...
- * TODO Test TalonSafety
+ * TODO Test TalonSafety !!!!!!!!!!!!!!!!!!!!
  * 
  * TODO SATURDAY REQUIREMENTS
 
@@ -92,29 +93,9 @@ public class MarkXII extends SampleRobot
 		//TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 
-		/*CANTalon motor = null;
-		try
-		{
-			motor = TKOHardware.getLeftDrive();
-		}
-		catch (TKOException e1)
-		{
-			e1.printStackTrace();
-		}*/
 
 		while (isOperatorControl() && isEnabled())
-		{
-			//System.out.println("Distance: " + motor.getPosition());
-			//System.out.println("Velocity: " + motor.getVelocity());
-			/*try
-			{
-				System.out.println("Gripper: " + TKOHardware.getLiftGripper());
-			}
-			catch (TKOException e)
-			{
-				e.printStackTrace();
-			}*/
-			
+		{			
 			Timer.delay(0.1); // wait for a motor update time
 		}
 
@@ -145,45 +126,38 @@ public class MarkXII extends SampleRobot
 	public void test()
 	{
 		System.out.println("Enabling test!");
-		AnalogInput test = new AnalogInput(3);
+		TKOHardware.initObjects();
+		TKOLogger.getInstance().start();
+		TKODrive.getInstance().start();
+		TKOPneumatics.getInstance().start();
+		TKODataReporting.getInstance().start();
+		TKOLift.getInstance().start();
+		System.out.println("STARTING STATE MACHINE");
+		StateMachine.getInstance().start();
+
 		while (isTest() && isEnabled())
 		{
-			System.out.println("V: " + test.getVoltage());
-			SmartDashboard.putNumber("A Voltage", test.getVoltage());
-		}
-		/*TKOHardware.initObjects();
-		TKOLogger.getInstance().start();
-		TKODataReporting.getInstance().start();
-
-		try
-		{
-			TKOHardware.getLeftDrive().setPosition(0);
-			while (isTest() && isEnabled())
-			{
-				TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, 0.5, 0.01, 0.);
-				TKOHardware.getLeftDrive().set(5000);
-				System.out.println("Current Pos: " + TKOHardware.getLeftDrive().getEncPosition());
-				System.out.println("Error: " + TKOHardware.getLeftDrive().getClosedLoopError());
-			}
-
-		}
-		catch (TKOException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Timer.delay(0.1); // wait for a motor update time
 		}
 
 		try
 		{
+			StateMachine.getInstance().stop();
+			StateMachine.getInstance().stateThread.join();
+			TKOLift.getInstance().stop();
+			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
+			TKOPneumatics.getInstance().stop();
+			TKOPneumatics.getInstance().pneuThread.join();
+			TKODrive.getInstance().stop();
+			TKODrive.getInstance().driveThread.join();
 			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
-			TKOHardware.destroyObjects();
 		}
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}*/
+		}
 	}
 }

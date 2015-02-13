@@ -82,7 +82,7 @@ public class Definitions
 	public static final double MAX_CURRENT_RIGHT = 10.;
 
 	public static final double[] TALON_CURRENT_TIMEOUT =
-	{ 100, 100, 100, 100, 25, 25 };
+	{ 100, 100, 100, 100, 50, 50 };
 	public static final long[] CURRENT_TIMEOUT_LENGTH =
 	{ 1000L, 1000L, 1000L, 1000L, 1000L, 1000L };
 

@@ -57,10 +57,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public TKOThread conveyorThread = null;
 	private static TKOLift m_Instance = null;
 
-	private int level;
-	private Action currentAction;
-	private boolean calibrated;
-	private double softBottom, softTop;
+	private int level; //changes the level	
+	private Action currentAction; //figures out if you are ascending or descending
+	private boolean calibrated; //calibrates
+	private double softBottom, softTop; //Soft bottom and top set to ensure no damage is done to the robot through running ti
 	private int currentPIDSetpoint, customPositionTarget;
 
 	private Operation operation = Operation.PID_CRATES;
@@ -77,7 +77,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final short liftThreadSleep = 20; // used to be 20
 
 	public static final short trashcanPickupPosition = softBottomOffset + 101;
-	public static final short fullOfCratesPosition = (short) (3.4 * oneLevel + bottomOffset);
+	public static final short fullOfCratesPosition = (short) (3.625 * oneLevel + bottomOffset);
 	public static final short dropOffsetDistance = (short) (0.75 * oneLevel);
 
 	private boolean manualEnabled = true;
@@ -349,11 +349,13 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						currentAction = Action.DONE;
 						// done ascending
 					}
+					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
+					System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
 				}
 				else if (currentPIDSetpoint <= getSoftTop())
 				{
-					currentPIDSetpoint += (Definitions.LIFT_PID_INCREMENTER * liftThreadSleep);
+					currentPIDSetpoint += (Definitions.LIFT_PID_INCREMENTER);
 				}
 				else
 				{
@@ -372,13 +374,13 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						currentAction = Action.DONE;
 						// done ascending
 					}
-					// System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
-					// System.out.println("TarPos: " + position);
+					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
+					System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
 				}
 				else if (currentPIDSetpoint >= getSoftBottom())
 				{
-					currentPIDSetpoint -= (Definitions.LIFT_PID_INCREMENTER * liftThreadSleep);
+					currentPIDSetpoint -= (Definitions.LIFT_PID_INCREMENTER);
 				}
 				else
 				{
@@ -643,9 +645,18 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private synchronized void printMessages()
 	{
-		System.out.println("CurAct: " + currentAction);
-		System.out.println("CurrentOp: " + operation);
-		System.out.println("Level: " + level);
+//		System.out.println("CurAct: " + currentAction);
+//		System.out.println("CurrentOp: " + operation);
+//		System.out.println("Level: " + level);
+		try
+		{
+			System.out.println("CRATE: " + TKOHardware.getCrateDistance());
+			System.out.println("CRATE TF: " + TKOHardware.cratePresent());
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
 
 		// try {
@@ -726,7 +737,6 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public synchronized void updateCrateLevelTarget()
 	{
 		int target = oneLevel * level + bottomOffset;
-		System.out.println(target);
 		goToPosition(target); // TODO is it bad we don't check currentAction here?
 	}
 
@@ -783,7 +793,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// throw new TKORuntimeException("CRITICAL ERROR LEVEL OUT OF BOUNDS HOW IS THIS EVEN POSSIBLE?");
 		}
 		int error = TKOHardware.getLiftTalon().getClosedLoopError();
-		if (error > ((Definitions.LIFT_PID_INCREMENTER * liftThreadSleep) + encoderThreshold))
+		if (error > ((Definitions.LIFT_PID_INCREMENTER) + encoderThreshold))
 		{
 			System.out.println("PROBLEM WHY IS OUR CLOSED LOOP ERROR LARGER THAN IT SHOULD BE: " + error);
 			// throw new TKORuntimeException("PROBLEM WHY IS OUR CLOSED LOOP ERROR LARGER THAN IT SHOULD BE: " + error);

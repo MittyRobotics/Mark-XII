@@ -26,7 +26,7 @@ public class Definitions
 	public static final int WHEELIE_A = 0; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 1;
 
-	public static final int CRATE_SENSOR_ID = 0;
+	public static final int CRATE_SENSOR_ID = 3;
 	
     public static final int NUM_SWITCHES = 7; // 5 for state machine + 2 for gripper top/bottom
 	public static final int NUM_ANALOG = 2; // crate left and crate right
@@ -53,14 +53,14 @@ public class Definitions
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 0;
 	public static final int LIFT_TOP_OPTICAL_SWITCH = 1;
-	public static final double LIFT_PID_INCREMENTER = 10.;
+	public static final double LIFT_PID_INCREMENTER = 75.;
 
 	public static final double DRIVE_P = 4.;
 	public static final double DRIVE_I = 0.01;
 	public static final double DRIVE_D = 0;
 
-	public static final double LIFT_P = 3.0;
-	public static final double LIFT_I = 0.0;
+	public static final double LIFT_P = 3.;
+	public static final double LIFT_I = 0.01;
 	public static final double LIFT_D = 0;
 
 	public static final double LIFT_CALIBRATION_POWER = .4;
@@ -89,8 +89,8 @@ public class Definitions
 	public static final int DEF_DATA_REPORTING_THREAD_WAIT = 250;
 	public static final int PCM_ID = 0;
 
-	public static final double INCHES_PER_VOLT = 10.;
-	public static final double CRATE_DISTANCE_THRESHOLD = 4.;
+	public static final double INCHES_PER_VOLT = 1.;
+	public static final double CRATE_DISTANCE_THRESHOLD = 5.1;
 
 	public static ArrayList<String> threadNames = new ArrayList<String>();
 	public static HashMap<String, Integer> threadPriorities;

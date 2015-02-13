@@ -12,6 +12,7 @@ package org.usfirst.team1351.robot.evom;
  */
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
+import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
@@ -73,6 +74,15 @@ public class TKOPneumatics implements Runnable
 		}
 		if (!pneuThread.isThreadRunning())
 			pneuThread.setThreadRunning(true);
+		
+		try
+		{
+			TKOHardware.getCompressor().start();
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 		
 		System.out.println("Started pneumatics task");
 	}

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DropAll implements IStateFunction
 {
+	int position;
 	@Override
 	public StateEnum doState(InstanceData data)
 	{
@@ -38,6 +39,7 @@ public class DropAll implements IStateFunction
 		if (cur != 26 || cur != 90 || cur != 58 || cur != 122 || cur != 5  || cur != 69 || cur != 37 || cur != 101)
 			return StateEnum.STATE_ERR;
 		
+		
 		data.curState = StateEnum.STATE_DROP_ALL;
 
 		double lvl = TKOLift.getInstance().getCurrentLevel();
@@ -50,7 +52,8 @@ public class DropAll implements IStateFunction
 			{
 				double pos = TKOLift.getInstance().getEncoderPosition();
 				//TKOLift.getInstance().updateCustomPositionTarget(); TODO THIS WHOLE WHILE LOOP WONT WORK
-				TKOLift.getInstance().goToPosition((int) pos);
+				//TKOLift.getInstance().goToPosition((int) pos);
+				TKOLift.getInstance().goToLevel((pos - TKOLift.bottomOffset) / TKOLift.oneLevel);
 				Timer.delay(1.);
 				lvl--;
 				//pos -= TKOLift.getInstance().oneLevel;

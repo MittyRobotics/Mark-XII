@@ -34,6 +34,8 @@ import edu.wpi.first.wpilibj.DriverStation;
  *          TODO Test code with lift encoder unplugged; what happens?
  * 
  *          TODO Test validation, validate for above^?
+ *          
+ *          TODO DropCrates doesnt work, need to hold button?!?
  */
 
 public class TKOLift implements Runnable // implements Runnable is important to make this class support the Thread (run method)
@@ -602,7 +604,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private synchronized void printMessages()
 	{
-		System.out.println("CurAct: " + currentAction);
+		//System.out.println("CurAct: " + currentAction);
 //		System.out.println("CurrentOp: " + operation);
 		System.out.println("Level: " + level);
 		/*try

@@ -25,7 +25,18 @@ public class StateMachine implements Runnable
 {	
 	// TODO add analog inputs but make them act as digital inputs
 	static Timer m_timer;
-	static DigitalInput m_gripper, m_pistonRetract_L, m_pistonExtend_L, m_pistonRetract_R, m_pistonExtend_R;
+	
+//	static DigitalInput m_crateLeft;
+//	static DigitalInput m_crateRight;
+	
+	static DigitalInput m_gripper;
+	static DigitalInput m_pistonRetract_L;
+	static DigitalInput m_pistonExtend_L;
+	static DigitalInput m_pistonRetract_R;
+	static DigitalInput m_pistonExtend_R;
+	static DigitalInput m_crateLeft;
+	static DigitalInput m_crateRight;
+	
 	static Joystick m_evomStick;
 	static DoubleSolenoid m_gripperPiston;
 

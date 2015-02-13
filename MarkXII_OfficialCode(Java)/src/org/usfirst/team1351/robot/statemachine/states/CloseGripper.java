@@ -39,7 +39,6 @@ public class CloseGripper implements IStateFunction
 	 	// 0b |     |     |  16 |     |     |   2 |     |	= 18
 	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
 	 	// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-	    
 	    while (sensors != StateMachine.READY_TO_LIFT &&
 	    		(sensors == 21 || sensors == 17 || sensors == 20 || sensors == 16 || sensors == 24 || sensors == 18))
 	    {

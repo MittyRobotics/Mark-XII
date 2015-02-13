@@ -351,8 +351,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				else
 				{
 					currentPIDSetpoint = (int) getSoftTop();
-					System.out.println("TRYING TO DRIVE LIFT BEYOND MAX");
-					throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MAX");
+					System.out.println(currentAction);
+					System.out.println("TRYING TO DRIVE LIFT BEYOND MAX: " + currentPIDSetpoint);
+					throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MAX: " + currentPIDSetpoint);
 				}
 			}
 			else if (currentAction == Action.DESCENDING)
@@ -701,6 +702,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public synchronized void updateCrateLevelTarget()
 	{
 		int target = oneLevel * level + bottomOffset;
+		System.out.println(target);
 		goToPosition(target); // TODO is it bad we don't check currentAction here?
 	}
 

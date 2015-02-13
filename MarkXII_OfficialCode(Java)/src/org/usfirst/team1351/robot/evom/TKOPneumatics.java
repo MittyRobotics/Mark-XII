@@ -115,11 +115,11 @@ public class TKOPneumatics implements Runnable
 	{
 		try
 		{
-			if (StateMachine.getGripperSwitch())
+			/*if (StateMachine.getGripperSwitch())
 			{
 				System.out.println("Gripper switch activated, closing gripper");
 				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-			}
+			}*/
 			
 			if (manualEnabled)
 			{

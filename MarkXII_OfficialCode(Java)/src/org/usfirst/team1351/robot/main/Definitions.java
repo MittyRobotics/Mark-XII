@@ -26,7 +26,7 @@ public class Definitions
 	public static final int WHEELIE_A = 0; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 1;
 
-	public static final int CRATE_SENSOR_ID = 3;
+	public static final int CRATE_SENSOR_ID = 0;
 	
     public static final int NUM_SWITCHES = 7; // 5 for state machine + 2 for gripper top/bottom
 	public static final int NUM_ANALOG = 2; // crate left and crate right
@@ -51,8 +51,8 @@ public class Definitions
 	public static final int LIFT_CONTROL_STICK = 3;
 
 	public static final int LIFT_GRIPPER_SWITCH = 2;
-	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 1;
-	public static final int LIFT_TOP_OPTICAL_SWITCH = 0;
+	public static final int LIFT_BOTTOM_OPTICAL_SWITCH = 0;
+	public static final int LIFT_TOP_OPTICAL_SWITCH = 1;
 	public static final double LIFT_PID_INCREMENTER = 10.;
 
 	public static final double DRIVE_P = 4.;

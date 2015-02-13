@@ -60,7 +60,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	private int level; //changes the level	
 	private Action currentAction; //figures out if you are ascending or descending
 	private boolean calibrated; //calibrates
-	private double softBottom, softTop; //Soft bottom and top set to ensure no damage is done to the robot through running ti
+	private double softBottom; //Soft bottom and top set to ensure no damage is done to the robot through running ti
 	private int currentPIDSetpoint, customPositionTarget;
 
 	private Operation operation = Operation.PID_CRATES;
@@ -76,8 +76,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final short encoderThreshold = 100;
 	public static final short liftThreadSleep = 20; // used to be 20
 
+	public static final short softTop = 22226 - softTopOffset;
+
 	public static final short trashcanPickupPosition = softBottomOffset + 101;
-	public static final short fullOfCratesPosition = (short) (3.625 * oneLevel + bottomOffset);
+	public static final short fullOfCratesPosition = (short) softTop - 100;
 	public static final short dropOffsetDistance = (short) (0.75 * oneLevel);
 
 	private boolean manualEnabled = true;
@@ -91,7 +93,6 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		customPositionTarget = 0;
 		calibrated = false;
 		softBottom = 0.;
-		softTop = 0.;
 		manualEnabled = true;
 	}
 
@@ -149,7 +150,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			lmotor.set(0); // stop motor
 			lmotor.setPosition(0); // reset encoder
 			softBottom = lmotor.getPosition() + softBottomOffset;
-			Timer.delay(.1);
+			/*Timer.delay(.1);
 
 			while (!TKOHardware.getLiftTop() && DriverStation.getInstance().isEnabled())
 			{
@@ -163,7 +164,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 				System.out.println("CRITICAL ERROR ENCODER PROBABLY NOT PLUGGED IN");
 				throw new TKORuntimeException("CRITICAL ERROR ENCODER PROBABLY NOT PLUGGED IN");
 			}
-			softTop = lmotor.getPosition() - softTopOffset;
+			System.out.println("POSITION: " + lmotor.getPosition());
+			softTop = lmotor.getPosition() - softTopOffset;*/
 
 			lmotor.setSafetyEnabled(false);
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);

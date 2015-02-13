@@ -39,7 +39,7 @@ public class TKODrive implements Runnable
 		try
 		{
 			double moveValue = TKOHardware.getJoystick(0).getY();
-			double rotateValue = TKOHardware.getJoystick(1).getX();
+			double rotateValue = TKOHardware.getJoystick(1).getX() * 0.8;
 			double leftMotorSpeed;
 			double rightMotorSpeed;
 

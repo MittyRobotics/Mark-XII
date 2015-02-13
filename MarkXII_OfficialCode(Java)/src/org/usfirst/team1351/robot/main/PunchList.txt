@@ -1,0 +1,36 @@
+DRIVE
+	Current-based driving
+	Position based control for autonomous
+	Switching between these modes?
+	Driving slower, based on number of crates?
+	Shifting
+
+LIFT
+	Test crate sensor, pickup totes with crate sensor
+	Test trashcan sensor, pickup trashcan automatically with trashcan sensor
+	Pickup, dropoff of simple stacks
+	Picking up stack with a trashcan - what kind of routine is necessary
+	Dropoff stack with a trashcan - what is different
+	Resetting the lift; run through typical procedure in pits. How does robot remember stuff after disable/enable
+	Middle step - pickup/dropoff
+	Test with the whellie bars, check for robot flipping
+	Adjust nylon bolts; larger hooks?
+	Error recovery - what to do if crate falls off
+	Current safety
+	Keep track of totes?
+	Add tape to trashcan gripper
+	Pneumatics
+	Test switching to ManualVBUS mode
+	TEST GOING FROM MANUALVBUS BACK TO POSITION
+	
+STATE MACHINE
+	Testing everything
+	Error recovery - manual mode
+
+AUTONOMOUS
+	Driving atoms
+	Stacking atoms
+	Dropping atoms
+
+VISION
+	Vision processing to figure out distance/angle for autonomous

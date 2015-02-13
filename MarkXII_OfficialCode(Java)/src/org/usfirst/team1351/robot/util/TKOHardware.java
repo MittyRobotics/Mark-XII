@@ -377,7 +377,10 @@ public class TKOHardware
 	
 	public static double getCrateDistance() throws TKOException
 	{
-		return getAnalog(0).getVoltage() * Definitions.INCHES_PER_VOLT;
+		//return Definitions.INCHES_PER_VOLT / getAnalog(0).getVoltage();
+		//return getAnalog(0).getVoltage();
+		return (-6.066 * Math.log(getAnalog(0).getAverageVoltage()) + 4.6772);
+		//y = -6.066ln(x) + 4.6772
 	}
 	
 	public static boolean cratePresent() throws TKOException

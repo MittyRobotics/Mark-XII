@@ -42,7 +42,7 @@ public class DropAll implements IStateFunction
 		
 		data.curState = StateEnum.STATE_DROP_ALL;
 
-		int lvl = TKOLift.getInstance().getCurrentLevel();
+		double lvl = TKOLift.getInstance().getCurrentLevel();
 		
 		int sensors = StateMachine.getSensorData(data);
 		
@@ -51,8 +51,8 @@ public class DropAll implements IStateFunction
 			while (TKOLift.getInstance().getCurrentLevel() != 0)
 			{
 				double pos = TKOLift.getInstance().getEncoderPosition();
-				TKOLift.getInstance().updateCustomPositionTarget();
-				TKOLift.getInstance().goToPosition(position);
+				//TKOLift.getInstance().updateCustomPositionTarget(); TODO THIS WHOLE WHILE LOOP WONT WORK
+				TKOLift.getInstance().goToPosition((int) pos);
 				Timer.delay(1.);
 				lvl--;
 				//pos -= TKOLift.getInstance().oneLevel;

@@ -10,12 +10,9 @@ import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOHardware;
-import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /*-----------TODO-------------
  * Write TKOLEDArduino lol rekt

@@ -3,12 +3,18 @@
 
 package org.usfirst.team1351.robot.statemachine;
 
-import org.usfirst.team1351.robot.statemachine.states.*;
+import org.usfirst.team1351.robot.statemachine.states.CloseGripper;
+import org.usfirst.team1351.robot.statemachine.states.DecideAction;
+import org.usfirst.team1351.robot.statemachine.states.DropAll;
+import org.usfirst.team1351.robot.statemachine.states.ErrorState;
+import org.usfirst.team1351.robot.statemachine.states.LiftCrate;
+import org.usfirst.team1351.robot.statemachine.states.LookForCrate;
+import org.usfirst.team1351.robot.statemachine.states.OpenGripper;
+import org.usfirst.team1351.robot.statemachine.states.ReadyForRC;
+import org.usfirst.team1351.robot.statemachine.states.ResetLift;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
-import org.usfirst.team1351.robot.evom.TKOLift;
-import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;

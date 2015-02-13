@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DropAll implements IStateFunction
 {
+	int position;
 	@Override
 	public StateEnum doState(InstanceData data)
 	{
@@ -37,6 +38,7 @@ public class DropAll implements IStateFunction
 		
 		if (cur != 26 || cur != 90 || cur != 58 || cur != 122 || cur != 5  || cur != 69 || cur != 37 || cur != 101)
 			return StateEnum.STATE_ERR;
+		
 		
 		data.curState = StateEnum.STATE_DROP_ALL;
 

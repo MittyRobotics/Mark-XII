@@ -25,6 +25,8 @@ public class StateMachine
 	static DigitalInput m_pistonExtend_L;
 	static DigitalInput m_pistonRetract_R;
 	static DigitalInput m_pistonExtend_R;
+	static DigitalInput m_crateLeft;
+	static DigitalInput m_crateRight;
 	
 	static Joystick m_evomStick;
 

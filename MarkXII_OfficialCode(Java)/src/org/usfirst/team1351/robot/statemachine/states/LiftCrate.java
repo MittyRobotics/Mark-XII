@@ -35,7 +35,7 @@ public class LiftCrate implements IStateFunction
 		
 		data.curState = StateEnum.STATE_LIFT_CRATE;
 
-		int lvl = TKOLift.getInstance().getCurrentLevel();
+		double lvl = TKOLift.getInstance().getCurrentLevel();
 		
 		TKOLift.getInstance().goUp();
 		

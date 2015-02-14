@@ -47,18 +47,19 @@ public class MarkXII extends SampleRobot
 		System.out.println("Enabling autonomous!");
 		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
-		TKODrive.getInstance().start();
+//		TKODrive.getInstance().start();
 //		TKOGripper.getInstance().start();
 		TKODataReporting.getInstance().start();
 		
 		Molecule molecule = new Molecule();
-		DriveAtom drive = new DriveAtom(10.f);
+		DriveAtom drive = new DriveAtom(10000.f);
 		molecule.add(drive);
 		molecule.init();
 		
 		while (isAutonomous() && isEnabled())
 		{
-			Timer.delay(0.25); // wait for a motor update time
+			molecule.run();
+			//Timer.delay(0.25); // wait for a motor update time
 		}
 
 		try
@@ -67,9 +68,9 @@ public class MarkXII extends SampleRobot
 			TKODataReporting.getInstance().dataReportThread.join();
 //			TKOGripper.getInstance().stop();
 //			TKOGripper.getInstance().gripperThread.join();
-			TKODrive.getInstance().stop();
-			TKODrive.getInstance().driveThread.join();
-			TKOLogger.getInstance().stop();
+//			TKODrive.getInstance().stop();
+//			TKODrive.getInstance().driveThread.join();
+//			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{

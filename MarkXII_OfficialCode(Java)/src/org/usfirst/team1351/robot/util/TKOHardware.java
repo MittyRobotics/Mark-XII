@@ -78,7 +78,7 @@ public class TKOHardware
         	encoder_R = new Encoder(Definitions.ENCODER_RIGHT_A, Definitions.ENCODER_RIGHT_B);
         }
 		
-		configTalons(10., 0., 0.);
+		configTalons(1., 0., 0.); // THIS IS WHERE PID IS SET TODO FIX THIS SHIT SOMEONE REMIND ME!!! 
 	}
 
 	public static synchronized void configTalons(double p, double I, double d)

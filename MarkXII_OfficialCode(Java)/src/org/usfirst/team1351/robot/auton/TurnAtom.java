@@ -46,4 +46,10 @@ public class TurnAtom extends Atom{
 		m_driveR1.set(0);
 		m_driveR2.set(0);
 	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
 }

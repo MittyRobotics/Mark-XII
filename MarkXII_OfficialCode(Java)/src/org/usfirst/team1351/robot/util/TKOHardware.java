@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -33,7 +34,7 @@ public class TKOHardware
 	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
-//	protected static Gyro gyro;
+	protected static Gyro gyro;
 	protected static AnalogInput analog[] = new AnalogInput[Definitions.NUM_ANALOG];
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
@@ -67,6 +68,7 @@ public class TKOHardware
 		}
 		compressor = null;
 		acc = null;
+		gyro = null;
 		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
 		{
 			analog[i] = null;
@@ -139,6 +141,13 @@ public class TKOHardware
 
 		if (acc == null)
 			acc = new BuiltInAccelerometer();
+		
+		if (gyro == null)
+		{
+			gyro = new Gyro(Definitions.GYRO_ANALOG_CHANNEL);
+			gyro.setSensitivity(7./1000.);
+			gyro.reset();
+		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
@@ -338,6 +347,12 @@ public class TKOHardware
 
 		if (acc != null)
 			acc = null;
+		
+		if (gyro != null)
+		{
+			gyro.free();
+			gyro = null;
+		}
 
 		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
 		{
@@ -541,6 +556,13 @@ public class TKOHardware
 		if (driveTalons == null)
 			throw new TKOException("NULL DRIVE ARRAY");
 		return driveTalons;
+	}
+	
+	public static synchronized Gyro getGyro() throws TKOException
+	{
+		if (gyro == null)
+			throw new TKOException("GYRO NULL");
+		return gyro;
 	}
 
 	/**

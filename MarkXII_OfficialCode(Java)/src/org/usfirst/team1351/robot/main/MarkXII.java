@@ -4,6 +4,7 @@
 package org.usfirst.team1351.robot.main;
 
 import org.usfirst.team1351.robot.auton.DriveAtom;
+import org.usfirst.team1351.robot.auton.GyroTurnAtom;
 import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.logger.TKOLogger;
@@ -33,7 +34,8 @@ public class MarkXII extends SampleRobot
 
 	public void robotInit()
 	{
-
+		TKOHardware.initObjects();
+		TKOHardware.getGyro().initGyro();
 	}
 
 	public void disabled()
@@ -51,8 +53,10 @@ public class MarkXII extends SampleRobot
 		TKODataReporting.getInstance().start();
 
 		Molecule molecule = new Molecule();
-		DriveAtom drive = new DriveAtom(10000.f);
-		molecule.add(drive);
+		//DriveAtom drive = new DriveAtom(10000.f);
+		GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
+		//molecule.add(drive);
+		molecule.add(turnGyro); 
 		molecule.init();
 
 		// while (isAutonomous() && isEnabled())

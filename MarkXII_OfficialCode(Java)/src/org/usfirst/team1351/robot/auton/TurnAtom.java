@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Gyro;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 //TODO write this implementing TKOHardware CANTalons and the like. 
+//TODO WRITE THIS, THIS IS SHIT 
 
 public class TurnAtom extends Atom{	
 	CANTalon m_driveL1, m_driveL2, m_driveR1, m_driveR2;

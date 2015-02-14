@@ -5,20 +5,19 @@ package org.usfirst.team1351.robot.auton;
 //Current values are 1, 0, 0 
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
-
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveAtom extends Atom
 {
 
-	float distance;
+	double distance, incrementer;
 	int ncoder1, ncoder2;
 
-	public DriveAtom(float f)
+	public DriveAtom(double f)
 	{
 		distance = f;
+		incrementer = 50;
 		// Talons 0 and 2 are the ones with Ncoders plugged in, keep that in
 		// mind. 1 and 3 have already been declared as slaves.
 	}
@@ -27,37 +26,21 @@ public class DriveAtom extends Atom
 	{
 		try
 		{
-			/*TKOHardware.getDriveTalon(0).changeControlMode(CANTalon.ControlMode.Position);
-			TKOHardware.getDriveTalon(0).setFeedbackDevice(FeedbackDevice.QuadEncoder);
-			TKOHardware.getDriveTalon(0).setPosition(0);
-			TKOHardware.getDriveTalon(0).reverseSensor(true); // Look into this later. We may have a backwards encoder.
-			TKOHardware.getDriveTalon(0).enableControl();
 
-			TKOHardware.getDriveTalon(2).changeControlMode(CANTalon.ControlMode.Position);
-			TKOHardware.getDriveTalon(2).setFeedbackDevice(FeedbackDevice.QuadEncoder);
-			TKOHardware.getDriveTalon(2).setPosition(0);
-			TKOHardware.getDriveTalon(2).reverseSensor(true); // Look into this later. We may have a backwards encoder.
-			TKOHardware.getDriveTalon(2).enableControl();*/
-			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.); // The swaggiest thing ever
+																													// written
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0);
-			//TKOHardware.getLeftDrive().reverseSensor(true);
+			// TKOHardware.getLeftDrive().reverseSensor(true);
 			TKOHardware.getRightDrive().reverseSensor(true);
 		} catch (TKOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("HOLY THIS ENCODER DUN GOOFED UP!!!");
+			System.out.println("Err.... Talons kinda died ");
 		}
 		System.out.println("Initialized");
-		// try {
-		// TKOHardware.getLeftEncoder().setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
-		// TKOHardware.getRightEncoder().setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
-		// } catch (TKOException e1) {
-		// // TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// }
 	}
 
 	@Override
@@ -66,13 +49,16 @@ public class DriveAtom extends Atom
 		System.out.println("Starting execution");
 		try
 		{
-			while (DriverStation.getInstance().isEnabled())
+			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() < distance)
 			{
-				TKOHardware.getDriveTalon(0).set(distance);
-				TKOHardware.getDriveTalon(2).set(distance);
+				TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() + incrementer);
+				TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() + incrementer);
 				System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
-						+ TKOHardware.getDriveTalon(2).getPosition());
+						+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: " + TKOHardware.getDriveTalon(0).getSetpoint());
 			}
+
+			TKOHardware.getDriveTalon(0).set(distance);
+			TKOHardware.getDriveTalon(2).set(distance);
 
 		} catch (TKOException e1)
 		{
@@ -81,14 +67,6 @@ public class DriveAtom extends Atom
 			System.out.println("Error at another expected spot, I would assume....");
 		}
 		System.out.println("Done executing");
-
-		// try {
-		// TKOHardware.getDriveTalon(0).set(0.0);
-		// TKOHardware.getDriveTalon(2).set(0.0);
-		// } catch (TKOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 }

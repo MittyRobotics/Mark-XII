@@ -59,7 +59,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private double level; //changes the level	
 	private Action currentAction; //figures out if you are ascending or descending
-	private boolean calibrated; //calibrates
+	public boolean calibrated; //calibrates
 	private double softBottom; //Soft bottom and top set to ensure no damage is done to the robot through running ti
 	private double currentPIDSetpoint;
 	

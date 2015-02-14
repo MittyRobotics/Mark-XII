@@ -1,13 +1,10 @@
 package org.usfirst.team1351.robot.statemachine.states;
 
-import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.statemachine.IStateFunction;
 import org.usfirst.team1351.robot.statemachine.InstanceData;
 import org.usfirst.team1351.robot.statemachine.StateEnum;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
-
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 // This state is entered when the robot is enabled and after the lift is reset.
 

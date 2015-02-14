@@ -67,6 +67,11 @@ public class StateMachine implements Runnable
 		return m_Instance;
 	}
 	
+	protected void init()
+	{
+		//currentState = new DecideAction();
+	}
+	
 	protected StateMachine()
 	{
 		m_timer = new Timer();
@@ -167,6 +172,8 @@ public class StateMachine implements Runnable
 		if (!stateThread.isThreadRunning())
 			stateThread.setThreadRunning(true);
 		
+		init();
+		
 		System.out.println("Started state machine task");
 	}
 
@@ -186,10 +193,11 @@ public class StateMachine implements Runnable
 			while (stateThread.isThreadRunning())
 			{
 				// what goes here?
+				runState(data.curState, data);
 				
 				synchronized (stateThread)
 				{
-					stateThread.wait(10);	// how long is this wait?
+					stateThread.wait(20);	// how long is this wait?
 				}
 			}
 		} catch (Exception e)

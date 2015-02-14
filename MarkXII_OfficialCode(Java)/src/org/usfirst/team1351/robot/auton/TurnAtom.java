@@ -3,6 +3,9 @@ package org.usfirst.team1351.robot.auton;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
+import org.usfirst.team1351.robot.util.TKOException;
+import org.usfirst.team1351.robot.util.TKOHardware;
+//TODO write this implementing TKOHardware CANTalons and the like. 
 
 public class TurnAtom extends Atom{	
 	CANTalon m_driveL1, m_driveL2, m_driveR1, m_driveR2;
@@ -32,12 +35,12 @@ public class TurnAtom extends Atom{
 		m_driveR1.changeControlMode(CANTalon.ControlMode.PercentVbus);
 		m_driveR2.changeControlMode(CANTalon.ControlMode.PercentVbus);
 		
-		encoder_L.setDistancePerPulse(0.112);
-		encoder_R.setDistancePerPulse(0.112);
+		encoder_L.setDistancePerPulse(0.112); //ask where the hell this number came from 
+		encoder_R.setDistancePerPulse(0.112); //LIKE SERIOUSLY, WHERE THE FRACK DID THIS NUMBER COME FROM 
 		while (gyro.getAngle() < angle)
 		{
 			m_driveL1.set(0.3 * direction);
-			m_driveL2.set(0.3 * direction);
+			m_driveL2.set(0.3 * direction); //WHAT BEAUTY!!! 
 			m_driveR1.set(-0.3 * direction);
 			m_driveR2.set(-0.3 * direction);
 		}

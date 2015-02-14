@@ -29,17 +29,17 @@ public class MarkXII extends SampleRobot
 
 	public MarkXII()
 	{
-		
+
 	}
-	
+
 	public void robotInit()
 	{
-		
+
 	}
-	
+
 	public void disabled()
 	{
-		
+
 	}
 
 	public void autonomous()
@@ -47,30 +47,30 @@ public class MarkXII extends SampleRobot
 		System.out.println("Enabling autonomous!");
 		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
-//		TKODrive.getInstance().start();
-//		TKOGripper.getInstance().start();
+		// TKODrive.getInstance().start();
+		// TKOGripper.getInstance().start();
 		TKODataReporting.getInstance().start();
-		
+
 		Molecule molecule = new Molecule();
 		DriveAtom drive = new DriveAtom(10000.f);
 		molecule.add(drive);
 		molecule.init();
-		
-		while (isAutonomous() && isEnabled())
-		{
-			molecule.run();
-			//Timer.delay(0.25); // wait for a motor update time
-		}
+
+		// while (isAutonomous() && isEnabled())
+		// {
+		molecule.run();
+		// Timer.delay(0.25); // wait for a motor update time
+		// }
 
 		try
 		{
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
-//			TKOGripper.getInstance().stop();
-//			TKOGripper.getInstance().gripperThread.join();
-//			TKODrive.getInstance().stop();
-//			TKODrive.getInstance().driveThread.join();
-//			TKOLogger.getInstance().stop();
+			// TKOGripper.getInstance().stop();
+			// TKOGripper.getInstance().gripperThread.join();
+			// TKODrive.getInstance().stop();
+			// TKODrive.getInstance().driveThread.join();
+			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{

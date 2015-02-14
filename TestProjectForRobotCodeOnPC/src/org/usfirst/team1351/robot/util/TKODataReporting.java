@@ -3,8 +3,7 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
-import us.vadweb.wrapper.wpilib.CANJaguar;
-import us.vadweb.wrapper.wpilib.PowerDistributionPanel;
+import us.vadweb.wrapper.wpilib.CANTalon;
 
 /**
  * Data collection for everything
@@ -18,12 +17,13 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	 * makes it easy to make using the thread safe
 	 */
 	public TKOThread dataReportThread = null;
-	private PowerDistributionPanel pdp = new PowerDistributionPanel();
 	private static TKODataReporting m_Instance = null;
 	private boolean collectingDriveData = false;
 	private boolean collectingDefaultData = true;
 	private int threadWaitTime = Definitions.DEF_DATA_REPORTING_THREAD_WAIT;
 	private double currentPTested = -1;
+	private double currentITested = -1;
+	private double currentDTested = -1;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKODataReporting()
@@ -78,12 +78,14 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		}
 	}
 
-	public synchronized void startCollectingDriveData(double p)
+	public synchronized void startCollectingDriveData(double p, double i, double d)
 	{
 		collectingDefaultData = false;
 		collectingDriveData = true;
 		threadWaitTime = 10;
 		currentPTested = p;
+		currentITested = i;
+		currentDTested = d;
 		record();
 		dataReportThread.interrupt();
 	}
@@ -149,7 +151,6 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 		if (collectingDefaultData)
 		{
 			TKOLogger inst = TKOLogger.getInstance();
-
 			inst.addMessage("Total pdp current:" + pdp.getTotalCurrent());
 			for (int i = 0; i < 16; i++)
 			{
@@ -157,12 +158,10 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 			}
 			try
 			{
-				for (CANJaguar motor : TKOHardware.getDriveJaguars())
+				for (CANTalon motor : TKOHardware.getDriveTalons())
 				{
-					// TODO Check if motors are null
-					if (motor == null)
-						continue;
-					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemperature());
+					int id = motor.getDeviceID();
+					inst.addMessage("Temperature for jag " + motor.getDeviceID() + ": " + motor.getTemp());
 					inst.addMessage("Current for jag " + motor.getDeviceID() + ": " + motor.getOutputCurrent());
 					inst.addMessage("Output voltage for jag " + motor.getDeviceID() + ": " + motor.getOutputVoltage());
 					inst.addMessage("Voltage for jag " + motor.getDeviceID() + ": " + motor.getBusVoltage());
@@ -182,9 +181,13 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 	public void collectDriveData()
 	{
 		TKOLogger inst = TKOLogger.getInstance();
+		SmartDashboard.putNumber("DataBufferSize", TKOLogger.getInstance().dataBufferSize);
+		SmartDashboard.putNumber("PValTested", currentPTested);
+		SmartDashboard.putNumber("IValTested", currentITested);
+		SmartDashboard.putNumber("DValTested", currentDTested);
 		try
-		{
-			for (CANJaguar motor : TKOHardware.getDriveJaguars())
+		{			
+			for (CANTalon motor : TKOHardware.getDriveTalons())
 			{
 				if (motor == null)
 					continue;
@@ -192,17 +195,21 @@ public class TKODataReporting implements Runnable // implements Runnable is impo
 
 				if (currentPTested < 10)
 				{
-					inst.addData("Temperature", motor.getTemperature(), id + "; p: 0" + currentPTested);
-					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: 0" + currentPTested);
-					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: 0" + currentPTested);
-					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: 0" + currentPTested);
+					inst.addData("Temperature", motor.getTemp(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
+					inst.addData("Out_Current", motor.getOutputCurrent(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
+					inst.addData("Out_Voltage", motor.getOutputVoltage(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
+					inst.addData("In_Voltage", motor.getBusVoltage(), "p: 0" + currentPTested + " i: 0" + currentITested + " d: 0" + currentDTested, id);
 				} else
 				{
-					inst.addData("Temperature", motor.getTemperature(), id + "; p: " + currentPTested);
-					inst.addData("Out_Current", motor.getOutputCurrent(), id + "; p: " + currentPTested);
-					inst.addData("Out_Voltage", motor.getOutputVoltage(), id + "; p: " + currentPTested);
-					inst.addData("In_Voltage", motor.getBusVoltage(), id + "; p: " + currentPTested);
+					inst.addData("Temperature", motor.getTemp(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
+					inst.addData("Out_Current", motor.getOutputCurrent(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
+					inst.addData("Out_Voltage", motor.getOutputVoltage(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
+					inst.addData("In_Voltage", motor.getBusVoltage(), "p: " + currentPTested + " i: " + currentITested + " d: " + currentDTested, id);
 				}
+				SmartDashboard.putNumber("Temperature Jag " + id, motor.getTemp());
+				SmartDashboard.putNumber("Out_Current Jag " + id, motor.getOutputCurrent());
+				SmartDashboard.putNumber("Out_Voltage Jag " + id, motor.getOutputVoltage());
+				SmartDashboard.putNumber("In_Voltage Jag " + id, motor.getBusVoltage());
 			}
 		} catch (Exception e)
 		{

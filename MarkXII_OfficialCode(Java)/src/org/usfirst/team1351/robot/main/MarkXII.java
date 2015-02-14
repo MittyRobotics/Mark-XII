@@ -6,7 +6,6 @@ package org.usfirst.team1351.robot.main;
 import org.usfirst.team1351.robot.auton.DriveAtom;
 import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.drive.TKODrive;
-import org.usfirst.team1351.robot.evom.TKOGripper;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOHardware;
@@ -84,7 +83,7 @@ public class MarkXII extends SampleRobot
 		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
-		TKOGripper.getInstance().start();
+		//TKOGripper.getInstance().start();
 		TKODataReporting.getInstance().start();
 		while (isOperatorControl() && isEnabled())
 		{
@@ -95,8 +94,8 @@ public class MarkXII extends SampleRobot
 		{
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
-			TKOGripper.getInstance().stop();
-			TKOGripper.getInstance().gripperThread.join();
+			//TKOGripper.getInstance().stop();
+			//TKOGripper.getInstance().gripperThread.join();
 			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
 			TKOLogger.getInstance().stop();

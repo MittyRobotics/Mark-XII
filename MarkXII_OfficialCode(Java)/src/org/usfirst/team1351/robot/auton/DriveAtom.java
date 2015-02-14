@@ -27,7 +27,7 @@ public class DriveAtom extends Atom
 	{
 		try
 		{
-			TKOHardware.getDriveTalon(0).changeControlMode(CANTalon.ControlMode.Position);
+			/*TKOHardware.getDriveTalon(0).changeControlMode(CANTalon.ControlMode.Position);
 			TKOHardware.getDriveTalon(0).setFeedbackDevice(FeedbackDevice.QuadEncoder);
 			TKOHardware.getDriveTalon(0).setPosition(0);
 			TKOHardware.getDriveTalon(0).reverseSensor(true); // Look into this later. We may have a backwards encoder.
@@ -37,7 +37,13 @@ public class DriveAtom extends Atom
 			TKOHardware.getDriveTalon(2).setFeedbackDevice(FeedbackDevice.QuadEncoder);
 			TKOHardware.getDriveTalon(2).setPosition(0);
 			TKOHardware.getDriveTalon(2).reverseSensor(true); // Look into this later. We may have a backwards encoder.
-			TKOHardware.getDriveTalon(2).enableControl();
+			TKOHardware.getDriveTalon(2).enableControl();*/
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
+			TKOHardware.getLeftDrive().setPosition(0);
+			TKOHardware.getRightDrive().setPosition(0);
+			//TKOHardware.getLeftDrive().reverseSensor(true);
+			TKOHardware.getRightDrive().reverseSensor(true);
 		} catch (TKOException e)
 		{
 			// TODO Auto-generated catch block
@@ -63,7 +69,7 @@ public class DriveAtom extends Atom
 			while (DriverStation.getInstance().isEnabled())
 			{
 				TKOHardware.getDriveTalon(0).set(distance);
-				TKOHardware.getDriveTalon(2).set(-distance);
+				TKOHardware.getDriveTalon(2).set(distance);
 				System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
 						+ TKOHardware.getDriveTalon(2).getPosition());
 			}

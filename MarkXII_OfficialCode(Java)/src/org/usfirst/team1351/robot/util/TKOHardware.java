@@ -76,7 +76,7 @@ public class TKOHardware
         if (encoder_R == null)
         {
         	encoder_R = new Encoder(Definitions.ENCODER_RIGHT_A, Definitions.ENCODER_RIGHT_B);
-        }
+        } 
 		
 		configTalons(1., 0., 0.); // THIS IS WHERE PID IS SET TODO FIX THIS SHIT SOMEONE REMIND ME!!! 
 	}

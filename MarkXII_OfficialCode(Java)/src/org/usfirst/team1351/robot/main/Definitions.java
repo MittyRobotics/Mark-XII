@@ -6,6 +6,7 @@ package org.usfirst.team1351.robot.main;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
 
 public class Definitions
@@ -91,6 +92,8 @@ public class Definitions
 
 	public static final double INCHES_PER_VOLT = 1.;
 	public static final double CRATE_DISTANCE_THRESHOLD = 5.1;
+
+	public static final int GYRO_ANALOG_CHANNEL = 1;
 
 	public static ArrayList<String> threadNames = new ArrayList<String>();
 	public static HashMap<String, Integer> threadPriorities;

@@ -1,61 +1,72 @@
 package org.usfirst.team1351.robot.auton;
 
-import org.usfirst.team1351.robot.main.Definitions;
+//LINE 81 (TKOHardware.java) IS WHERE PID VALUE ARE SET TODO TUNE THOSE ASAP AFTER THIS WORKS 
+//TODO TUNE PID - LINE 81 TKOHARDWARE.JAVA 
+//Current values are 1, 0, 0 
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
-
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DriverStation;
 
-public class DriveAtom extends Atom {
-	
-	float distance;
+public class DriveAtom extends Atom
+{
 
-	public DriveAtom(float f)
+	double distance, incrementer;
+	int ncoder1, ncoder2;
+
+	public DriveAtom(double f)
 	{
 		distance = f;
+		incrementer = 50;
+		// Talons 0 and 2 are the ones with Ncoders plugged in, keep that in
+		// mind. 1 and 3 have already been declared as slaves.
 	}
-	
+
 	public void init()
 	{
-		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
-			try {
-				TKOHardware.getDriveTalon(i).changeControlMode(CANTalon.ControlMode.PercentVbus);
-			} catch (TKOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-		try {
-			TKOHardware.getEncoder(1).setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
-			TKOHardware.getEncoder(2).setDistancePerPulse(Definitions.DISTANCE_PER_PULSE);
-		} catch (TKOException e1) {
+		try
+		{
+
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.); // The swaggiest thing ever
+																													// written
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
+			TKOHardware.getLeftDrive().setPosition(0);
+			TKOHardware.getRightDrive().setPosition(0);
+			// TKOHardware.getLeftDrive().reverseSensor(true);
+			TKOHardware.getRightDrive().reverseSensor(true);
+		} catch (TKOException e)
+		{
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+			System.out.println("Err.... Talons kinda died ");
 		}
+		System.out.println("Initialized");
 	}
-	
+
 	@Override
 	public void execute()
-	{	
-		try {
-			while (TKOHardware.getEncoder(1).get() < distance &&
-					TKOHardware.getEncoder(2).get() < distance)
+	{
+		System.out.println("Starting execution");
+		try
+		{
+			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() < distance)
 			{
-				for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
-					TKOHardware.getDriveTalon(i).set(0.3);
+				TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() + incrementer);
+				TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() + incrementer);
+				System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
+						+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: " + TKOHardware.getDriveTalon(0).getSetpoint());
 			}
-		} catch (TKOException e1) {
+
+			TKOHardware.getDriveTalon(0).set(distance);
+			TKOHardware.getDriveTalon(2).set(distance);
+
+		} catch (TKOException e1)
+		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			System.out.println("Error at another expected spot, I would assume....");
 		}
-		
-		for (int i = 0; i < Definitions.NUM_DRIVE_TALONS; i++)
-			try {
-				TKOHardware.getDriveTalon(i).set(0.0);
-			} catch (TKOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		System.out.println("Done executing");
 	}
-	
+
 }

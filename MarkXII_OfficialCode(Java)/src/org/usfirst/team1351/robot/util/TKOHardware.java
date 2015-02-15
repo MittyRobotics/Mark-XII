@@ -184,6 +184,7 @@ public class TKOHardware
 				}
 				driveTalons[i].enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[i]);
 				driveTalons[i].reverseOutput(Definitions.DRIVE_REVERSE_OUTPUT_MODE[i]);
+				driveTalons[i].reverseSensor(Definitions.DRIVE_REVERSE_SENSOR[i]);
 				driveTalons[i].setVoltageRampRate(96.);
 			}
 		}

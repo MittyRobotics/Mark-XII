@@ -41,9 +41,9 @@ public class TKOPneumatics implements Runnable
 		{
 			TKOHardware.getCompressor().start();
 			// TODO check that this is kReverse in all branches
-			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
-		} catch (Exception e)
+			reset();
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -73,7 +73,7 @@ public class TKOPneumatics implements Runnable
 		}
 		if (!pneuThread.isThreadRunning())
 			pneuThread.setThreadRunning(true);
-		
+
 		try
 		{
 			TKOHardware.getCompressor().start();
@@ -82,8 +82,22 @@ public class TKOPneumatics implements Runnable
 		{
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("Started pneumatics task");
+	}
+
+	public synchronized void reset()
+	{
+		try
+		{
+			TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -97,18 +111,19 @@ public class TKOPneumatics implements Runnable
 		try
 		{
 			TKOHardware.getCompressor().stop();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 		System.out.println("Stopped pneumatics task");
 	}
-	
+
 	public void setManual()
 	{
 		manualEnabled = true;
 	}
-	
+
 	public void notManual()
 	{
 		manualEnabled = false;
@@ -119,17 +134,16 @@ public class TKOPneumatics implements Runnable
 	 * TKOException. Joystick input is simple here: one button extends the piston, the other retracts it.
 	 * 
 	 */
-	
+
 	public synchronized void pistonControl()
 	{
 		try
 		{
-			/*if (StateMachine.getGripperSwitch())
-			{
-				System.out.println("Gripper switch activated, closing gripper");
-				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-			}*/
-			
+			/*
+			 * if (StateMachine.getGripperSwitch()) { System.out.println("Gripper switch activated, closing gripper");
+			 * TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward); }
+			 */
+
 			if (manualEnabled)
 			{
 				if (TKOHardware.getJoystick(2).getRawButton(2))
@@ -150,8 +164,17 @@ public class TKOPneumatics implements Runnable
 				TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
 
 			}
+			if (TKOHardware.getJoystick(0).getRawButton(4))
+			{
+				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+			}
+			if (TKOHardware.getJoystick(0).getRawButton(5))
+			{
+				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+			}
 
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -171,7 +194,8 @@ public class TKOPneumatics implements Runnable
 					pneuThread.wait(20);
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

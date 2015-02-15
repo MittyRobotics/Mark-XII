@@ -9,7 +9,6 @@ import org.usfirst.team1351.robot.util.TKORuntimeException;
 import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class TKODrive implements Runnable
@@ -212,20 +211,9 @@ public class TKODrive implements Runnable
 				// PIDCurrentCalibration();
 				// // calibRan = true;
 				// }
-				if (TKOHardware.getJoystick(0).getRawButton(4))
-				{
-					// TODO make this not ghetto
-					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
-				}
-				if (TKOHardware.getJoystick(0).getRawButton(5))
-				{
-					TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
-					// TODO make this not ghetto
-				}
-
-				//tankDrive();
+				// tankDrive();
 				arcadeDrive();
-				//currentModeTankDrive();
+				// currentModeTankDrive();
 				synchronized (driveThread)
 				{
 					driveThread.wait(5);

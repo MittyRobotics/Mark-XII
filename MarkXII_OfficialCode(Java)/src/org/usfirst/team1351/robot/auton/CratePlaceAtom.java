@@ -37,16 +37,6 @@ public class CratePlaceAtom extends Atom
 		TKOLift.getInstance().stop();
 		
 		System.out.println("Done executing");
-
-		// try {
-		// TKOHardware.getDriveTalon(0).set(0.0);
-		// TKOHardware.getDriveTalon(2).set(0.0);
-		// } catch (TKOException e) {
-		// } catch (TKOException e) {
-		// } catch (TKOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 }

@@ -3,8 +3,10 @@ package org.usfirst.team1351.robot.auton;
 //LINE 81 (TKOHardware.java) IS WHERE PID VALUE ARE SET TODO TUNE THOSE ASAP AFTER THIS WORKS 
 //TODO TUNE PID - LINE 81 TKOHARDWARE.JAVA 
 //Current values are 1, 0, 0 
+import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -13,11 +15,15 @@ public class DriveAtom extends Atom
 
 	double distance, incrementer;
 	int ncoder1, ncoder2;
+	double p, i, d;
 
 	public DriveAtom(double f)
 	{
 		distance = f;
-		incrementer = 50;
+		incrementer = Definitions.AUTON_PID_INCREMENTER;
+		p = Definitions.AUTON_DRIVE_P;
+		i = Definitions.AUTON_DRIVE_I;
+		d = Definitions.AUTON_DRIVE_D;
 		// Talons 0 and 2 are the ones with Ncoders plugged in, keep that in
 		// mind. 1 and 3 have already been declared as slaves.
 	}
@@ -26,13 +32,12 @@ public class DriveAtom extends Atom
 	{
 		try
 		{
-			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
-			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, p, i, d);
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, p, i, d);
 			TKOHardware.getLeftDrive().setPosition(0);
-			TKOHardware.getRightDrive().setPosition(0);
-			// TKOHardware.getLeftDrive().reverseSensor(true);
-			TKOHardware.getRightDrive().reverseSensor(true);
-		} catch (TKOException e)
+			TKOHardware.getRightDrive().setPosition(0); // resets encoders
+		}
+		catch (TKOException e)
 		{
 			e.printStackTrace();
 			System.out.println("Err.... Talons kinda died ");
@@ -57,7 +62,8 @@ public class DriveAtom extends Atom
 			TKOHardware.getDriveTalon(0).set(distance);
 			TKOHardware.getDriveTalon(2).set(distance);
 
-		} catch (TKOException e1)
+		}
+		catch (TKOException e1)
 		{
 			e1.printStackTrace();
 			System.out.println("Error at another expected spot, I would assume....");

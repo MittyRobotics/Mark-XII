@@ -81,15 +81,15 @@ public class MarkXII extends SampleRobot
 		TKOLift.getInstance().start();
 		TKOPneumatics.getInstance().start();
 
+		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		Molecule molecule = new Molecule();
 		DriveAtom drive = new DriveAtom(10000.);
 		GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
 		molecule.add(drive);
 		molecule.add(turnGyro); 
-		molecule.init();
 
 		System.out.println("Running molecule");
-		molecule.run();
+		molecule.initAndRun();
 		System.out.println("Finished running molecule");
 
 		try

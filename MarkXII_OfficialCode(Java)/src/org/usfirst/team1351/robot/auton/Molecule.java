@@ -21,7 +21,12 @@ public class Molecule {
 		chain.clear();
 	}
 	
-	public void init()
+	/**
+	 * DO NOT CALL INIT
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void init()
 	{
 		for (Atom a : chain)
 		{
@@ -33,6 +38,15 @@ public class Molecule {
 	{
 		for (Atom a : chain)
 		{
+			a.execute();
+		}
+	}
+	
+	public void initAndRun()
+	{
+		for (Atom a : chain)
+		{
+			a.init();
 			a.execute();
 		}
 	}

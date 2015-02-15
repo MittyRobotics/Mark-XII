@@ -3,12 +3,16 @@
 
 package org.usfirst.team1351.robot.main;
 
+import org.usfirst.team1351.robot.auton.DriveAtom;
+import org.usfirst.team1351.robot.auton.GyroTurnAtom;
+import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKODataReporting;
+import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -18,55 +22,49 @@ import edu.wpi.first.wpilibj.Timer;
  * Write TKOLEDArduino lol rekt
  * Test/fix StateMachine
  * Recreate documentation for java
- * TKOGyro/TKORelay?
- * Port/rewrite Autonomous Atoms/Molecules?
- * TODO global current checker/safety manager loop in TKOHardware for each jag?
  * TODO Thread priorities
- * TODO Drive - access only drives 0/2? - COMPLETE/NEEDS TESTING
  * TODO don't forget to turn on all the subsystems
- * TODO organize TKOHardware by the different things components will be used for, (array of arrays?) - COMPLETE/NEEDS TESTING
- * TODO figure out easy way to switch between drive modes - COMPLETE/NEEDS TESTING
- * 		TODO Maybe create a checker for what mode we are in, and have setVelocity, setPosition, etc. - COMPLETE/NEEDS TESTING
- * 		TODO 2 Lift motors - COMPLETE/NEEDS TESTING
- * 		TODO right now TKOHardware talon control mode changing and managing it turbo ghetto - COMPLETE/NEEDS TESTING
  * TODO Do we need to destroy hardware pointers when we are done with operator control loop
  * TODO Test the TKOException writing to log file - COMPLETE/NEEDS TESTING
  * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
  * 
- * TODO Figure out why the talon initialization is sometimes slow...
  * TODO Test TalonSafety !!!!!!!!!!!!!!!!!!!!
+ * TODO Lift needs to honor limit switches
  * 
- * TODO SATURDAY REQUIREMENTS
-
- All manual
-
- lift running with .Set pid for later honoring limit switches
- Use the lift in manual mode (as in using the .set method on the can talon for moving the lift without pid). 
- Pid can happen after we can verify that the lift works
- Driving
- Grabber open and close
- wheelie bar up and down
-
- Get working
- drive up to a bin/trash can
- pickup
- and drive around
-
- Also need to ask Lead mentors for more time on Saturday
-
+ * TODO Lift autotuned using the Zeigler-Nichols method;
+ * Calculate Kc by testing max p with i and d = 0 where stable oscilation 
+ * Calculate max and min of oscilation and find the period between the max and min
+ * Kp = 0.6 Kc
+ * Ki = 2*Kp/Pc
+ * Kd = 0.125*Kp*Pc
+ * 
+ * TODO Auton
+ * 	AutoCratePickupAtom - drives forward until crate engaged, automatically goes up immediately
+	CratePlaceAtom - places the stack of 3 (hardcoded) or maybe place stack based on current lift level
  */
+
 public class MarkXII extends SampleRobot
 {
 
 	public MarkXII()
 	{
-
+		//don't put stuff here, use robotInit();
 	}
 
 	public void robotInit()
 	{
 		System.out.println("-----WELCOME TO MARKXII 2015-----");
 		System.out.println("-----SYSTEM BOOT: " + Timer.getFPGATimestamp() + "-----");
+		TKOHardware.initObjects();
+		try
+		{
+			TKOHardware.getGyro().initGyro();
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+		System.out.println("-----GYRO INITIALIZED: " + Timer.getFPGATimestamp() + "-----");
 	}
 
 	public void disabled()
@@ -76,13 +74,43 @@ public class MarkXII extends SampleRobot
 
 	public void autonomous()
 	{
+		System.out.println("Enabling autonomous!");
+		TKOLogger.getInstance().start();
+		TKODataReporting.getInstance().start();
+		//TKOTalonSafety.getInstance().start();
+		TKOLift.getInstance().start();
+		TKOPneumatics.getInstance().start();
 
+		Molecule molecule = new Molecule();
+		DriveAtom drive = new DriveAtom(10000.);
+		GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
+		molecule.add(drive);
+		molecule.add(turnGyro); 
+		molecule.init();
+
+		System.out.println("Running molecule");
+		molecule.run();
+		System.out.println("Finished running molecule");
+
+		try
+		{
+			TKOPneumatics.getInstance().stop();
+			TKOPneumatics.getInstance().pneuThread.join();
+			TKOLift.getInstance().stop();
+			TKOLift.getInstance().conveyorThread.join();
+			TKODataReporting.getInstance().stop();
+			TKODataReporting.getInstance().dataReportThread.join();
+			TKOLogger.getInstance().stop();
+			TKOLogger.getInstance().loggerThread.join();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void operatorControl()
 	{
 		System.out.println("Enabling teleop!");
-		TKOHardware.initObjects();
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
@@ -93,7 +121,8 @@ public class MarkXII extends SampleRobot
 
 		while (isOperatorControl() && isEnabled())
 		{			
-			Timer.delay(0.1); // wait for a motor update time
+			Timer.delay(0.01); // wait for a motor update time
+			//TODO This will make it so robot lags after disabling, need to make it sorta small
 		}
 
 		try
@@ -134,7 +163,7 @@ public class MarkXII extends SampleRobot
 
 		while (isTest() && isEnabled())
 		{
-			Timer.delay(0.1); // wait for a motor update time
+			Timer.delay(0.01); // wait for a motor update time
 		}
 
 		try

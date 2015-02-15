@@ -615,16 +615,16 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		//System.out.println("CurAct: " + currentAction);
 //		System.out.println("CurrentOp: " + operation);
-		System.out.println("Level: " + level);
-		try
-		{
-			System.out.println("CRATE: " + TKOHardware.getCrateDistance());
-			//System.out.println("CRATE TF: " + TKOHardware.cratePresent());
-		}
-		catch (TKOException e)
-		{
-			e.printStackTrace();
-		}
+//		System.out.println("Level: " + level);
+//		try
+//		{
+//			System.out.println("CRATE: " + TKOHardware.getCrateDistance());
+//			//System.out.println("CRATE TF: " + TKOHardware.cratePresent());
+//		}
+//		catch (TKOException e)
+//		{
+//			e.printStackTrace();
+//		}
 		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
 
 		// try {

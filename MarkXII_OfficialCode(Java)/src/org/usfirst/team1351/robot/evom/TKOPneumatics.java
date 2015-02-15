@@ -11,7 +11,6 @@ package org.usfirst.team1351.robot.evom;
  * You'll notice that Eclipse will neatly collapse these lines. Expand it by clicking the plus on the left.
  */
 import org.usfirst.team1351.robot.main.Definitions;
-import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;

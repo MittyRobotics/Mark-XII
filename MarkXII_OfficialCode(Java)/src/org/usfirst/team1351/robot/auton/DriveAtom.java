@@ -26,9 +26,7 @@ public class DriveAtom extends Atom
 	{
 		try
 		{
-
-			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.); // The swaggiest thing ever
-																													// written
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, .6, -0.1, 0.);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0);
@@ -36,7 +34,6 @@ public class DriveAtom extends Atom
 			TKOHardware.getRightDrive().reverseSensor(true);
 		} catch (TKOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("Err.... Talons kinda died ");
 		}
@@ -62,7 +59,6 @@ public class DriveAtom extends Atom
 
 		} catch (TKOException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			System.out.println("Error at another expected spot, I would assume....");
 		}

@@ -86,7 +86,6 @@ public class StateMachine implements Runnable
 			
 			// TODO stick 4 for state machine actions, stick 3 for manual control?
 			m_evomStick = TKOHardware.getJoystick(3);
-			
 			m_gripperPiston = TKOHardware.getPiston(1);
 			
 		} catch (TKOException e)

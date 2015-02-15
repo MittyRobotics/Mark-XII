@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
@@ -564,6 +563,13 @@ public class TKOHardware
 			throw new TKOException("GYRO NULL");
 		return gyro;
 	}
+	
+	public static synchronized double getGyroAngle() throws TKOException
+	{
+		if (gyro == null)
+			throw new TKOException("GYRO NULL");
+		return gyro.getAngle();
+	}
 
 	/**
 	 * Try not to use this function; use getPiston(int n) instead.
@@ -578,12 +584,4 @@ public class TKOHardware
 			throw new TKOException("NULL PISTON ARRAY");
 		return pistonSolenoids;
 	}
-
-	public static Encoder getEncoder(int i) throws TKOException
-	{
-		//TODO REMOVE THIS
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

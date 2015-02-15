@@ -5,9 +5,9 @@ package org.usfirst.team1351.robot.auton;
 //Current values are 1, 0, 0 
 import org.usfirst.team1351.robot.evom.TKOLift;
 
-public class GoUpAtom extends Atom
+public class CratePlaceAtom extends Atom
 {
-	public GoUpAtom()
+	public CratePlaceAtom()
 	{
 		
 	}

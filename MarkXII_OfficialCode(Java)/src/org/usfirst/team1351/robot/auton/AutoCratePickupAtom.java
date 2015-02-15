@@ -9,6 +9,7 @@ import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Timer;
 
 public class AutoCratePickupAtom extends Atom
 {
@@ -51,23 +52,27 @@ public class AutoCratePickupAtom extends Atom
 			CANTalon left = TKOHardware.getLeftDrive();
 			CANTalon right = TKOHardware.getRightDrive();
 
-			while (crateDist > Definitions.CRATE_DISTANCE_THRESHOLD)
+			while (TKOLift.getInstance().isMoving() || !TKOLift.getInstance().calibrated)
+			{
+				//System.out.println("NOT READY TO GO UP");
+			}
+			
+			Timer tim = new Timer();
+			tim.start();
+			while (crateDist > Definitions.CRATE_DISTANCE_THRESHOLD && tim.get() < 2.5)
 			{
 				left.set(driveMult);
 				right.set(driveMult);
 				crateDist = TKOHardware.getCrateDistance();
 			}
-
-			while (TKOLift.getInstance().isMoving() || !TKOLift.getInstance().calibrated)
-			{
-				System.out.println("NOT READY TO GO UP");
-			}
+			tim.stop();
+			tim.reset();
 
 			TKOLift.getInstance().goUp();
 
 			while (TKOLift.getInstance().isMoving())
 			{
-				System.out.println("MOVING");
+				//System.out.println("MOVING");
 			}
 
 			TKOLift.getInstance().stop();

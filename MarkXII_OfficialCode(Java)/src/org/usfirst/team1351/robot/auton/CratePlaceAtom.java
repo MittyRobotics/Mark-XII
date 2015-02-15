@@ -15,6 +15,7 @@ public class CratePlaceAtom extends Atom
 	public void init()
 	{
 		TKOLift.getInstance().start();
+		System.out.println("Initialized");
 	}
 
 	@Override
@@ -27,7 +28,7 @@ public class CratePlaceAtom extends Atom
 			System.out.println("NOT READY TO GO UP");
 		}
 		
-		TKOLift.getInstance().goUp();
+		TKOLift.getInstance().goToDropCratesBasedOnLevel();
 		
 		while (TKOLift.getInstance().isMoving())
 		{

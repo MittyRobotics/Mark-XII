@@ -22,6 +22,7 @@ LIFT
 	Pneumatics
 	Test switching to ManualVBUS mode
 	TEST GOING FROM MANUALVBUS BACK TO POSITION
+	TEST DROPBASEDONLEVEL
 	
 STATE MACHINE
 	Testing everything

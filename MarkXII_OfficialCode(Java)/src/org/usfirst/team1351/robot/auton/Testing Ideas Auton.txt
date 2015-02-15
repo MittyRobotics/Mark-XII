@@ -1,0 +1,40 @@
+DRIVE ATOM
+GYRO TURN ATOM
+goUP ATOM
+driveUntilCrate ATOM 
+cratePlace ATOM
+LP - Low Priority 
+MP - Medium Priority 
+HP - Hit points / High Priority 
+SORTED IN ORDER OF PRIORITY 
+
+
+
+gyroTurn Atom HP - really need to test and debug, pretty bad right now. Need to make it so both wheels properly turn
+	Test it with turning various angles - 30, 45, 60, 90 - check for accuracy 
+	Check if it goes in the more efficient direction (probs does) 
+	Test with bumps - if they affect 
+	pid.setContinuous() testing? Look into, TODO
+	Test robot on cart on blocks - watch pid.getError() while cart is turned - see if it corrects (PUT ON BLOCKS) 
+
+driveUntilCrate Atom MP/HP - Priority changes based on Vision being completed. Most likely HP. This will autoalign the robot with the crate 
+	Place crate directly in front of robot - basic test
+	Place crate at some angle in FRONT of robot - slightly harder
+	Place crate slightly off - very hard test
+	Test how tolerant the robot is to crates in front of it 
+
+cratePlace Atom MP - Should be using existing methods, just drops all held crates onto ground 
+	Test 1/2/3 crates - how well it lowers 
+	Test with step - does that deter it, or does it continue lowering. Ensure no damage occurs 
+	Test with crates in awk positions - meaning only one crate, int lowest set of hooks. Does it continue, or stop? 
+
+goUp Atom MP - Untested, but most likely functioning. Uses existing function calls. 
+	Test with one crate, two crates, three crates, four crates
+	See if drive or turn atom can be used right after (most likely yes) 
+	Test if existing limits are met and kept, or exceeded (probably safe)
+	
+drive Atom LP - mostly working, need to work out kinks with PID and Incrementer. 
+	Test this with basic moving forward, check for accuracy and speed. 
+	Test with the bumps and steps on the field - see how that affects
+
+//This is beautiful - Babu //Best praise I ever got 

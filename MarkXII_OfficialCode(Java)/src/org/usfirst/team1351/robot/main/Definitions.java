@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.CANTalon;
 public class Definitions
 {
 	public static final double AUTON_DRIVE_P = 0.6;
-	public static final double AUTON_DRIVE_I = -0.1;
+	public static final double AUTON_DRIVE_I = 0.; //-0.1
 	public static final double AUTON_DRIVE_D = 0.;
 	public static final double AUTON_GYRO_TURN_P = 0.6;
-	public static final double AUTON_GYRO_TURN_I = 0.1;
+	public static final double AUTON_GYRO_TURN_I = 0.; //0.1
 	public static final double AUTON_GYRO_TURN_D = 0.;
 	public static final double AUTON_PID_INCREMENTER = 50.;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;

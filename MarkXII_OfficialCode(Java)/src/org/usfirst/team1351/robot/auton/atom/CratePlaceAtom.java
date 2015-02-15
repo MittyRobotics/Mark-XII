@@ -1,5 +1,6 @@
-package org.usfirst.team1351.robot.auton;
+package org.usfirst.team1351.robot.auton.atom;
 
+import org.usfirst.team1351.robot.auton.Atom;
 //LINE 81 (TKOHardware.java) IS WHERE PID VALUE ARE SET TODO TUNE THOSE ASAP AFTER THIS WORKS 
 //TODO TUNE PID - LINE 81 TKOHARDWARE.JAVA 
 import org.usfirst.team1351.robot.evom.TKOLift;

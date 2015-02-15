@@ -1,4 +1,4 @@
-package org.usfirst.team1351.robot.auton;
+package org.usfirst.team1351.robot.auton.atom;
 
 //LINE 81 (TKOHardware.java) IS WHERE PID VALUE ARE SET TODO TUNE THOSE ASAP AFTER THIS WORKS 
 //TODO TUNE PID - LINE 81 TKOHARDWARE.JAVA 
@@ -68,7 +68,8 @@ public class GyroTurnAtom extends Atom
 			while (DriverStation.getInstance().isEnabled() && pid.onTarget())
 			{
 				pid.setSetpoint(angle);
-				TKOHardware.getRightDrive().set(-pid.get()); //TODO what does pid.get() actually return?
+				TKOHardware.getRightDrive().set(-TKOHardware.getLeftDrive().get()); 
+				//TKOHardware.getRightDrive().set(-pid.get()); //TODO what does pid.get() actually return?
 				// System.out.println("GYRO " + gyro.getAngle());
 				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t PID GET: " + pid.get());
 			}

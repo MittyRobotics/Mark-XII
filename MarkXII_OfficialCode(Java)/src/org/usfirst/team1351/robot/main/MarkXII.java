@@ -3,9 +3,9 @@
 
 package org.usfirst.team1351.robot.main;
 
-import org.usfirst.team1351.robot.auton.DriveAtom;
-import org.usfirst.team1351.robot.auton.GyroTurnAtom;
 import org.usfirst.team1351.robot.auton.Molecule;
+import org.usfirst.team1351.robot.auton.atom.DriveAtom;
+import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;

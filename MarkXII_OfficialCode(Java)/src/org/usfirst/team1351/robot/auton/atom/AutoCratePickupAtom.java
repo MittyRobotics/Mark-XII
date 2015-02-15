@@ -1,8 +1,9 @@
-package org.usfirst.team1351.robot.auton;
+package org.usfirst.team1351.robot.auton.atom;
 
 //LINE 81 (TKOHardware.java) IS WHERE PID VALUE ARE SET TODO TUNE THOSE ASAP AFTER THIS WORKS 
 //TODO TUNE PID - LINE 81 TKOHARDWARE.JAVA 
 //Current values are 1, 0, 0 
+import org.usfirst.team1351.robot.auton.Atom;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;

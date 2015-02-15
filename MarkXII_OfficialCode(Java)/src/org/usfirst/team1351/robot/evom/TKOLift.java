@@ -264,17 +264,20 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("FULL POSITION TIME");
-			level = fullOfCratesPosition;
-			goToLevel(level);
+			//level = fullOfCratesPosition;
+			goToLevel(fullOfCratesPosition);
 		}
 	}
 
 	public synchronized void goToLevel(double newLevel)
 	{
+		if (DriverStation.getInstance().isDisabled())
+			return;
+		
 		System.out.println("GOING TO LEVEL " + newLevel);
 		System.out.println("TARGET LEVEL POSITION: " + (newLevel * oneLevel + bottomOffset));
 
-		this.level = newLevel;
+		level = newLevel;
 
 		if (calculateLevel() > this.level)
 			this.currentAction = Action.DESCENDING;
@@ -372,8 +375,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("TRASHCAN TIME");
-			level = trashcanPickupPosition;
-			goToLevel(level);
+			//level = trashcanPickupPosition;
+			goToLevel(trashcanPickupPosition);
 		}
 	}
 
@@ -382,8 +385,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("DROPPING STACK TIME");
-			level = calculateLevel() - dropOffsetDistance;
-			goToLevel(level);
+			//level = calculateLevel() - dropOffsetDistance;
+			goToLevel(calculateLevel() - dropOffsetDistance);
 		}
 	}
 	
@@ -392,8 +395,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("DROPPING STACK TIME BASED ON LEVEL");
-			level = calculateLevel() - (level * dropoffPerLevel);
-			goToLevel(level);
+			//level = calculateLevel() - (level * dropoffPerLevel);
+			goToLevel(calculateLevel() - (level * dropoffPerLevel));
 		}
 	}
 

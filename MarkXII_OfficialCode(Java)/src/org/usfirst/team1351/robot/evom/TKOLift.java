@@ -70,7 +70,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final byte maxLevel = 3; // 4th crate
 	public static final byte startLevel = 0;
 	public static final double bottomOffset = 4515;
-	public static final double dropoffPerLevel = 810; //TODO CALCULATE
+	public static final double dropoffPerLevel = 0.2; //TODO CALCULATE
 	public static final double softBottomOffset = 0; // safety offset
 	public static final double softTopOffset = 100; // safety offset
 	public static final double encoderThreshold = 100;
@@ -382,7 +382,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("DROPPING STACK TIME");
-			level = (getEncoderPosition() - dropOffsetDistance - bottomOffset) / oneLevel;
+			level = calculateLevel() - dropOffsetDistance;
 			goToLevel(level);
 		}
 	}
@@ -392,7 +392,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("DROPPING STACK TIME BASED ON LEVEL");
-			level = ((getEncoderPosition() - (level * dropoffPerLevel)) - bottomOffset) / oneLevel;
+			level = calculateLevel() - (level * dropoffPerLevel);
 			goToLevel(level);
 		}
 	}
@@ -457,44 +457,47 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		try
 		{
-			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
+			/*if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
 			{
 				// TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.Position);
 				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, Definitions.LIFT_P,
 						Definitions.LIFT_I, Definitions.LIFT_D);
 				TKOHardware.getLiftTalon().enableControl();
-			}
+			}*/
 
-			double p = 0., i = 0., d = 0.;
+			double p = 0.1, i = 0., d = 0.;
 			boolean tuning = true;
 
 			while (tuning)
 			{
 				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, p, i, d);
+				System.out.println(TKOHardware.getLiftTalon().getP());
+				System.out.println(TKOHardware.getLiftTalon().getI());
+				System.out.println(TKOHardware.getLiftTalon().getD());
 				TKOHardware.getLiftTalon().enableControl();
 
-				int pos = getEncoderPosition();
-				double target = softTopOffset - 1000;
-				if (pos > target)
+				//int pos = getEncoderPosition();
+				double target = softTop - 10000;
+				/*if (pos > target)
 					currentAction = Action.DESCENDING;
 				if (pos < target)
-					currentAction = Action.ASCENDING;
+					currentAction = Action.ASCENDING;*/
+				goToLevel((target - bottomOffset) / oneLevel);
 
-				while (isMoving())
+				while (isMoving() && DriverStation.getInstance().isEnabled())
 				{
 					goToPosition(target);
 				}
 
-				pos = getEncoderPosition();
-				target = softBottomOffset + 1000;
-				if (pos < target)
+				target = softBottom + 10000;
+				/*if (pos < target)
 					currentAction = Action.ASCENDING;
 				if (pos > target)
-					currentAction = Action.DESCENDING;
+					currentAction = Action.DESCENDING;*/
+				
+				goToLevel((target - bottomOffset) / oneLevel);
 
-				goToPosition(target);
-
-				while (isMoving())
+				while (isMoving() && DriverStation.getInstance().isEnabled())
 				{
 					goToPosition(target);
 				}
@@ -531,8 +534,14 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		try
 		{
+			boolean PIDTuning = false;
 			while (conveyorThread.isThreadRunning())
 			{
+				if (PIDTuning)
+				{
+					PIDTune();
+					return;
+				}
 				if (manualEnabled)
 				{
 					/*
@@ -607,10 +616,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		//System.out.println("CurAct: " + currentAction);
 //		System.out.println("CurrentOp: " + operation);
 		System.out.println("Level: " + level);
-		/*try
+		try
 		{
 			System.out.println("CRATE: " + TKOHardware.getCrateDistance());
-			System.out.println("CRATE TF: " + TKOHardware.cratePresent());
+			//System.out.println("CRATE TF: " + TKOHardware.cratePresent());
 		}
 		catch (TKOException e)
 		{
@@ -627,8 +636,6 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		// } catch (TKOException e) {
 		// e.printStackTrace();
 		// }
-		 * 
-		 */
 	}
 
 	public void setStartPosition()

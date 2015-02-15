@@ -194,6 +194,7 @@ public class StateMachine implements Runnable
 			{
 				// what goes here?
 				runState(data.curState, data);
+				System.out.println("RUNNING STATE: " + data.curState);
 				
 				synchronized (stateThread)
 				{

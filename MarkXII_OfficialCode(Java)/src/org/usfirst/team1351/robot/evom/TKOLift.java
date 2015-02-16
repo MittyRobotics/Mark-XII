@@ -500,11 +500,14 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						timeMin = t.get();
 					}
 				}
+				double period = Math.abs(timeMax - timeMin);
 				
 				System.out.println("Tested p: " + p);
 				System.out.println("Period of oscilation with current p: " + Math.abs(timeMax - timeMin));
 				System.out.println("MAX: " + max);
 				System.out.println("MIN: " + min);
+				System.out.println("Suggested i: " + (2 * p / period));
+				System.out.println("Suggested d: " + (2 * p / period));
 				
 				//tuning = false;
 				

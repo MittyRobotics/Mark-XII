@@ -1,21 +1,17 @@
 //Last edited by Alex Parks
 //on 2/6/15
 
-package org.usfirst.frc.team1351.robot.vision;
+package org.usfirst.team1351.robot.vision;
 
-import org.usfirst.frc.team1351.robot.util.*;
-import org.usfirst.frc.team1351.robot.logger.*;
-import org.usfirst.frc.team1351.robot.main.*;
-import org.usfirst.frc.team1351.robot.main.Definitions.*;
+import org.usfirst.team1351.robot.util.TKOThread;
 
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ShapeMode;
 
-import edu.wpi.first.wpilibj.CameraServer; 
-import edu.wpi.first.wpilibj.vision.USBCamera;
-import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TKOVision implements Runnable 
@@ -77,7 +73,7 @@ public class TKOVision implements Runnable
 	
 		NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
 
-		while (isOperatorControl() && isEnabled())
+		while (DriverStation.getInstance().isOperatorControl() && DriverStation.getInstance().isEnabled())
 		{
 			NIVision.IMAQdxGrab(session, frame, 1);
 			NIVision.imaqDrawShapeOnImage(frame, frame, rect, DrawMode.DRAW_VALUE, ShapeMode.SHAPE_OVAL, 0.0f); // (Image dest, Image source, Rect rect, DrawMode mode, ShapeMode shape, float newPixelValue)

@@ -1,39 +1,32 @@
 //Last edited by Alex Parks
 //on 2/16/15
 
-package org.usfirst.frc.team1351.robot.vision;
+package org.usfirst.team1351.robot.vision;
 
-import org.usfirst.frc.team1351.robot.util.*;
-import org.usfirst.frc.team1351.robot.logger.*;
-import org.usfirst.frc.team1351.robot.main.*;
-import org.usfirst.frc.team1351.robot.main.Definitions.*;
+import org.usfirst.team1351.robot.util.TKOThread;
 
 import com.ni.vision.NIVision;
-import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
-import com.ni.vision.NIVision.ShapeMode;
 
-import edu.wpi.first.wpilibj.CameraServer; 
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 
-public class TKOVision implements Runnable 
+public class TKOVision implements Runnable
 {
 	public TKOThread visionThread = null;
-	private static TKOVision m_Instance = null; 
+	private static TKOVision m_Instance = null;
 	int session;
-    Image frame;
-    AxisCamera camera;
-	
+	Image frame;
+	AxisCamera camera;
+
 	protected TKOVision()
-	
+
 	{
 		System.out.println("Vision Activated!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		camera = new AxisCamera("10.13.51.11");
-	}	
-	
+	}
+
 	public static synchronized TKOVision getInstance()
 	{
 		if (TKOVision.m_Instance == null)
@@ -43,14 +36,14 @@ public class TKOVision implements Runnable
 		}
 		return m_Instance;
 	}
-	
+
 	public void start()
 	{
 		System.out.println("Starting vision task");
-		
+
 		if (!visionThread.isAlive() && m_Instance != null)
 			visionThread = new TKOThread(m_Instance);
-		
+
 		if (!visionThread.isThreadRunning())
 			visionThread.setThreadRunning(true);
 
@@ -62,38 +55,41 @@ public class TKOVision implements Runnable
 		System.out.println("Stopping vision task");
 		if (visionThread.isThreadRunning())
 			visionThread.setThreadRunning(false);
-		
+
 		System.out.println("Stopped vision task");
 	}
-	
-    public void autonomousControl() {
-        NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
 
-        while (isAutonomousControl() && isEnabled()) {
-            camera.getImage(frame);
-            CameraServer.getInstance().setImage(frame);
+	public void process()
+	{
+		if (DriverStation.getInstance().isAutonomous() && DriverStation.getInstance().isEnabled())
+		{
+			camera.writeBrightness(0);
+			camera.getImage(frame);
+			
+			Image processedImage = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+			//NIVision.imaqColorThreshold(processedImage, frame, 0, NIVision.ColorMode.HSV, range1, range2, range3);
+//			CameraServer.getInstance().setImage(frame);
 
-            /** robot code here! **/
-            
-            Timer.delay(0.005);		// wait for a motor update time
-        }
-    }
-	
+			/** robot code here! **/
+
+		}
+	}
+
 	@Override
-	public void run() 
+	public void run()
 	{
 		try
 		{
 			while (visionThread.isThreadRunning())
 			{
-				System.out.println("VISION THREAD RAN!");
-				autonomousControl();
+				process();
 				synchronized (visionThread)
 				{
-					visionThread.wait(5);
+					visionThread.wait(50);
 				}
 			}
-		} catch (InterruptedException e)
+		}
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}

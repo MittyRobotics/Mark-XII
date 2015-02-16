@@ -707,7 +707,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public void setStartPosition()
 	{
-		//currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
+		currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
 		goToLevel(startLevel);
 	}
 

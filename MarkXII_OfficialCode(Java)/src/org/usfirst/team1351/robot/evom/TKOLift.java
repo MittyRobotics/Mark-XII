@@ -129,7 +129,6 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// return true;
 			System.out.println("STARTING LIFT CALIBRATION");
 			CANTalon lmotor = TKOHardware.getLiftTalon();
-			currentPIDSetpoint = lmotor.getEncPosition();
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I,
 					Definitions.LIFT_D);
 			TKOHardware.getLiftTalon().reverseOutput(true);
@@ -294,7 +293,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	 */
 	public synchronized void goToPosition(double position)
 	{
-		// System.out.println("Tar Pos: " + position + " CURRENT ACTION " + currentAction);
+		System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
@@ -501,21 +500,21 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					}
 				}
 				double period = Math.abs(timeMax - timeMin);
-				
+
 				System.out.println("Tested p: " + p);
 				System.out.println("Period of oscilation with current p: " + Math.abs(timeMax - timeMin));
 				System.out.println("MAX: " + max);
 				System.out.println("MIN: " + min);
 				System.out.println("Suggested i: " + (2 * p / period));
 				System.out.println("Suggested d: " + (2 * p / period));
-				
-				//tuning = false;
-				
+
+				// tuning = false;
+
 				p++;
 				if (p > 20)
 					tuning = false;
 			}
-			
+
 		}
 		catch (TKOException e)
 		{
@@ -695,20 +694,20 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		// }
 		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
 
-		// try {
-		// System.out.println("Lift Position: "
-		// + TKOHardware.getLiftTalon().getPosition());
-		// System.out.println("Crate: " + TKOHardware.getCrateDistance());
-		// System.out.println("PID ERROR?: "
-		// + TKOHardware.getLiftTalon().getClosedLoopError());
-		// } catch (TKOException e) {
-		// e.printStackTrace();
-		// }
+		try
+		{
+			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void setStartPosition()
 	{
-		currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
+		//currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
 		goToLevel(startLevel);
 	}
 

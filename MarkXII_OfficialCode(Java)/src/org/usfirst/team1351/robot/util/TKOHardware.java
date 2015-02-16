@@ -256,8 +256,11 @@ public class TKOHardware
 	{
 		if (target == null)
 			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
-		//if (newMode == target.getControlMode())
-		//	return;
+		if (newMode == target.getControlMode())
+		{
+			target.setPID(newP, newI, newD);
+			return;
+		}
 		
 
 		//if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)

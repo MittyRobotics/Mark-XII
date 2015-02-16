@@ -1,38 +1,37 @@
 //Last edited by Alex Parks
-//on 2/6/15
+//on 2/16/15
 
-package org.usfirst.team1351.robot.vision;
+package org.usfirst.frc.team1351.robot.vision;
 
-import org.usfirst.team1351.robot.util.TKOThread;
+import org.usfirst.frc.team1351.robot.util.*;
+import org.usfirst.frc.team1351.robot.logger.*;
+import org.usfirst.frc.team1351.robot.main.*;
+import org.usfirst.frc.team1351.robot.main.Definitions.*;
 
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ShapeMode;
 
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.CameraServer; 
+import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.vision.AxisCamera;
 
 public class TKOVision implements Runnable 
 {
 	public TKOThread visionThread = null;
-	private static TKOVision m_Instance = null;
-	private static int session;
-	private static Image frame;  
+	private static TKOVision m_Instance = null; 
+	int session;
+    Image frame;
+    AxisCamera camera;
 	
 	protected TKOVision()
 	
 	{
 		System.out.println("Vision Activated!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-		
-		//TODO change camera name
-		
-		session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-		NIVision.IMAQdxConfigureGrab(session);
-		
-		//TODO set up camera and its settings 
+		camera = new AxisCamera("10.13.51.11");
 	}	
 	
 	public static synchronized TKOVision getInstance()
@@ -67,24 +66,18 @@ public class TKOVision implements Runnable
 		System.out.println("Stopped vision task");
 	}
 	
-	public static void draw() //TODO figure this business out
-	{
-		NIVision.IMAQdxStartAcquisition(session);
-	
-		NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
+    public void autonomousControl() {
+        NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
 
-		while (DriverStation.getInstance().isOperatorControl() && DriverStation.getInstance().isEnabled())
-		{
-			NIVision.IMAQdxGrab(session, frame, 1);
-			NIVision.imaqDrawShapeOnImage(frame, frame, rect, DrawMode.DRAW_VALUE, ShapeMode.SHAPE_OVAL, 0.0f); // (Image dest, Image source, Rect rect, DrawMode mode, ShapeMode shape, float newPixelValue)
-			CameraServer.getInstance().setImage(frame);
+        while (isAutonomousControl() && isEnabled()) {
+            camera.getImage(frame);
+            CameraServer.getInstance().setImage(frame);
 
-			//TODO Here: stuff
-			//
-			Timer.delay(0.005); // wait for a motor update time
-		}
-		NIVision.IMAQdxStopAcquisition(session);
-	}
+            /** robot code here! **/
+            
+            Timer.delay(0.005);		// wait for a motor update time
+        }
+    }
 	
 	@Override
 	public void run() 
@@ -94,7 +87,7 @@ public class TKOVision implements Runnable
 			while (visionThread.isThreadRunning())
 			{
 				System.out.println("VISION THREAD RAN!");
-				draw();
+				autonomousControl();
 				synchronized (visionThread)
 				{
 					visionThread.wait(5);

@@ -25,7 +25,7 @@ public class ReadyForRC implements IStateFunction
 	    	{
 	    		// skip to LiftCrate w/o a trash can
 	    		System.out.println("Exiting ReadyForRC state");
-	    	    return StateEnum.STATE_LIFT_CRATE;
+	    	    return StateEnum.STATE_LIFT_CRATE; //TODO Is RC pickup position different from crate pickup position; does this take care of that?
 	    	}
 	    }
 

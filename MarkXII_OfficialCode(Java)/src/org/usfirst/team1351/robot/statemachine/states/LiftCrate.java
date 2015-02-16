@@ -3,6 +3,8 @@ package org.usfirst.team1351.robot.statemachine.states;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.statemachine.*;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * This state is first entered after going through the gripper states.
  * However, it will be more commonly entered after a crate is found.
@@ -58,10 +60,10 @@ public class LiftCrate implements IStateFunction
 				(sensors == 26 || sensors == 90 || sensors == 58) ||
 				(sensors == 5 || sensors == 69 || sensors == 37))
 		{
-			
+			Timer.delay(0.1);
 		}
 			
-		if (TKOLift.getInstance().getCurrentLevel() == 5)
+		if (TKOLift.getInstance().getCurrentLevel() == TKOLift.fullOfCratesPosition)
 		{
 			System.out.println("Lift full, waiting for joystick");
 			while (StateMachine.getJoystick().getRawButton(8) == false)

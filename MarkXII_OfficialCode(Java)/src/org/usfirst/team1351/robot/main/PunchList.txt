@@ -23,6 +23,7 @@ LIFT
 	Test switching to ManualVBUS mode
 	TEST GOING FROM MANUALVBUS BACK TO POSITION
 	TEST DROPBASEDONLEVEL
+	TEST DataLogging and adjust current safeties accordingly
 	
 STATE MACHINE
 	Testing everything

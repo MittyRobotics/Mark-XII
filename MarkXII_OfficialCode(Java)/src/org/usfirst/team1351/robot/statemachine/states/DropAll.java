@@ -10,63 +10,54 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DropAll implements IStateFunction
 {
-	int position;
 	@Override
 	public StateEnum doState(InstanceData data)
 	{
 		System.out.println("Entering DropAll state");
-		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |  16 |   8 |     |   2 |     |	= 90
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |  16 |   8 |     |   2 |     |	= 58
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |  32 |  16 |   8 |     |   2 |     |	= 122
-		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |   1 |	= 5
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |     |     |   4 |     |   1 |	= 69
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |     |     |   4 |     |   1 |	= 37
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |  32 |     |     |   4 |     |   1 |	= 101
-		
+
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | | | 16 | 8 | | 2 | | = 26
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | 64 | | 16 | 8 | | 2 | | = 90
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | | 32 | 16 | 8 | | 2 | | = 58
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | 64 | 32 | 16 | 8 | | 2 | | = 122
+
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | | | | | 4 | | 1 | = 5
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | 64 | | | | 4 | | 1 | = 69
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | | 32 | | | 4 | | 1 | = 37
+		// 0b | CL | CR | GS | LE | LR | RE | RR |
+		// 0b | 64 | 32 | | | 4 | | 1 | = 101
+
 		int cur = StateMachine.createIntFromBoolArray(data);
-		
-		if (cur != 26 || cur != 90 || cur != 58 || cur != 122 || cur != 5  || cur != 69 || cur != 37 || cur != 101)
+
+		if (cur != 26 || cur != 90 || cur != 58 || cur != 122 || cur != 5 || cur != 69 || cur != 37 || cur != 101)
 			return StateEnum.STATE_ERR;
-		
-		
+
 		data.curState = StateEnum.STATE_DROP_ALL;
 
-		double lvl = TKOLift.getInstance().getCurrentLevel();
-		
 		int sensors = StateMachine.getSensorData(data);
-		
-		while (sensors == 26 || cur == 90 || cur == 58 || cur == 122 || cur == 5  || cur == 69 || cur == 37 || cur == 101)
+
+		TKOLift.getInstance().goToDropCrates(); // TODO Maybe goToDropCratesBasedOnLevel();
+		while ((sensors == 26 || cur == 90 || cur == 58 || cur == 122 || cur == 5 || cur == 69 || cur == 37 || cur == 101)
+				&& TKOLift.getInstance().isMoving())
 		{
-			while (TKOLift.getInstance().getCurrentLevel() != 0)
-			{
-				double pos = TKOLift.getInstance().getEncoderPosition();
-				//TKOLift.getInstance().updateCustomPositionTarget(); TODO THIS WHOLE WHILE LOOP WONT WORK
-				//TKOLift.getInstance().goToPosition((int) pos);
-				TKOLift.getInstance().goToLevel((pos - TKOLift.bottomOffset) / TKOLift.oneLevel);
-				Timer.delay(1.);
-				lvl--;
-				//pos -= TKOLift.getInstance().oneLevel;
-				if (lvl != TKOLift.getInstance().getCurrentLevel())
-					break;
-			}
-			break;
+			// double pos = TKOLift.getInstance().getEncoderPosition();
+			// TKOLift.getInstance().updateCustomPositionTarget(); TODO THIS WHOLE WHILE LOOP WONT WORK
+			// TKOLift.getInstance().goToPosition((int) pos);
+			// TKOLift.getInstance().goToLevel((pos - TKOLift.bottomOffset) / TKOLift.oneLevel);
+			Timer.delay(0.1);
 		}
-		
-		if (TKOLift.getInstance().getCurrentLevel() == 0)
-			return StateEnum.STATE_ERR;
-		
+
+		//TODO Error check, the one below isnt right
+		//if (TKOLift.getInstance().getCurrentLevel() == 0)
+		//	return StateEnum.STATE_ERR;
+
 		System.out.println("Exiting DropAll state");
-	    return StateEnum.STATE_LOOK_FOR_CRATE;
+		return StateEnum.STATE_LOOK_FOR_CRATE;
 	}
 }

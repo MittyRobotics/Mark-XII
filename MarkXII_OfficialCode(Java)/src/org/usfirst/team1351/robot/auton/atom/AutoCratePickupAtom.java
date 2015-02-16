@@ -66,8 +66,12 @@ public class AutoCratePickupAtom extends Atom
 				right.set(driveMult);
 				crateDist = TKOHardware.getCrateDistance();
 			}
+			left.set(0.);
+			right.set(0.);
 			tim.stop();
 			tim.reset();
+			
+			Timer.delay(.25); //TODO remove this
 
 			TKOLift.getInstance().goUp();
 

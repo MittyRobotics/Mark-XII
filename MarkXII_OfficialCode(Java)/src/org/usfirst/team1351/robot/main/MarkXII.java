@@ -38,6 +38,8 @@ import edu.wpi.first.wpilibj.Timer;
  * Ki = 2*Kp/Pc
  * Kd = 0.125*Kp*Pc
  * 
+ * TODO Important, StateMachine assumes that TKOLift is enabled and configured
+ * 
  * TODO Auton
  * 	AutoCratePickupAtom - drives forward until crate engaged, automatically goes up immediately
 	CratePlaceAtom - places the stack of 3 (hardcoded) or maybe place stack based on current lift level

@@ -40,10 +40,12 @@ public class ResetLift implements IStateFunction
 		
 		data.curState = StateEnum.STATE_RESET_LIFT;
 
-		double lvl = TKOLift.getInstance().getCurrentLevel();
-		int pos = TKOLift.getInstance().getEncoderPosition();
+		TKOLift.getInstance().goToLevel(0);
 		
-		int sensors = StateMachine.getSensorData(data);
+		while (TKOLift.getInstance().getCurrentLevel() != 0 || TKOLift.getInstance().isMoving())
+		{
+			Timer.delay(0.1);
+		}
 		
 		/*while (sensors == 26 || cur == 90 || cur == 58 || cur == 122 || cur == 5  || cur == 69 || cur == 37 || cur == 101)
 		{

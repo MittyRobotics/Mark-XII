@@ -117,7 +117,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	private double calculateLevel(int encPosition)
 	{
 		double calculatedLevel = (encPosition - bottomOffset) / oneLevel;
-		System.out.println("Calculated level: " + calculatedLevel);
+		System.out.println("Calculated level: " + calculatedLevel + " pos: " + encPosition);
 		return calculatedLevel;
 	}
 
@@ -131,16 +131,20 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			CANTalon lmotor = TKOHardware.getLiftTalon();
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I,
 					Definitions.LIFT_D);
-			TKOHardware.getLiftTalon().reverseOutput(true);
+			
+			lmotor.reverseOutput(true);
+			lmotor.setSafetyEnabled(false);
 
 			while (!TKOHardware.getLiftBottom() && DriverStation.getInstance().isEnabled())
 			{
 				lmotor.set(Definitions.LIFT_CALIBRATION_POWER);
+				System.out.println("Pos: " + lmotor.getPosition());
 			}
 			if (!DriverStation.getInstance().isEnabled())
 				return false;
 			lmotor.set(0); // stop motor
 			lmotor.setPosition(0); // reset encoder
+			System.out.println("POSITION: " + lmotor.getPosition());
 			softBottom = lmotor.getPosition() + softBottomOffset;
 			/*
 			 * Timer.delay(.1);
@@ -152,11 +156,11 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			 * lmotor.getPosition()); softTop = lmotor.getPosition() - softTopOffset;
 			 */
 
-			lmotor.setSafetyEnabled(false);
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
+			lmotor.setPosition(0.); // reset encoder
 			setStartPosition(); // goto starting place
 			currentPIDSetpoint = lmotor.getEncPosition();
-			System.out.println("DONE CALIBRATING");
+			System.out.println("DONE CALIBRATING " + currentPIDSetpoint);
 		}
 		catch (TKOException e)
 		{
@@ -707,7 +711,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public void setStartPosition()
 	{
-		currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
+		//currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
 		goToLevel(startLevel);
 	}
 

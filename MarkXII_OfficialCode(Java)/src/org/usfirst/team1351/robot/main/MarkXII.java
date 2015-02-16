@@ -14,6 +14,7 @@ import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -117,7 +118,7 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
-		//TKOTalonSafety.getInstance().start();
+		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 
 
@@ -129,8 +130,8 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			//TKOTalonSafety.getInstance().stop();
-			//TKOTalonSafety.getInstance().safetyCheckerThread.join();
+			TKOTalonSafety.getInstance().stop();
+			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();

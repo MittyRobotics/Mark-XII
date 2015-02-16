@@ -1,5 +1,5 @@
 //Last edited by Alex Parks
-//on 1/31/15
+//on 2/6/15
 
 package org.usfirst.frc.team1351.robot.vision;
 
@@ -13,13 +13,13 @@ import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ShapeMode;
 
-import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.CameraServer; 
 import edu.wpi.first.wpilibj.vision.USBCamera;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 
-public class TKOVision implements Runnable {
-
+public class TKOVision implements Runnable 
+{
 	public TKOThread visionThread = null;
 	private static TKOVision m_Instance = null;
 	private static int session;
@@ -28,29 +28,15 @@ public class TKOVision implements Runnable {
 	protected TKOVision()
 	
 	{
-		//stick4(STICK_4_PORT);
 		System.out.println("Vision Activated!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+		
 		//TODO change camera name
+		
 		session = NIVision.IMAQdxOpenCamera("cam0", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
 		NIVision.IMAQdxConfigureGrab(session);
 		
-		//not sure if lastDist, lastProcessingTime, and lastTimestamp will be used
-		//if so, will need to be implemented
-		
-		double lastDist = 0.0;
-		double lastProcessingTime = 0.0; //values from 2014
-		double lastTimestamp = 0.0;
-		
 		//TODO set up camera and its settings 
-		
-		//AxisCamera.WriteMaxFPS(30); //check static
-		//AxisCamera.WriteCompression(30);
-		//AxisCamera.WriteBrightness(30); //TODO add setting writing
-		
-		boolean lastTarget = false; //.Hot later
-		
-		//AddToSingletonList();
 	}	
 	
 	public static synchronized TKOVision getInstance()
@@ -103,18 +89,7 @@ public class TKOVision implements Runnable {
 		}
 		NIVision.IMAQdxStopAcquisition(session);
 	}
-
-	public static void straightDistance()
-	{
-		int dist;
-		int vertHeight;
-		int targetHeight;
-		int imageHeight;
-		int straightAngle;
-		
 	
-		
-	}
 	@Override
 	public void run() 
 	{

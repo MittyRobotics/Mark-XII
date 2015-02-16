@@ -15,27 +15,18 @@ public class ResetLift implements IStateFunction
 	{
 		System.out.println("Entering ResetLift state");
 		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |  16 |   8 |     |   2 |     |	= 90
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |  16 |   8 |     |   2 |     |	= 58
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |  32 |  16 |   8 |     |   2 |     |	= 122
-		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |   1 |	= 5
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |     |     |   4 |     |   1 |	= 69
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |     |     |   4 |     |   1 |	= 37
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |  32 |     |     |   4 |     |   1 |	= 101
-		
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |   8 |     |   2 |     | = 10
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |   8 |     |   2 |   1 | = 11
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |     | = 20
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |   1 | = 21
+
 		int cur = StateMachine.createIntFromBoolArray(data);
-		
-		if (cur != 26 || cur != 90 || cur != 58 || cur != 122 || cur != 5  || cur != 69 || cur != 37 || cur != 101)
+
+		if (cur != 10 || cur != 11 || cur != 20 || cur != 21)
 			return StateEnum.STATE_ERR;
 		
 		data.curState = StateEnum.STATE_RESET_LIFT;

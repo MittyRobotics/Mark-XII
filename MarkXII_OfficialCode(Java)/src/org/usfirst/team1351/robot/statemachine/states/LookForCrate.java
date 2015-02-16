@@ -5,6 +5,8 @@ import org.usfirst.team1351.robot.statemachine.InstanceData;
 import org.usfirst.team1351.robot.statemachine.StateEnum;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class LookForCrate implements IStateFunction
 {
 	@Override
@@ -12,43 +14,40 @@ public class LookForCrate implements IStateFunction
 	{
 		System.out.println("Entering LookForCrate state");
 		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |   1 |	= 5
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |     | = 42
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |     | = 20
 		
-		if (StateMachine.createIntFromBoolArray(data) != 5 || StateMachine.createIntFromBoolArray(data) != 26)
+		int cur = StateMachine.createIntFromBoolArray(data);
+		
+		if (cur != StateMachine.READY_TO_LIFT || cur != StateMachine.PISTON_RETRACTED)
 			return StateEnum.STATE_ERR;
 		
 		data.curState = StateEnum.STATE_LOOK_FOR_CRATE;
 		
 		int sensors = StateMachine.getSensorData(data);
-
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |  16 |   8 |     |   2 |     |	= 90
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |  16 |   8 |     |   2 |     |	= 58
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |   1 |	= 5
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |     |     |   4 |     |   1 |	= 69
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |     |     |   4 |     |   1 |	= 37
 		
-		while ((sensors != StateMachine.CRATE_FOUND || sensors != 101) &&
-				(sensors == 26 || sensors == 90 || sensors == 58) ||
-				(sensors == 5 || sensors == 69 || sensors == 37))
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |     | = 42
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |   1 | = 43
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |     | = 20
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |   1 | = 21
+		
+		while ((sensors != 43 || sensors != 21) && (sensors == 42 || sensors == 20))
 		{
 			if (StateMachine.getJoystick().getRawButton(11))
 			{
 				System.out.println("Exiting LookForCrate state");
 			    return StateEnum.STATE_DROP_ALL;
 			}
+			Timer.delay(0.1);
 		}
 			
-		if (sensors != StateMachine.CRATE_FOUND)
+		if (sensors != 43 || sensors != 21)
 			return StateEnum.STATE_ERR;
 		
 		System.out.println("Exiting LookForCrate state");

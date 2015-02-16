@@ -6,6 +6,7 @@ import org.usfirst.team1351.robot.statemachine.StateEnum;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 
 public class OpenGripper implements IStateFunction
 {
@@ -27,23 +28,21 @@ public class OpenGripper implements IStateFunction
 	    
 	    int sensors = StateMachine.getSensorData(data);
 
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |   8 |     |   2 |     |	= 10
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |     |   2 |     |	= 2
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |   8 |     |     |     |	= 8
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |     |     |     |	= 0
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |     |	= 4	    
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |     |     |   1 |	= 1
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |     |     |   4 |     |   1 |	= 5
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |   8 |     |   2 |     | = 10
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |   8 |     |     |     | = 8
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |     |     |   2 |     | = 2
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |     |     |     |     | = 0
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |     |     |     | = 16
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |     |     |   4 |     |     | = 4
 	    
 	    while (sensors != StateMachine.PISTON_RETRACTED &&
-	    		(sensors == 10 || sensors == 2 || sensors == 8 || sensors == 0 || sensors == 4 || sensors == 1))
+	    		(sensors == 10 || sensors == 8 || sensors == 2 || sensors == 0 || sensors == 16 || sensors == 4))
 	    {
 	    	if (StateMachine.getTimer().get() > StateMachine.PISTON_RETRACT_TIMEOUT)
 	    	{
@@ -51,6 +50,7 @@ public class OpenGripper implements IStateFunction
 	            StateMachine.getTimer().reset();
 	            return StateEnum.STATE_ERR;
 	        }
+	    	Timer.delay(0.1);
 	    }
 	    StateMachine.getTimer().stop();
 	    StateMachine.getTimer().reset();

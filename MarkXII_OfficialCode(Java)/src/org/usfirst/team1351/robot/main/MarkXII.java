@@ -78,18 +78,22 @@ public class MarkXII extends SampleRobot
 	public void autonomous()
 	{
 		System.out.println("Enabling autonomous!");
-		TKOLogger.getInstance().start();
-		TKODataReporting.getInstance().start();
+//		TKOLogger.getInstance().start();
+//		TKODataReporting.getInstance().start();
 		//TKOTalonSafety.getInstance().start();
-		TKOLift.getInstance().start();
+		//TKOLift.getInstance().start();
 		TKOPneumatics.getInstance().start();
 
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		Molecule molecule = new Molecule();
-		DriveAtom drive = new DriveAtom(10000.);
-		GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
+		DriveAtom drive = new DriveAtom(-5000.);
+		GyroTurnAtom turnGyro = new GyroTurnAtom(90.f); 
 		molecule.add(drive);
 		molecule.add(turnGyro); 
+		molecule.add(drive);
+		//molecule.add(turnGyro);
+		//molecule.add(drive);
+		
 
 		System.out.println("Running molecule");
 		molecule.initAndRun();
@@ -99,12 +103,12 @@ public class MarkXII extends SampleRobot
 		{
 			TKOPneumatics.getInstance().stop();
 			TKOPneumatics.getInstance().pneuThread.join();
-			TKOLift.getInstance().stop();
-			TKOLift.getInstance().conveyorThread.join();
-			TKODataReporting.getInstance().stop();
-			TKODataReporting.getInstance().dataReportThread.join();
-			TKOLogger.getInstance().stop();
-			TKOLogger.getInstance().loggerThread.join();
+			//TKOLift.getInstance().stop();
+			//TKOLift.getInstance().conveyorThread.join();
+			//TKODataReporting.getInstance().stop();
+			//TKODataReporting.getInstance().dataReportThread.join();
+			//TKOLogger.getInstance().stop();
+			//TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();

@@ -37,6 +37,8 @@ public class DriveAtom extends Atom
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, p, i, d);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0); // resets encoders
+			TKOHardware.getLeftDrive().enableBrakeMode(true);
+			TKOHardware.getRightDrive().enableBrakeMode(true);
 			//TKOHardware.getLeftDrive().reverseSensor(true);
 //			TKOHardware.getLeftDrive().reverseOutput(true);
 //			TKOHardware.getRightDrive().reverseOutput(true); 

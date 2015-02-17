@@ -11,19 +11,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Definitions
 {
-<<<<<<< .merge_file_a07336
 	public static final double AUTON_DRIVE_P = 1.;
 	public static final double AUTON_DRIVE_I = -0.1; //-0.1
 	public static final double AUTON_DRIVE_D = 0.5;
-	public static final double AUTON_GYRO_TURN_P = 0.6;
-	public static final double AUTON_GYRO_TURN_I = 0.; //0.1
-=======
-	public static final double AUTON_DRIVE_P = 0.6;
-	public static final double AUTON_DRIVE_I = 0.; //-0.1
-	public static final double AUTON_DRIVE_D = 0.;
 	public static final double AUTON_GYRO_TURN_P = 0.0064;
 	public static final double AUTON_GYRO_TURN_I = 0.00023; //0.1
->>>>>>> .merge_file_a03284
 	public static final double AUTON_GYRO_TURN_D = 0.;
 	public static final double AUTON_PID_INCREMENTER = 50.;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;

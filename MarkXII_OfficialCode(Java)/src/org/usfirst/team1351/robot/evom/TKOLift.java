@@ -117,7 +117,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	private double calculateLevel(int encPosition)
 	{
 		double calculatedLevel = (encPosition - bottomOffset) / oneLevel;
-		System.out.println("Calculated level: " + calculatedLevel);
+		System.out.println("Calculated level: " + calculatedLevel + " pos: " + encPosition);
 		return calculatedLevel;
 	}
 
@@ -129,19 +129,22 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// return true;
 			System.out.println("STARTING LIFT CALIBRATION");
 			CANTalon lmotor = TKOHardware.getLiftTalon();
-			currentPIDSetpoint = lmotor.getEncPosition();
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I,
 					Definitions.LIFT_D);
-			TKOHardware.getLiftTalon().reverseOutput(true);
+			
+			lmotor.reverseOutput(true);
+			lmotor.setSafetyEnabled(false);
 
 			while (!TKOHardware.getLiftBottom() && DriverStation.getInstance().isEnabled())
 			{
 				lmotor.set(Definitions.LIFT_CALIBRATION_POWER);
+				System.out.println("Pos: " + lmotor.getPosition());
 			}
 			if (!DriverStation.getInstance().isEnabled())
 				return false;
 			lmotor.set(0); // stop motor
 			lmotor.setPosition(0); // reset encoder
+			System.out.println("POSITION: " + lmotor.getPosition());
 			softBottom = lmotor.getPosition() + softBottomOffset;
 			/*
 			 * Timer.delay(.1);
@@ -153,11 +156,11 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			 * lmotor.getPosition()); softTop = lmotor.getPosition() - softTopOffset;
 			 */
 
-			lmotor.setSafetyEnabled(false);
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
+			lmotor.setPosition(0.); // reset encoder
 			setStartPosition(); // goto starting place
 			currentPIDSetpoint = lmotor.getEncPosition();
-			System.out.println("DONE CALIBRATING");
+			System.out.println("DONE CALIBRATING " + currentPIDSetpoint);
 		}
 		catch (TKOException e)
 		{
@@ -294,7 +297,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	 */
 	public synchronized void goToPosition(double position)
 	{
-		// System.out.println("Tar Pos: " + position + " CURRENT ACTION " + currentAction);
+		System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
@@ -500,19 +503,22 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						timeMin = t.get();
 					}
 				}
-				
+				double period = Math.abs(timeMax - timeMin);
+
 				System.out.println("Tested p: " + p);
 				System.out.println("Period of oscilation with current p: " + Math.abs(timeMax - timeMin));
 				System.out.println("MAX: " + max);
 				System.out.println("MIN: " + min);
-				
-				//tuning = false;
-				
+				System.out.println("Suggested i: " + (2 * p / period));
+				System.out.println("Suggested d: " + (2 * p / period));
+
+				// tuning = false;
+
 				p++;
 				if (p > 20)
 					tuning = false;
 			}
-			
+
 		}
 		catch (TKOException e)
 		{
@@ -692,20 +698,20 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		// }
 		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
 
-		// try {
-		// System.out.println("Lift Position: "
-		// + TKOHardware.getLiftTalon().getPosition());
-		// System.out.println("Crate: " + TKOHardware.getCrateDistance());
-		// System.out.println("PID ERROR?: "
-		// + TKOHardware.getLiftTalon().getClosedLoopError());
-		// } catch (TKOException e) {
-		// e.printStackTrace();
-		// }
+		try
+		{
+			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void setStartPosition()
 	{
-		currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
+		//currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
 		goToLevel(startLevel);
 	}
 

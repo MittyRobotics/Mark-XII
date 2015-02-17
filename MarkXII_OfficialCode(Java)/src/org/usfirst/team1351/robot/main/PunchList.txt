@@ -1,11 +1,12 @@
 DRIVE
 	Current-based driving
-	Position based control for autonomous
 	Switching between these modes?
 	Driving slower, based on number of crates?
 	Shifting
 
 LIFT
+	CONFIGURE CAMERAS
+	DOES ENCODER READ WHILE ROBOT DISABLED
 	Test crate sensor, pickup totes with crate sensor
 	Test trashcan sensor, pickup trashcan automatically with trashcan sensor
 	Pickup, dropoff of simple stacks
@@ -16,14 +17,13 @@ LIFT
 	Test with the whellie bars, check for robot flipping
 	Adjust nylon bolts; larger hooks?
 	Error recovery - what to do if crate falls off
-	Current safety
 	Keep track of totes?
 	Add tape to trashcan gripper
 	Pneumatics
 	Test switching to ManualVBUS mode
 	TEST GOING FROM MANUALVBUS BACK TO POSITION
 	TEST DROPBASEDONLEVEL
-	TEST DataLogging and adjust current safeties accordingly
+	TEST DataLogging and TalonSafety and adjust current safeties accordingly
 	
 STATE MACHINE
 	Testing everything

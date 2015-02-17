@@ -20,45 +20,51 @@ public class LiftCrate implements IStateFunction
 	public StateEnum doState(InstanceData data)
 	{
 		System.out.println("Entering LiftCrate state");
-		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |  32 |  16 |   8 |     |   2 |     |	= 122
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |   1 |	= 5
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |  32 |     |     |   4 |     |   1 |	= 101
+				
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |     | = 42
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |   1 | = 43
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |     | = 20
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |   1 | = 21
 		
 		int cur = StateMachine.createIntFromBoolArray(data);
 		
-		if (cur != 26 || cur != 122 || cur != 5 || cur != 101)
+		if (cur != 42 || cur != 43 || cur != 20 || cur != 21)
 			return StateEnum.STATE_ERR;
 		
 		data.curState = StateEnum.STATE_LIFT_CRATE;
 
 		double lvl = TKOLift.getInstance().getCurrentLevel();
 		
+		if (lvl > TKOLift.getInstance().getSoftTop() || lvl < TKOLift.getInstance().getSoftBottom())
+		{
+			return StateEnum.STATE_ERR;
+		}
+			
+		if (lvl == TKOLift.trashcanPickupPosition)
+		{
+//			TKOLift.getInstance().goToLevel(newLevel);
+		}
+			
 		TKOLift.getInstance().goUp();
 		
 		int sensors = StateMachine.getSensorData(data);
 		
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |  16 |   8 |     |   2 |     |	= 90
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |  16 |   8 |     |   2 |     |	= 58
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |     |     |     |   4 |     |   1 |	= 5
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |  64 |     |     |     |   4 |     |   1 |	= 69
-		// 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-		// 0b |     |  32 |     |     |   4 |     |   1 |	= 37
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |     | = 42
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |   2 |   1 | = 43
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |     | = 20
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |     |  16 |     |   4 |     |   1 | = 21
 		
-		while (TKOLift.getInstance().getCurrentLevel() != lvl + 1 &&
-				(sensors == 26 || sensors == 90 || sensors == 58) ||
-				(sensors == 5 || sensors == 69 || sensors == 37))
+		while ((TKOLift.getInstance().getCurrentLevel() != lvl + TKOLift.oneLevel) ||
+				(TKOLift.getInstance().getCurrentLevel() != TKOLift.fullOfCratesPosition) &&
+				(sensors == 42 || sensors == 43) || (sensors == 20 || sensors == 21))
 		{
 			Timer.delay(0.1);
 		}
@@ -68,13 +74,13 @@ public class LiftCrate implements IStateFunction
 			System.out.println("Lift full, waiting for joystick");
 			while (StateMachine.getJoystick().getRawButton(8) == false)
 			{
-				
+				Timer.delay(0.1);
 			}
 			System.out.println("Exiting LiftCrate state");
 			return StateEnum.STATE_DROP_ALL;
 		}
 		
-		if (TKOLift.getInstance().getCurrentLevel() != lvl + 1)
+		if (TKOLift.getInstance().getCurrentLevel() != lvl + TKOLift.oneLevel)
 			return StateEnum.STATE_ERR;
 		
 		System.out.println("Exiting LiftCrate state");

@@ -14,6 +14,7 @@ import org.usfirst.team1351.robot.statemachine.StateMachine;
 import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -80,14 +81,14 @@ public class MarkXII extends SampleRobot
 		TKOLogger.getInstance().start();
 		TKODataReporting.getInstance().start();
 		//TKOTalonSafety.getInstance().start();
-		//TKOLift.getInstance().start();
+		TKOLift.getInstance().start();
 		TKOPneumatics.getInstance().start();
 
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		Molecule molecule = new Molecule();
-		//DriveAtom drive = new DriveAtom(-50000.);
-		GyroTurnAtom turnGyro = new GyroTurnAtom(90.f); 
-		//molecule.add(drive);
+		DriveAtom drive = new DriveAtom(10000.);
+		GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
+		molecule.add(drive);
 		molecule.add(turnGyro); 
 
 		System.out.println("Running molecule");
@@ -98,8 +99,8 @@ public class MarkXII extends SampleRobot
 		{
 			TKOPneumatics.getInstance().stop();
 			TKOPneumatics.getInstance().pneuThread.join();
-//			TKOLift.getInstance().stop();
-//			TKOLift.getInstance().conveyorThread.join();
+			TKOLift.getInstance().stop();
+			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
 			TKOLogger.getInstance().stop();
@@ -117,8 +118,8 @@ public class MarkXII extends SampleRobot
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
 		TKODataReporting.getInstance().start();
-		//TKOTalonSafety.getInstance().start();
-		//TKOLift.getInstance().start();
+		TKOTalonSafety.getInstance().start();
+		TKOLift.getInstance().start();
 
 
 		while (isOperatorControl() && isEnabled())
@@ -129,10 +130,10 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			//TKOTalonSafety.getInstance().stop();
-			//TKOTalonSafety.getInstance().safetyCheckerThread.join();
-			//TKOLift.getInstance().stop();
-			//TKOLift.getInstance().conveyorThread.join();
+			TKOTalonSafety.getInstance().stop();
+			TKOTalonSafety.getInstance().safetyCheckerThread.join();
+			TKOLift.getInstance().stop();
+			TKOLift.getInstance().conveyorThread.join();
 			TKODataReporting.getInstance().stop();
 			TKODataReporting.getInstance().dataReportThread.join();
 			TKOPneumatics.getInstance().stop();

@@ -34,6 +34,7 @@ public class TKOPneumatics implements Runnable
 	public TKOThread pneuThread = null;
 	private static TKOPneumatics m_Instance = null;
 	private boolean manualEnabled = true;
+	long lastShiftTime = System.currentTimeMillis();
 
 	protected TKOPneumatics()
 	{
@@ -128,6 +129,33 @@ public class TKOPneumatics implements Runnable
 	{
 		manualEnabled = false;
 	}
+	
+	public void autoShift()
+	{
+		try
+		{
+			double currentThreshLeft = 30;
+			double currentThreshRight = 30;
+			short shiftDelay = 500;
+			
+			if (System.currentTimeMillis() - lastShiftTime < shiftDelay)
+				return;
+			
+			if (TKOHardware.getLeftDrive().getOutputCurrent() > currentThreshLeft || TKOHardware.getRightDrive().getOutputCurrent() > currentThreshRight)
+			{
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
+			}
+			else
+			{
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_HIGH);
+			}
+			lastShiftTime = System.currentTimeMillis();
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * The pistonControl() method runs continuously in the run() method. The try-catch loop exists since getPiston(i) can throw a
@@ -167,11 +195,15 @@ public class TKOPneumatics implements Runnable
 			if (TKOHardware.getJoystick(0).getRawButton(4))
 			{
 				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+				lastShiftTime = System.currentTimeMillis();
 			}
-			if (TKOHardware.getJoystick(0).getRawButton(5))
+			else if (TKOHardware.getJoystick(0).getRawButton(5))
 			{
 				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+				lastShiftTime = System.currentTimeMillis();
 			}
+			else
+				autoShift();
 
 		}
 		catch (Exception e)

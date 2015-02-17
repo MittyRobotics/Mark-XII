@@ -25,17 +25,12 @@ public class StateMachine implements Runnable
 {	
 	// TODO add analog inputs but make them act as digital inputs
 	static Timer m_timer;
-	
-//	static DigitalInput m_crateLeft;
-//	static DigitalInput m_crateRight;
-	
+
 	static DigitalInput m_gripper;
 	static DigitalInput m_pistonRetract_L;
 	static DigitalInput m_pistonExtend_L;
 	static DigitalInput m_pistonRetract_R;
 	static DigitalInput m_pistonExtend_R;
-	static DigitalInput m_crateLeft;
-	static DigitalInput m_crateRight;
 	
 	static Joystick m_evomStick;
 	static DoubleSolenoid m_gripperPiston;
@@ -47,12 +42,19 @@ public class StateMachine implements Runnable
 	public static final float PISTON_RETRACT_TIMEOUT = 15.f;
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
 
-	// refer to other states for detailed bit maps
-	public static final int PISTON_EXTENDED = 10;		// goes to state: open gripper
-	public static final int PISTON_RETRACTED = 5;		// goes to state: ready for rc
-	public static final int RC_FOUND = 21;				// goes to state: close gripper
-	public static final int READY_TO_LIFT = 26;			// goes to state: lift crate
-	public static final int CRATE_FOUND = 122;			// goes to state: lift crate
+	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+	// 0b |     |     |   8 |     |   2 |     | = 10
+	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+	// 0b |     |  16 |     |   4 |     |     | = 20
+	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+	// 0b |  32 |  16 |     |   4 |     |     | = 52
+	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+	// 0b |  32 |     |   8 |     |   2 |     | = 42
+	
+	public static final int PISTON_EXTENDED = 10;
+	public static final int PISTON_RETRACTED = 20;
+	public static final int RC_FOUND = 52;
+	public static final int READY_TO_LIFT = 42;
 	
 	public TKOThread stateThread = null;
 	private static StateMachine m_Instance = null;
@@ -108,14 +110,19 @@ public class StateMachine implements Runnable
 	}
 
 	public static int getSensorData(InstanceData id)
-	{
-		id.state[0] = false; //(m_crateLeft.get() == false);
-		id.state[1] = false; //(m_crateRight.get() == false);		
-		id.state[2] = (m_gripper.get() == false);
-		id.state[3] = (m_pistonRetract_L.get() == false);
-		id.state[4] = (m_pistonExtend_L.get() == false);
-		id.state[5] = (m_pistonRetract_R.get() == false);
-		id.state[6] = (m_pistonExtend_R.get() == false);
+	{	
+		id.state[0] = (m_gripper.get() == false);
+		id.state[1] = (m_pistonRetract_L.get() == false);
+		id.state[2] = (m_pistonExtend_L.get() == false);
+		id.state[3] = (m_pistonRetract_R.get() == false);
+		id.state[4] = (m_pistonExtend_R.get() == false);
+		try
+		{
+			id.state[5] = (TKOHardware.cratePresent() == false);
+		} catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 		
 		return createIntFromBoolArray(id);
 	}
@@ -191,7 +198,6 @@ public class StateMachine implements Runnable
 		{
 			while (stateThread.isThreadRunning())
 			{
-				// what goes here?
 				runState(data.curState, data);
 				System.out.println("RUNNING STATE: " + data.curState);
 				

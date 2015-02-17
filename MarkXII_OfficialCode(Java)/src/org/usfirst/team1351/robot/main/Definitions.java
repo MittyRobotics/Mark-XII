@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Definitions
 {
@@ -69,9 +70,9 @@ public class Definitions
 	public static final CANTalon.FeedbackDevice LIFT_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 
-	public static final double LIFT_I = 0.01;
+	public static final double LIFT_I = 0.02;
 
-	public static final double LIFT_P = 2.;
+	public static final double LIFT_P = 4.;
 	public static final double LIFT_PID_INCREMENTER = 100.;
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
@@ -96,10 +97,13 @@ public class Definitions
 
 	public static final int NUM_SWITCHES = 7; // 5 for state machine + 2 for gripper top/bottom
 	public static final int PCM_ID = 0;
+	
+	public static final DoubleSolenoid.Value SHIFTER_LOW = DoubleSolenoid.Value.kForward;
+	public static final DoubleSolenoid.Value SHIFTER_HIGH = DoubleSolenoid.Value.kReverse;
 
 	public static final int SHIFTER_A = 2; // drive train shifting piston
-
 	public static final int SHIFTER_B = 3;
+	
 	public static final double[] TALON_CURRENT_TIMEOUT =
 	{ 100, 100, 100, 100, 50, 50 };
 	public static ArrayList<String> threadNames = new ArrayList<String>();

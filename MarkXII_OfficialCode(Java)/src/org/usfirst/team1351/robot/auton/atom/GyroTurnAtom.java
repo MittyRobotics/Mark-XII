@@ -18,13 +18,14 @@ public class GyroTurnAtom extends Atom
 {
 	PIDController pid;
 	Gyro gyro;
-	double angle, incrementer;
+	double angle, incrementer, threshold;
 	double p, i, d;
 	int ncoder1, ncoder2;
 
 	public GyroTurnAtom(double f)
 	{
 		angle = f;
+		threshold = 1;
 		incrementer = Definitions.AUTON_PID_INCREMENTER;
 		p = Definitions.AUTON_GYRO_TURN_P;
 		i = Definitions.AUTON_GYRO_TURN_I;
@@ -57,7 +58,7 @@ public class GyroTurnAtom extends Atom
 		pid.reset();
 		pid.setOutputRange(-1, 1);
 		pid.setContinuous();
-		pid.setAbsoluteTolerance(5);
+		pid.setAbsoluteTolerance(1);
 
 		System.out.println("Initialized");
 	}
@@ -80,6 +81,10 @@ public class GyroTurnAtom extends Atom
 				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
 			}
 
+			while (Math.abs(gyro.getAngle() - angle) < threshold)
+			{
+				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
+			}
 			TKOHardware.getDriveTalon(0).set(0);
 			TKOHardware.getDriveTalon(2).set(0);
 		}

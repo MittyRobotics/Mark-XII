@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class DriveAtom extends Atom
 {
 
-	double distance, incrementer;
+	double distance, incrementer, threshold;
 	int ncoder1, ncoder2;
 	double p, i, d;
 
@@ -24,6 +24,7 @@ public class DriveAtom extends Atom
 		distance = f;
 		//incrementer = Definitions.AUTON_PID_INCREMENTER;
 		incrementer = 25;
+		threshold = 5;
 		p = Definitions.AUTON_DRIVE_P;
 		i = Definitions.AUTON_DRIVE_I;
 		d = Definitions.AUTON_DRIVE_D;
@@ -71,6 +72,11 @@ public class DriveAtom extends Atom
 
 			TKOHardware.getDriveTalon(0).set(distance);
 			TKOHardware.getDriveTalon(2).set(distance);
+			
+			while (Math.abs(TKOHardware.getLeftDrive().getPosition() - distance) > threshold)
+			{
+				//not close enough doe
+			}
 
 		}
 		catch (TKOException e1)

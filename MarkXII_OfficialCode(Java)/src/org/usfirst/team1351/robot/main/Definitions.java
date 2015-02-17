@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Definitions
 {
-	public static final double AUTON_DRIVE_P = 1.;
+	public static final double AUTON_DRIVE_P = 0.5;
 	public static final double AUTON_DRIVE_I = -0.1; //-0.1
 	public static final double AUTON_DRIVE_D = 0.5;
 	public static final double AUTON_GYRO_TURN_P = 0.0064;

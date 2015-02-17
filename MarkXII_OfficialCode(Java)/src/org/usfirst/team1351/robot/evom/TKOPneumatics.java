@@ -147,7 +147,7 @@ public class TKOPneumatics implements Runnable
 			}
 			else
 			{
-				TKOHardware.getPiston(0).set(Definitions.SHIFTER_HIGH);
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW); //TODO
 			}
 			lastShiftTime = System.currentTimeMillis();
 		}
@@ -204,6 +204,11 @@ public class TKOPneumatics implements Runnable
 			}
 			else
 				autoShift();
+			
+//			if (TKOHardware.getSwitch(2).get())
+//			{
+//				TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
+//			}
 
 		}
 		catch (Exception e)

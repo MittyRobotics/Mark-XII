@@ -5,6 +5,7 @@ package org.usfirst.team1351.robot.main;
 
 import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
+import org.usfirst.team1351.robot.auton.atom.GoUpAtom;
 import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
@@ -87,9 +88,10 @@ public class MarkXII extends SampleRobot
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		Molecule molecule = new Molecule();
 		DriveAtom drive = new DriveAtom(10000.);
-		GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
+		//GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
 		molecule.add(drive);
-		molecule.add(turnGyro); 
+		molecule.add(new GoUpAtom());
+		//molecule.add(turnGyro); 
 
 		System.out.println("Running molecule");
 		molecule.initAndRun();

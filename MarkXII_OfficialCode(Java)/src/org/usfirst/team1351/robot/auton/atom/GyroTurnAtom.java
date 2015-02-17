@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 
 public class GyroTurnAtom extends Atom
 {
@@ -36,8 +37,11 @@ public class GyroTurnAtom extends Atom
 		{
 			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.PercentVbus, p, i, d);
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.PercentVbus, p, i, d);
+			TKOHardware.getLeftDrive().reverseOutput(false);
+			TKOHardware.getRightDrive().reverseOutput(true);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0);
+			Timer.delay(0.1);;
 
 			gyro = TKOHardware.getGyro();
 			pid = new PIDController(p, i, d, gyro, TKOHardware.getLeftDrive());
@@ -65,12 +69,13 @@ public class GyroTurnAtom extends Atom
 			pid.enable();
 			pid.setSetpoint(angle);
 			//pid.onTarget might not work if the setInput method isnt called
-			while (DriverStation.getInstance().isEnabled() && pid.onTarget())
+			while (DriverStation.getInstance().isEnabled())// && !pid.onTarget())
 			{
 				pid.setSetpoint(angle);
 				TKOHardware.getRightDrive().set(-TKOHardware.getLeftDrive().get()); 
 				//TKOHardware.getRightDrive().set(-pid.get()); //TODO what does pid.get() actually return?
 				// System.out.println("GYRO " + gyro.getAngle());
+				System.out.println("Left get: " + TKOHardware.getLeftDrive().get());
 				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t PID GET: " + pid.get());
 			}
 

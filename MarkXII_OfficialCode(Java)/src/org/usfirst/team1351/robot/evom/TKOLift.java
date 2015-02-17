@@ -66,18 +66,18 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final double oneLevel = 4875; // TODO 4750 before
+	public static final double oneLevel = 4900; // TODO 4750 before
 	public static final byte minLevel = 0; // zero based
 	public static final byte maxLevel = 3; // 4th crate
 	public static final byte startLevel = 0;
-	public static final double bottomOffset = 4515;
+	public static final double bottomOffset = 4700;
 	public static final double dropoffPerLevel = 0.2; // TODO CALCULATE
 	public static final double softBottomOffset = 0; // safety offset
 	public static final double softTopOffset = 100; // safety offset
 	public static final double encoderThreshold = 100;
 	public static final long liftThreadSleep = 20; // used to be 20
 
-	public static final double softTop = 22226 - softTopOffset;
+	public static final double softTop = 22500 - softTopOffset;
 
 	public static final double softLevelTop = (-softTopOffset + softTop - bottomOffset) / oneLevel;
 	public static final double softLevelBot = (softBottomOffset - bottomOffset) / oneLevel;
@@ -131,7 +131,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			CANTalon lmotor = TKOHardware.getLiftTalon();
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I,
 					Definitions.LIFT_D);
-			
+
 			lmotor.reverseOutput(true);
 			lmotor.setSafetyEnabled(false);
 
@@ -143,8 +143,11 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			if (!DriverStation.getInstance().isEnabled())
 				return false;
 			lmotor.set(0); // stop motor
-			lmotor.setPosition(0); // reset encoder
+			Timer.delay(0.1);
 			System.out.println("POSITION: " + lmotor.getPosition());
+			lmotor.setPosition(0); // reset encoder
+			Timer.delay(0.25);
+			System.out.println("POSITION AFTER RESET: " + lmotor.getPosition());
 			softBottom = lmotor.getPosition() + softBottomOffset;
 			/*
 			 * Timer.delay(.1);
@@ -157,7 +160,6 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			 */
 
 			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
-			lmotor.setPosition(0.); // reset encoder
 			setStartPosition(); // goto starting place
 			currentPIDSetpoint = lmotor.getEncPosition();
 			System.out.println("DONE CALIBRATING " + currentPIDSetpoint);
@@ -317,6 +319,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						currentAction = Action.DONE;
 						// done ascending
 					}
+					currentPIDSetpoint = position; // TODO DANGER
 					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
 					System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
@@ -342,6 +345,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						currentAction = Action.DONE;
 						// done ascending
 					}
+					currentPIDSetpoint = position; // TODO DANGER
 					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
 					System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
@@ -687,31 +691,31 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		// System.out.println("CurAct: " + currentAction);
 		// System.out.println("CurrentOp: " + operation);
 		// System.out.println("Level: " + level);
-		// try
-		// {
-		// System.out.println("CRATE: " + TKOHardware.getCrateDistance());
-		// //System.out.println("CRATE TF: " + TKOHardware.cratePresent());
-		// }
-		// catch (TKOException e)
-		// {
-		// e.printStackTrace();
-		// }
-		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
-
-		try
-		{
-			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
-			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
-		}
-		catch (TKOException e)
-		{
-			e.printStackTrace();
-		}
+//		try
+//		{
+//			System.out.println("CRATE: " + TKOHardware.getCrateDistance());
+//			System.out.println("CRATE TF: " + TKOHardware.cratePresent());
+//		}
+//		catch (TKOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
+//
+//		try
+//		{
+//			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+//			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
+//		}
+//		catch (TKOException e)
+//		{
+//			e.printStackTrace();
+//		}
 	}
 
 	public void setStartPosition()
 	{
-		//currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
+		// currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
 		goToLevel(startLevel);
 	}
 

@@ -10,6 +10,7 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveAtom extends Atom
 {
@@ -21,7 +22,8 @@ public class DriveAtom extends Atom
 	public DriveAtom(double f)
 	{
 		distance = f;
-		incrementer = Definitions.AUTON_PID_INCREMENTER;
+		//incrementer = Definitions.AUTON_PID_INCREMENTER;
+		incrementer = 25;
 		p = Definitions.AUTON_DRIVE_P;
 		i = Definitions.AUTON_DRIVE_I;
 		d = Definitions.AUTON_DRIVE_D;
@@ -35,8 +37,15 @@ public class DriveAtom extends Atom
 		{
 			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, p, i, d);
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, p, i, d);
+			TKOHardware.getLeftDrive().reverseOutput(false);
+			TKOHardware.getRightDrive().reverseOutput(true);
+			TKOHardware.getLeftDrive().reverseSensor(true);
+			TKOHardware.getRightDrive().reverseSensor(false);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0); // resets encoders
+			Timer.delay(0.1);
+			TKOHardware.getLeftDrive().set(TKOHardware.getLeftDrive().getPosition());
+			TKOHardware.getRightDrive().set(TKOHardware.getRightDrive().getPosition());
 		}
 		catch (TKOException e)
 		{

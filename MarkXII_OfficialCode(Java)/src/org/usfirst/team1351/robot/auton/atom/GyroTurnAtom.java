@@ -51,7 +51,7 @@ public class GyroTurnAtom extends Atom
 		pid.reset();
 		pid.setOutputRange(-1, 1);
 		pid.setContinuous();
-		pid.setAbsoluteTolerance(10);
+		pid.setAbsoluteTolerance(5);
 
 		System.out.println("Initialized");
 	}
@@ -65,13 +65,13 @@ public class GyroTurnAtom extends Atom
 			pid.enable();
 			pid.setSetpoint(angle);
 			//pid.onTarget might not work if the setInput method isnt called
-			while (DriverStation.getInstance().isEnabled() && pid.onTarget())
+			while (DriverStation.getInstance().isEnabled() && !pid.onTarget())
 			{
 				pid.setSetpoint(angle);
-				TKOHardware.getRightDrive().set(-TKOHardware.getLeftDrive().get()); 
+				TKOHardware.getRightDrive().set(pid.get());; 
 				//TKOHardware.getRightDrive().set(-pid.get()); //TODO what does pid.get() actually return?
 				// System.out.println("GYRO " + gyro.getAngle());
-				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t PID GET: " + pid.get());
+				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
 			}
 
 			TKOHardware.getDriveTalon(0).set(0);

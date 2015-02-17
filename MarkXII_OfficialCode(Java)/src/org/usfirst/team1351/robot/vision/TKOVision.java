@@ -7,6 +7,7 @@ import org.usfirst.team1351.robot.util.TKOThread;
 
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
+import com.ni.vision.NIVision.Range;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
@@ -66,8 +67,12 @@ public class TKOVision implements Runnable
 			camera.writeBrightness(0);
 			camera.getImage(frame);
 			
+			Range range1 = new Range(100, 140);
+			Range range2 = new Range(104, 255);
+			Range range3 = new Range(92, 132);
 			Image processedImage = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-			//NIVision.imaqColorThreshold(processedImage, frame, 0, NIVision.ColorMode.HSV, range1, range2, range3);
+			NIVision.imaqColorThreshold(processedImage, frame, 0, NIVision.ColorMode.HSV, range1, range2, range3);
+			//NIVision.imaqMorphology(processedImage, processedImage, NIVision.MorphologyMethod., structuringElement);
 //			CameraServer.getInstance().setImage(frame);
 
 			/** robot code here! **/

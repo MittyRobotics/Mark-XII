@@ -10,6 +10,7 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveAtom extends Atom
 {
@@ -21,7 +22,8 @@ public class DriveAtom extends Atom
 	public DriveAtom(double f)
 	{
 		distance = f;
-		incrementer = Definitions.AUTON_PID_INCREMENTER;
+		//incrementer = Definitions.AUTON_PID_INCREMENTER;
+		incrementer = 25;
 		p = Definitions.AUTON_DRIVE_P;
 		i = Definitions.AUTON_DRIVE_I;
 		d = Definitions.AUTON_DRIVE_D;
@@ -35,13 +37,15 @@ public class DriveAtom extends Atom
 		{
 			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, p, i, d);
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, p, i, d);
+			TKOHardware.getLeftDrive().reverseOutput(false);
+			TKOHardware.getRightDrive().reverseOutput(true);
+			TKOHardware.getLeftDrive().reverseSensor(true);
+			TKOHardware.getRightDrive().reverseSensor(false);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0); // resets encoders
-			TKOHardware.getLeftDrive().enableBrakeMode(true);
-			TKOHardware.getRightDrive().enableBrakeMode(true);
-			//TKOHardware.getLeftDrive().reverseSensor(true);
-//			TKOHardware.getLeftDrive().reverseOutput(true);
-//			TKOHardware.getRightDrive().reverseOutput(true); 
+			Timer.delay(0.1);
+			TKOHardware.getLeftDrive().set(TKOHardware.getLeftDrive().getPosition());
+			TKOHardware.getRightDrive().set(TKOHardware.getRightDrive().getPosition());
 		}
 		catch (TKOException e)
 		{
@@ -57,10 +61,10 @@ public class DriveAtom extends Atom
 		System.out.println("Starting execution");
 		try
 		{
-			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() > distance)
+			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() < distance)
 			{
-				TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() - incrementer);
-				TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() - incrementer);
+				TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() + incrementer);
+				TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() + incrementer);
 				System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
 						+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: " + TKOHardware.getDriveTalon(0).getSetpoint());
 			}

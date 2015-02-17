@@ -11,16 +11,16 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Definitions
 {
-	public static final double AUTON_DRIVE_P = 0.6;
-	public static final double AUTON_DRIVE_I = 0.; //-0.1
-	public static final double AUTON_DRIVE_D = 0.;
+	public static final double AUTON_DRIVE_P = 1.;
+	public static final double AUTON_DRIVE_I = -0.1; //-0.1
+	public static final double AUTON_DRIVE_D = 0.5;
 	public static final double AUTON_GYRO_TURN_P = 0.0064;
 	public static final double AUTON_GYRO_TURN_I = 0.00023; //0.1
 	public static final double AUTON_GYRO_TURN_D = 0.;
 	public static final double AUTON_PID_INCREMENTER = 50.;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;
 
-	public static final double CRATE_DISTANCE_THRESHOLD = 5.1;
+	public static final double CRATE_DISTANCE_THRESHOLD = 5.2;
 	public static final int CRATE_SENSOR_ID = 3;
 
 	public static final long[] CURRENT_TIMEOUT_LENGTH =
@@ -66,14 +66,16 @@ public class Definitions
 	public static final double LIFT_CALIBRATION_POWER = .4;
 	public static final int LIFT_CONTROL_STICK = 3;
 
-	public static final double LIFT_D = 0;
+	
 	public static final CANTalon.FeedbackDevice LIFT_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 
-	public static final double LIFT_I = 0.02;
-
-	public static final double LIFT_P = 4.;
-	public static final double LIFT_PID_INCREMENTER = 100.;
+	public static final double LIFT_P = 1.5;
+	public static final double LIFT_I = 0.005;
+	public static final double LIFT_D = 0.1;
+	//public static final double LIFT_I = 0.02;
+	//public static final double LIFT_D = 0.1;
+	public static final double LIFT_PID_INCREMENTER = 200.;
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
 	{ true, false };
@@ -105,7 +107,7 @@ public class Definitions
 	public static final int SHIFTER_B = 3;
 	
 	public static final double[] TALON_CURRENT_TIMEOUT =
-	{ 100, 100, 100, 100, 50, 50 };
+	{ 5, 5, 5, 5, 5, 5 };
 	public static ArrayList<String> threadNames = new ArrayList<String>();
 	public static HashMap<String, Integer> threadPriorities;
 

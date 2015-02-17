@@ -16,6 +16,7 @@ public class DecideAction implements IStateFunction
 		System.out.println("Entering DecideAction state");
 		
 		TKOPneumatics.getInstance().notManual();
+		// TODO for a recovery mode, add a toggle in TKOLift for manual/nonmanual
 		
 		int cur = StateMachine.createIntFromBoolArray(data);
 

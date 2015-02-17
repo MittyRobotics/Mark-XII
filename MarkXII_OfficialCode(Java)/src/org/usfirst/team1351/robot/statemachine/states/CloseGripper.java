@@ -6,6 +6,7 @@ import org.usfirst.team1351.robot.statemachine.StateEnum;
 import org.usfirst.team1351.robot.statemachine.StateMachine;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 
 public class CloseGripper implements IStateFunction
 {
@@ -25,22 +26,21 @@ public class CloseGripper implements IStateFunction
 	    
 	    int sensors = StateMachine.getSensorData(data);
 	    
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |     |   4 |     |   1 |	= 21
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |     |     |     |   1 |	= 17
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |     |   4 |     |     |	= 20
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |     |     |     |     |	= 16
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |   8 |     |     |     |	= 24
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |     |     |   2 |     |	= 18
-	    // 0b |  CL |  CR |  GS |  LE |  LR |  RE |  RR |
-	 	// 0b |     |     |  16 |   8 |     |   2 |     |	= 26
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |  16 |     |   4 |     |     | = 52
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |  16 |     |     |     |     | = 48
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |     |   4 |     |     | = 36
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |     |     |     |     | = 32
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |   8 |     |     |     | = 40
+		// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
+		// 0b |  32 |     |     |     |   2 |     | = 34
+	    
 	    while (sensors != StateMachine.READY_TO_LIFT &&
-	    		(sensors == 21 || sensors == 17 || sensors == 20 || sensors == 16 || sensors == 24 || sensors == 18))
+	    		(sensors == 52 || sensors == 48 || sensors == 36 || sensors == 32 || sensors == 40 || sensors == 34))
 	    {
 	    	if (StateMachine.getTimer().get() > StateMachine.PISTON_EXTEND_TIMEOUT)
 	    	{
@@ -48,6 +48,7 @@ public class CloseGripper implements IStateFunction
 	            StateMachine.getTimer().reset();
 	            return StateEnum.STATE_ERR;
 	        }
+	    	Timer.delay(0.1);
 	    }
 	    StateMachine.getTimer().stop();
 	    StateMachine.getTimer().reset();

@@ -7,6 +7,7 @@ import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
 import org.usfirst.team1351.robot.auton.atom.GoUpAtom;
 import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
+import org.usfirst.team1351.robot.auton.atom.TrashcanGrabAndUp;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
@@ -18,6 +19,8 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Timer;
 
 /*-----------TODO-------------
@@ -49,7 +52,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class MarkXII extends SampleRobot
 {
-
+	SerialPort arduino;
 	public MarkXII()
 	{
 		//don't put stuff here, use robotInit();
@@ -87,11 +90,17 @@ public class MarkXII extends SampleRobot
 
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		Molecule molecule = new Molecule();
-		DriveAtom drive = new DriveAtom(10000.);
-		//GyroTurnAtom turnGyro = new GyroTurnAtom(45.f); 
-		molecule.add(drive);
+		
+	//	molecule.add(new GyroTurnAtom(90));
+	//	molecule.add(new GyroTurnAtom(-90));
+		
+		molecule.add(new TrashcanGrabAndUp());
+		molecule.add(new DriveAtom(-5000.));
+		molecule.add(new GyroTurnAtom(90)); 
+		molecule.add(new DriveAtom(8000.));
+		molecule.add(new GyroTurnAtom(-90)); 
+		molecule.add(new DriveAtom(15000.));
 		molecule.add(new GoUpAtom());
-		//molecule.add(turnGyro); 
 
 		System.out.println("Running molecule");
 		molecule.initAndRun();
@@ -122,7 +131,6 @@ public class MarkXII extends SampleRobot
 		TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-
 
 		while (isOperatorControl() && isEnabled())
 		{			

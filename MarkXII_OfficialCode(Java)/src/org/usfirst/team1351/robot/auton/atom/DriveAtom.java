@@ -24,7 +24,7 @@ public class DriveAtom extends Atom
 		distance = f;
 		//incrementer = Definitions.AUTON_PID_INCREMENTER;
 		incrementer = 25;
-		threshold = 5;
+		threshold = 15;
 		p = Definitions.AUTON_DRIVE_P;
 		i = Definitions.AUTON_DRIVE_I;
 		d = Definitions.AUTON_DRIVE_D;
@@ -62,6 +62,8 @@ public class DriveAtom extends Atom
 		System.out.println("Starting execution");
 		try
 		{
+			if (distance > 0)
+			{
 			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() < distance)
 			{
 				TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() + incrementer);
@@ -69,13 +71,24 @@ public class DriveAtom extends Atom
 				System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
 						+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: " + TKOHardware.getDriveTalon(0).getSetpoint());
 			}
+			}
+			else
+			{
+				while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() > distance)
+				{
+					TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() - incrementer);
+					TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() - incrementer);
+					System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
+							+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: " + TKOHardware.getDriveTalon(0).getSetpoint());
+				}
+			}
 
 			TKOHardware.getDriveTalon(0).set(distance);
 			TKOHardware.getDriveTalon(2).set(distance);
 			
-			while (Math.abs(TKOHardware.getLeftDrive().getPosition() - distance) > threshold)
+			while (Math.abs(TKOHardware.getLeftDrive().getPosition() - distance) > threshold && DriverStation.getInstance().isEnabled())
 			{
-				//not close enough doe
+				//not close enough doe; actually gets stuck here
 			}
 
 		}

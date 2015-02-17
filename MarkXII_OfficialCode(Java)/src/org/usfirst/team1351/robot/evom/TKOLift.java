@@ -66,7 +66,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final double oneLevel = 4900; // TODO 4750 before
+	public static final double oneLevel = 5000; // TODO 4750 before
 	public static final byte minLevel = 0; // zero based
 	public static final byte maxLevel = 3; // 4th crate
 	public static final byte startLevel = 0;
@@ -82,7 +82,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final double softLevelTop = (-softTopOffset + softTop - bottomOffset) / oneLevel;
 	public static final double softLevelBot = (softBottomOffset - bottomOffset) / oneLevel;
 
-	public static final double trashcanPickupPosition = softLevelBot + 0.01;
+	public static final double trashcanPickupPosition = softLevelBot + 0.1;
 	public static final double fullOfCratesPosition = softLevelTop - 0.1;
 	public static final double dropOffsetDistance = 0.75;
 
@@ -299,7 +299,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	 */
 	public synchronized void goToPosition(double position)
 	{
-		System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
+		//System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)

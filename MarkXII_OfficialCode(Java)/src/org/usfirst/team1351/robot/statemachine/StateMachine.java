@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
 public class StateMachine implements Runnable
-{	
+{
 	// TODO add analog inputs but make them act as digital inputs
 	static Timer m_timer;
 
@@ -31,34 +31,35 @@ public class StateMachine implements Runnable
 	static DigitalInput m_pistonExtend_L;
 	static DigitalInput m_pistonRetract_R;
 	static DigitalInput m_pistonExtend_R;
-	
+
 	static Joystick m_evomStick;
 	static DoubleSolenoid m_gripperPiston;
 
 	private InstanceData data = new InstanceData();
 
-	static IStateFunction states[] = new IStateFunction[StateEnum.NUM_STATES.getValue() + 1];
+	static IStateFunction states[] = new IStateFunction[StateEnum.STATE_ERR.getValue() + 1];
+	//static IStateFunction states[] = new IStateFunction[10];
 
 	public static final float PISTON_RETRACT_TIMEOUT = 15.f;
 	public static final float PISTON_EXTEND_TIMEOUT = 15.f;
 
-	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
-	// 0b |     |     |   8 |     |   2 |     | = 10
-	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
-	// 0b |     |  16 |     |   4 |     |     | = 20
-	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
-	// 0b |  32 |  16 |     |   4 |     |     | = 52
-	// 0b |  GS |  LR |  LE |  RR |  RE |  CP |
-	// 0b |  32 |     |   8 |     |   2 |     | = 42
-	
+	// 0b | GS | LR | LE | RR | RE | CP |
+	// 0b | | | 8 | | 2 | | = 10
+	// 0b | GS | LR | LE | RR | RE | CP |
+	// 0b | | 16 | | 4 | | | = 20
+	// 0b | GS | LR | LE | RR | RE | CP |
+	// 0b | 32 | 16 | | 4 | | | = 52
+	// 0b | GS | LR | LE | RR | RE | CP |
+	// 0b | 32 | | 8 | | 2 | | = 42
+
 	public static final int PISTON_EXTENDED = 10;
 	public static final int PISTON_RETRACTED = 20;
 	public static final int RC_FOUND = 52;
 	public static final int READY_TO_LIFT = 42;
-	
+
 	public TKOThread stateThread = null;
 	private static StateMachine m_Instance = null;
-	
+
 	public static synchronized StateMachine getInstance()
 	{
 		if (m_Instance == null)
@@ -68,12 +69,12 @@ public class StateMachine implements Runnable
 		}
 		return m_Instance;
 	}
-	
+
 	protected void init()
 	{
-		//currentState = new DecideAction();
+		// currentState = new DecideAction();
 	}
-	
+
 	protected StateMachine()
 	{
 		m_timer = new Timer();
@@ -81,21 +82,22 @@ public class StateMachine implements Runnable
 		try
 		{
 			m_gripper = TKOHardware.getSwitch(2);
-			m_pistonRetract_L = TKOHardware.getSwitch(3);
-			m_pistonExtend_L = TKOHardware.getSwitch(4);
-			m_pistonRetract_R = TKOHardware.getSwitch(5);
-			m_pistonExtend_R = TKOHardware.getSwitch(6);
-			
+			// m_pistonRetract_L = TKOHardware.getSwitch(3);
+			// m_pistonExtend_L = TKOHardware.getSwitch(4);
+			// m_pistonRetract_R = TKOHardware.getSwitch(5);
+			// m_pistonExtend_R = TKOHardware.getSwitch(6);
+
 			// TODO stick 4 for state machine actions, stick 3 for manual control?
 			m_evomStick = TKOHardware.getJoystick(3);
 			m_gripperPiston = TKOHardware.getPiston(1);
-			
-		} catch (TKOException e)
+
+		}
+		catch (TKOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		states[StateEnum.STATE_DECIDE_ACTION.getValue()] = new DecideAction();
 		states[StateEnum.STATE_OPEN_GRIPPER.getValue()] = new OpenGripper();
 		states[StateEnum.STATE_READY_FOR_RC.getValue()] = new ReadyForRC();
@@ -105,25 +107,33 @@ public class StateMachine implements Runnable
 		states[StateEnum.STATE_DROP_ALL.getValue()] = new DropAll();
 		states[StateEnum.STATE_RESET_LIFT.getValue()] = new ResetLift();
 		states[StateEnum.STATE_ERR.getValue()] = new ErrorState();
-		
+
 		data.curState = StateEnum.STATE_DECIDE_ACTION;
 	}
 
 	public static int getSensorData(InstanceData id)
-	{	
-		id.state[0] = (m_gripper.get() == false);
-		id.state[1] = (m_pistonRetract_L.get() == false);
-		id.state[2] = (m_pistonExtend_L.get() == false);
-		id.state[3] = (m_pistonRetract_R.get() == false);
-		id.state[4] = (m_pistonExtend_R.get() == false);
+	{
 		try
 		{
-			id.state[5] = (TKOHardware.cratePresent() == false);
-		} catch (TKOException e)
+			id.state[0] = (m_gripper.get() == false);
+			id.state[1] = (TKOHardware.getPiston(1).get() == DoubleSolenoid.Value.kReverse);
+			id.state[2] = (TKOHardware.getPiston(1).get() == DoubleSolenoid.Value.kForward);
+			id.state[3] = (TKOHardware.getPiston(1).get() == DoubleSolenoid.Value.kReverse);
+			id.state[4] = (TKOHardware.getPiston(1).get() == DoubleSolenoid.Value.kForward);
+			try
+			{
+				id.state[5] = (TKOHardware.cratePresent() == false);
+			}
+			catch (TKOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		catch (TKOException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		return createIntFromBoolArray(id);
 	}
 
@@ -159,7 +169,7 @@ public class StateMachine implements Runnable
 	{
 		return states[curState.getValue()].doState(data);
 	}
-	
+
 	public static synchronized boolean getGripperSwitch() throws TKOException
 	{
 		if (m_gripper == null)
@@ -173,16 +183,15 @@ public class StateMachine implements Runnable
 		if (!stateThread.isAlive() && m_Instance != null)
 		{
 			stateThread = new TKOThread(m_Instance);
-//			stateThread.setPriority(Definitions.getPriority("gripper"));
+			// stateThread.setPriority(Definitions.getPriority("gripper"));
 		}
 		if (!stateThread.isThreadRunning())
 			stateThread.setThreadRunning(true);
-		
+
 		init();
-		
+
 		System.out.println("Started state machine task");
 	}
-
 
 	public synchronized void stop()
 	{
@@ -191,7 +200,7 @@ public class StateMachine implements Runnable
 			stateThread.setThreadRunning(false);
 		System.out.println("Stopped state machine task");
 	}
-	
+
 	public void run()
 	{
 		try
@@ -200,13 +209,14 @@ public class StateMachine implements Runnable
 			{
 				runState(data.curState, data);
 				System.out.println("RUNNING STATE: " + data.curState);
-				
+
 				synchronized (stateThread)
 				{
-					stateThread.wait(20);	// how long is this wait?
+					stateThread.wait(20); // how long is this wait?
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

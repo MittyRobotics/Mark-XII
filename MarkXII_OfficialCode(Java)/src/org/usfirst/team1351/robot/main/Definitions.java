@@ -14,9 +14,9 @@ public class Definitions
 	public static final double AUTON_DRIVE_P = 0.5;
 	public static final double AUTON_DRIVE_I = -0.1; //-0.1
 	public static final double AUTON_DRIVE_D = 0.5;
-	public static final double AUTON_GYRO_TURN_P = 0.0064;
-	public static final double AUTON_GYRO_TURN_I = 0.00023; //0.1
-	public static final double AUTON_GYRO_TURN_D = 0.;
+	public static final double AUTON_GYRO_TURN_P = 0.04;
+	public static final double AUTON_GYRO_TURN_I = 0.001; //0.1
+	public static final double AUTON_GYRO_TURN_D = 0.05;
 	public static final double AUTON_PID_INCREMENTER = 50.;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;
 
@@ -70,12 +70,12 @@ public class Definitions
 	public static final CANTalon.FeedbackDevice LIFT_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 
-	public static final double LIFT_P = 1.5;
+	public static final double LIFT_P = 1;
 	public static final double LIFT_I = 0.005;
 	public static final double LIFT_D = 0.1;
 	//public static final double LIFT_I = 0.02;
 	//public static final double LIFT_D = 0.1;
-	public static final double LIFT_PID_INCREMENTER = 200.;
+	public static final double LIFT_PID_INCREMENTER = 100.;
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
 	{ true, false };

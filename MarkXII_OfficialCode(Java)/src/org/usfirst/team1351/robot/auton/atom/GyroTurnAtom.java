@@ -56,7 +56,7 @@ public class GyroTurnAtom extends Atom
 
 		gyro.reset();
 		pid.reset();
-		pid.setOutputRange(-1, 1);
+		pid.setOutputRange(-0.5, 0.5);
 		pid.setContinuous();
 		pid.setAbsoluteTolerance(1);
 
@@ -66,7 +66,7 @@ public class GyroTurnAtom extends Atom
 	@Override
 	public void execute()
 	{
-		System.out.println("Starting execution");
+		System.out.println("Starting execution of GYRO TURN");
 		try
 		{
 			pid.enable();
@@ -74,26 +74,34 @@ public class GyroTurnAtom extends Atom
 			//pid.onTarget might not work if the setInput method isnt called
 			while (DriverStation.getInstance().isEnabled() && !pid.onTarget())
 			{
-				pid.setSetpoint(angle);
-				TKOHardware.getRightDrive().set(-pid.get());; 
+				//pid.setSetpoint(angle);
+				TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
 				//TKOHardware.getRightDrive().set(-pid.get()); //TODO what does pid.get() actually return?
 				// System.out.println("GYRO " + gyro.getAngle());
-				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
+				//System.out.println("PID GET " + pid.get() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
+				System.out.println("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: " + TKOHardware.getRightDrive().get());
+				Timer.delay(0.001);
 			}
-
-			while (Math.abs(gyro.getAngle() - angle) < threshold)
+			Timer t = new Timer();
+			t.reset();
+			t.start();
+			while (pid.getError() > threshold || t.get() < 2.5)
 			{
+				TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
 				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
+				Timer.delay(0.001);
 			}
+			t.stop();
 			TKOHardware.getDriveTalon(0).set(0);
 			TKOHardware.getDriveTalon(2).set(0);
+			Timer.delay(0.1);
 		}
 		catch (TKOException e1)
 		{
 			e1.printStackTrace();
 		}
 		pid.disable();
-		System.out.println("Done executing");
+		System.out.println("GYRO Done executing");
 	}
 
 }

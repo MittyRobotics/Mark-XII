@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.ControlMode;
+import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
 
@@ -22,7 +24,7 @@ public class TKOHardware
 {
 	// TODO Switch initialization
 	// TODO write getSwitch(int) method
-	
+
 	/*
 	 * For monitoring the control mode of the talons: Once a follower is created, it should never be accessed
 	 */
@@ -131,7 +133,7 @@ public class TKOHardware
 
 		if (limitSwitches[1] == null)
 			limitSwitches[1] = new DigitalInput(Definitions.LIFT_TOP_OPTICAL_SWITCH);
-		
+
 		if (limitSwitches[2] == null)
 			limitSwitches[2] = new DigitalInput(Definitions.LIFT_GRIPPER_SWITCH);
 
@@ -140,17 +142,17 @@ public class TKOHardware
 
 		if (acc == null)
 			acc = new BuiltInAccelerometer();
-		
+
 		if (gyro == null)
 		{
 			gyro = new Gyro(Definitions.GYRO_ANALOG_CHANNEL);
-			gyro.setSensitivity(7./1000.);
+			gyro.setSensitivity(7. / 1000.);
 			gyro.reset();
 		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
-			
+
 		if (analog[0] == null)
 			analog[0] = new AnalogInput(Definitions.CRATE_SENSOR_ID);
 	}
@@ -227,29 +229,29 @@ public class TKOHardware
 		}
 	}
 
-//	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException
-//	{
-//		if (target == null)
-//			throw new TKOException("ERROR Attempted to change mode of null CANTalon");
-//		if (newMode == target.getControlMode())
-//			return;
-//		
-//		int id = target.getDeviceID();		
-//		target.delete();
-//		target = null;
-//		target = new CANTalon(id);
-//		talonModes[id] = null;
-//		
-//		if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
-//			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
-//		
-//		System.out.println(target.getP());
-//		System.out.println(target.getI());
-//		System.out.println(target.getD());
-//
-//		target.changeControlMode(newMode);
-//		talonModes[target.getDeviceID()] = newMode;
-//	}
+	// public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException
+	// {
+	// if (target == null)
+	// throw new TKOException("ERROR Attempted to change mode of null CANTalon");
+	// if (newMode == target.getControlMode())
+	// return;
+	//
+	// int id = target.getDeviceID();
+	// target.delete();
+	// target = null;
+	// target = new CANTalon(id);
+	// talonModes[id] = null;
+	//
+	// if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
+	// target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
+	//
+	// System.out.println(target.getP());
+	// System.out.println(target.getI());
+	// System.out.println(target.getD());
+	//
+	// target.changeControlMode(newMode);
+	// talonModes[target.getDeviceID()] = newMode;
+	// }
 
 	public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode, double newP, double newI, double newD)
 			throws TKOException
@@ -261,20 +263,19 @@ public class TKOHardware
 			target.setPID(newP, newI, newD);
 			return;
 		}
-		
 
-		//if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
-			target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
-		
+		// if (target.getControlMode() != CANTalon.ControlMode.Position && target.getControlMode() != CANTalon.ControlMode.Speed)
+		target.setFeedbackDevice(Definitions.DEF_ENCODER_TYPE);
+
 		System.out.println(target.getP());
 		System.out.println(target.getI());
 		System.out.println(target.getD());
-		
+
 		target.changeControlMode(newMode);
 		target.setPID(newP, newI, newD);
 		target.enableControl();
 		talonModes[target.getDeviceID()] = newMode;
-		
+
 		System.out.println("!!!! CHANGED TALON MODE !!!! " + target.getDeviceID());
 	}
 
@@ -350,7 +351,7 @@ public class TKOHardware
 
 		if (acc != null)
 			acc = null;
-		
+
 		if (gyro != null)
 		{
 			gyro.free();
@@ -366,7 +367,7 @@ public class TKOHardware
 			}
 		}
 	}
-	
+
 	public static synchronized DigitalInput getSwitch(int num) throws TKOException
 	{
 		if (num >= Definitions.NUM_SWITCHES)
@@ -374,7 +375,7 @@ public class TKOHardware
 			throw new TKOException("Digital input requested out of bounds");
 		}
 		if (limitSwitches[num] != null)
-		{			
+		{
 			return limitSwitches[num];
 		}
 		else
@@ -392,20 +393,20 @@ public class TKOHardware
 		else
 			throw new TKOException("Analog input " + (num) + "(array value) is null");
 	}
-	
+
 	public static double getCrateDistance() throws TKOException
 	{
-		//return Definitions.INCHES_PER_VOLT / getAnalog(0).getVoltage();
-		//return getAnalog(0).getVoltage();
+		// return Definitions.INCHES_PER_VOLT / getAnalog(0).getVoltage();
+		// return getAnalog(0).getVoltage();
 		return (-6.066 * Math.log(getAnalog(0).getAverageVoltage()) + 4.6772);
-		//y = -6.066ln(x) + 4.6772
+		// y = -6.066ln(x) + 4.6772
 	}
-	
+
 	public static boolean cratePresent() throws TKOException
 	{
 		return (getCrateDistance() < Definitions.CRATE_DISTANCE_THRESHOLD);
 	}
-	
+
 	public static synchronized Joystick getJoystick(int num) throws TKOException
 	{
 		if (num >= Definitions.NUM_JOYSTICKS)
@@ -497,7 +498,7 @@ public class TKOHardware
 			throw new TKOException("ERROR RIGHT DRIVE FOLLOWER TALON IS NOT UNITIALIZED; MODE IS UNSET!");
 		return driveTalons[2];
 	}
-	
+
 	public static synchronized boolean getLiftGripper() throws TKOException
 	{
 		if (limitSwitches[2] == null)
@@ -560,14 +561,14 @@ public class TKOHardware
 			throw new TKOException("NULL DRIVE ARRAY");
 		return driveTalons;
 	}
-	
+
 	public static synchronized Gyro getGyro() throws TKOException
 	{
 		if (gyro == null)
 			throw new TKOException("GYRO NULL");
 		return gyro;
 	}
-	
+
 	public static synchronized double getGyroAngle() throws TKOException
 	{
 		if (gyro == null)

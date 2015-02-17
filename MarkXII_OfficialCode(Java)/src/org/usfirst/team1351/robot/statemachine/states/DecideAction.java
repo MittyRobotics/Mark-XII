@@ -19,6 +19,7 @@ public class DecideAction implements IStateFunction
 		// TODO for a recovery mode, add a toggle in TKOLift for manual/nonmanual
 		
 		int cur = StateMachine.createIntFromBoolArray(data);
+		System.out.println(cur);
 
 		if (cur == StateMachine.PISTON_EXTENDED)	// gripper closed
 		{

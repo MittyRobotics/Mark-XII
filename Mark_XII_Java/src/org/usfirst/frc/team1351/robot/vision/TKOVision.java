@@ -29,7 +29,7 @@ public class TKOVision implements Runnable
 	protected TKOVision()
 	
 	{
-		System.out.println("Vision Activated!!!!!!!!!");
+		System.out.println("Vision Activated!!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		camera = new AxisCamera("10.13.51.11");
 	}	
@@ -77,6 +77,17 @@ public class TKOVision implements Runnable
             
             Timer.delay(0.005);		// wait for a motor update time
         }
+    }
+    
+    public double distance() {
+    	double targetWidth_Px = 5.; //get n in px from something in WPILib later, and 5 is an example value
+    	double dist = 7/(targetWidth_Px * 1.324);
+    
+    	return dist;
+    }
+    public double linearInterp(double pt1, double pt2, double t){
+    	return (pt2 * (1-t)) + (pt1 *(t));
+    	
     }
 	
 	@Override

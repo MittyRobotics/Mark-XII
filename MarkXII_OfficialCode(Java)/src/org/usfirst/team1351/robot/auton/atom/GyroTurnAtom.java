@@ -26,7 +26,8 @@ public class GyroTurnAtom extends Atom
 	{
 		angle = f;
 		threshold = 1;
-		incrementer = Definitions.AUTON_PID_INCREMENTER;
+		// incrementer = Definitions.AUTON_PID_INCREMENTER; //TODO CREATE NEW VARIABLE FOR THIS
+		incrementer = .5;
 		p = Definitions.AUTON_GYRO_TURN_P;
 		i = Definitions.AUTON_GYRO_TURN_I;
 		d = Definitions.AUTON_GYRO_TURN_D;
@@ -48,8 +49,7 @@ public class GyroTurnAtom extends Atom
 
 			gyro = TKOHardware.getGyro();
 			pid = new PIDController(p, i, d, gyro, TKOHardware.getLeftDrive());
-		}
-		catch (TKOException e)
+		} catch (TKOException e)
 		{
 			e.printStackTrace();
 		}
@@ -58,45 +58,57 @@ public class GyroTurnAtom extends Atom
 		pid.reset();
 		pid.setOutputRange(-0.5, 0.5);
 		pid.setContinuous();
-		pid.setAbsoluteTolerance(1);
+		pid.setAbsoluteTolerance(2);
 
 		System.out.println("Initialized");
 	}
 
 	@Override
 	public void execute()
-	{
+	{ //TODO get incrementer tuned, ensure that the system is fully working. May need to adjust the timer, seems to be somewhat overshooting 
 		System.out.println("Starting execution of GYRO TURN");
 		try
 		{
 			pid.enable();
-			pid.setSetpoint(angle);
-			//pid.onTarget might not work if the setInput method isnt called
-			while (DriverStation.getInstance().isEnabled() && !pid.onTarget())
+			// The following may or may not work TODO Test it
+			// The following is designed as an incrementer for turn atom so that it will be smooth
+			// pid.onTarget might not work if the setInput method isnt called
+			if (angle >= 0)
 			{
-				//pid.setSetpoint(angle);
-				TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
-				//TKOHardware.getRightDrive().set(-pid.get()); //TODO what does pid.get() actually return?
-				// System.out.println("GYRO " + gyro.getAngle());
-				//System.out.println("PID GET " + pid.get() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
-				System.out.println("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: " + TKOHardware.getRightDrive().get());
-				Timer.delay(0.001);
+				while (DriverStation.getInstance().isEnabled() && pid.getSetpoint() < angle)
+				{
+					pid.setSetpoint(pid.getSetpoint() + incrementer);
+					TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
+					System.out.println("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: "
+							+ TKOHardware.getRightDrive().get() + "\t Setpoint: " + pid.getSetpoint());
+					Timer.delay(0.001);
+				}
 			}
+			else if(angle < 0) {
+				while(DriverStation.getInstance().isEnabled() && pid.getSetpoint() > angle) {
+					pid.setSetpoint(pid.getSetpoint() - incrementer);
+					TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
+					System.out.println("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: "
+							+ TKOHardware.getRightDrive().get() + "\t Setpoint: " + pid.getSetpoint());
+					Timer.delay(0.001);
+				}
+			}
+			pid.setSetpoint(angle);
 			Timer t = new Timer();
 			t.reset();
 			t.start();
-			while (pid.getError() > threshold || t.get() < 2.5)
+			while ((pid.getError() > threshold || t.get() < .75) && DriverStation.getInstance().isEnabled())
 			{
 				TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
-				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: " + gyro.getAngle());
+				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: "
+						+ gyro.getAngle());
 				Timer.delay(0.001);
 			}
 			t.stop();
 			TKOHardware.getDriveTalon(0).set(0);
 			TKOHardware.getDriveTalon(2).set(0);
 			Timer.delay(0.1);
-		}
-		catch (TKOException e1)
+		} catch (TKOException e1)
 		{
 			e1.printStackTrace();
 		}

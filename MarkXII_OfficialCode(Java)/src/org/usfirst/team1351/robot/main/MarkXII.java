@@ -52,7 +52,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class MarkXII extends SampleRobot
 {
-	SerialPort arduino;
+//	SerialPort arduino;
 	public MarkXII()
 	{
 		//don't put stuff here, use robotInit();
@@ -82,10 +82,10 @@ public class MarkXII extends SampleRobot
 	public void autonomous()
 	{
 		System.out.println("Enabling autonomous!");
-		TKOLogger.getInstance().start();
-		TKODataReporting.getInstance().start();
+//		TKOLogger.getInstance().start();
+//		TKODataReporting.getInstance().start();
 		//TKOTalonSafety.getInstance().start();
-		TKOLift.getInstance().start();
+	//	TKOLift.getInstance().start();
 		TKOPneumatics.getInstance().start();
 
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
@@ -94,14 +94,21 @@ public class MarkXII extends SampleRobot
 	//	molecule.add(new GyroTurnAtom(90));
 	//	molecule.add(new GyroTurnAtom(-90));
 		
-		molecule.add(new TrashcanGrabAndUp());
-		molecule.add(new DriveAtom(-5000.));
-		molecule.add(new GyroTurnAtom(90)); 
-		molecule.add(new DriveAtom(8000.));
-		molecule.add(new GyroTurnAtom(-90)); 
-		molecule.add(new DriveAtom(15000.));
-		molecule.add(new GoUpAtom());
-
+//		molecule.add(new TrashcanGrabAndUp());
+//		molecule.add(new DriveAtom(5000.));
+//		molecule.add(new GyroTurnAtom(90)); 
+//		molecule.add(new DriveAtom(8000.));
+//		molecule.add(new GyroTurnAtom(-90)); 
+//		molecule.add(new DriveAtom(15000.));
+//		molecule.add(new GoUpAtom());
+		molecule.add(new DriveAtom(5000.));
+		molecule.add(new GyroTurnAtom(90));
+		molecule.add(new DriveAtom(5000.));
+		molecule.add(new GyroTurnAtom(90));
+		molecule.add(new DriveAtom(5000.));
+		molecule.add(new GyroTurnAtom(90));
+		molecule.add(new DriveAtom(5000.));
+		molecule.add(new GyroTurnAtom(90));
 		System.out.println("Running molecule");
 		molecule.initAndRun();
 		System.out.println("Finished running molecule");
@@ -110,12 +117,12 @@ public class MarkXII extends SampleRobot
 		{
 			TKOPneumatics.getInstance().stop();
 			TKOPneumatics.getInstance().pneuThread.join();
-			TKOLift.getInstance().stop();
-			TKOLift.getInstance().conveyorThread.join();
-			TKODataReporting.getInstance().stop();
-			TKODataReporting.getInstance().dataReportThread.join();
-			TKOLogger.getInstance().stop();
-			TKOLogger.getInstance().loggerThread.join();
+//			TKOLift.getInstance().stop();
+//			TKOLift.getInstance().conveyorThread.join();
+//			TKODataReporting.getInstance().stop();
+//			TKODataReporting.getInstance().dataReportThread.join();
+//			TKOLogger.getInstance().stop();
+//			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();

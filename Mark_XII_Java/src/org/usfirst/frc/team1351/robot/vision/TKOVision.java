@@ -72,19 +72,20 @@ public class TKOVision implements Runnable
         while (isAutonomousControl() && isEnabled()) {
             camera.getImage(frame);
             CameraServer.getInstance().setImage(frame);
+            
+            //acquire image, get values from image, do equation
 
-            /** robot code here! **/
+            public double distance() {
+            	double targetWidth_Px = 5.; //get n in px from something in WPILib later, and 5 is an example value
+            	double dist = 7/(targetWidth_Px * 1.324);
+            
+            	return dist;
+            }
             
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
     
-    public double distance() {
-    	double targetWidth_Px = 5.; //get n in px from something in WPILib later, and 5 is an example value
-    	double dist = 7/(targetWidth_Px * 1.324);
-    
-    	return dist;
-    }
     public double linearInterp(double pt1, double pt2, double t){
     	return (pt2 * (1-t)) + (pt1 *(t));
     	

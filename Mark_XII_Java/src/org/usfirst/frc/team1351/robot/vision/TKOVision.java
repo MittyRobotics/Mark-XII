@@ -1,5 +1,5 @@
 //Last edited by Adam Filiz
-//on 2/16/15
+//on 2/21/15
 
 package org.usfirst.frc.team1351.robot.vision;
 
@@ -72,7 +72,7 @@ public class TKOVision implements Runnable
             camera.getImage(frame);
             CameraServer.getInstance().setImage(frame);
             
-            //acquire image, get values from image, do equation
+            //TODO:acquire image, get values from image, do equation
 
        
             
@@ -82,6 +82,17 @@ public class TKOVision implements Runnable
     
     public double linearInterp(double pt1, double pt2, double t){
     	return (pt2 * (1-t)) + (pt1 *(t));
+    	
+    }
+    
+    public void processImage(){
+    	camera.getImage(frame);
+    	camera.writeBrightness(20); //20 for now - will edit later
+    	//imaqColorThreshold(frame,); change later =  (Image dest, Image source, int replaceValue, ColorMode mode, Range plane1Range, Range plane2Range, Range plane3Range)
+    	//imaqMorphology (Image dest, Image source, , StructuringElement structuringElement) 
+    	//imaqFillHoles (NIVision.Image dest,NIVision.Image source, int connectivity8) not sure what int connectivity8 is
+    	//imaqParticleReport or imaqGetROIBoundingBox - will find out later
+    	//TODO: Figure out values for these functions
     	
     }
     

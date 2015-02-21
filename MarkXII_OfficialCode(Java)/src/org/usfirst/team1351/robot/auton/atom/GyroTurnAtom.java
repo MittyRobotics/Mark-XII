@@ -97,7 +97,7 @@ public class GyroTurnAtom extends Atom
 			Timer t = new Timer();
 			t.reset();
 			t.start();
-			while ((pid.getError() > threshold || t.get() < .75) && DriverStation.getInstance().isEnabled())
+			while ((pid.getError() > threshold || t.get() < .4318) && DriverStation.getInstance().isEnabled())
 			{
 				TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
 				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: "

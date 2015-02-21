@@ -1,4 +1,4 @@
-//Last edited by Alex Parks
+//Last edited by Adam Filiz
 //on 2/16/15
 
 package org.usfirst.frc.team1351.robot.vision;
@@ -27,7 +27,6 @@ public class TKOVision implements Runnable
     AxisCamera camera;
 	
 	protected TKOVision()
-	
 	{
 		System.out.println("Vision Activated!!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
@@ -75,12 +74,7 @@ public class TKOVision implements Runnable
             
             //acquire image, get values from image, do equation
 
-            public double distance() {
-            	double targetWidth_Px = 5.; //get n in px from something in WPILib later, and 5 is an example value
-            	double dist = 7/(targetWidth_Px * 1.324);
-            
-            	return dist;
-            }
+       
             
             Timer.delay(0.005);		// wait for a motor update time
         }
@@ -90,7 +84,21 @@ public class TKOVision implements Runnable
     	return (pt2 * (1-t)) + (pt1 *(t));
     	
     }
-	
+    
+    public double distance() {
+    	double targetWidth_Px = 5.; //get n in px from something in WPILib later, and 5 is an example value
+    	double dist = 7/(targetWidth_Px * 1.324);
+    
+    	return dist;
+   }
+    
+    public double offAngle(){
+    	double angle = 0;
+    	
+    	
+    	return angle;
+    }
+    
 	@Override
 	public void run() 
 	{

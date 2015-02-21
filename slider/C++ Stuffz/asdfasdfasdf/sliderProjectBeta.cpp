@@ -45,7 +45,7 @@ public:
 				driveControl(0, 0, 0, &ncoder, &rightTest), joy1(1)
 
 	{
-		//PLEASE SET VALUES FOR THESE!!!
+		//PLEASE SET VALUES FOR THESE!!! i am hacking - shreyas
 		//Like, make sure you set some before running, otherwise bad things will happen
 		//BTW, these don't actually do anything, they are just very useful for reference.
 		rightJaguarPort = 1;
@@ -57,6 +57,8 @@ public:
 		bChannel = 2;
 		driverStation = DriverStation::GetInstance();
 		ncoder.SetDistancePerPulse(0.027); //Change this later, if possible, based on requirements and later calculations
+		//driveControl.SetAbsoluteTolerance(.001);
+		driveControl.SetTolerance(0); 
 		/*
 		 *Recalculate this value every time you change the end hardware
 		 *Utilize gear ratios to calculate the distance per pulse first, corroborate your work by actually measuring and stuff.
@@ -66,12 +68,13 @@ public:
 
 	void RobotInit() {
 		//rightTest.enableDeadbandElimination(true);
+		
 	}
 
 	void Disabled() {
 		//Safety before the code runs for the driver's reference
-		printf(
-				"Initializing in autonomous mode with all default settings will make the robot perform 10 loops after an autohome. It will then travel to the second limit switch and hold its position there, all via PID. \n Use the DriverStation IO to change the number of iterations. \n");
+		//printf(
+				//"Initializing in autonomous mode with all default settings will make the robot perform 10 loops after an autohome. It will then travel to the second limit switch and hold its position there, all via PID. \n Use the DriverStation IO to change the number of iterations. \n");
 		printf(
 				"Having DS IO 1 set to true will have 10 loops, having it set to false will have 5 loops. \n");
 

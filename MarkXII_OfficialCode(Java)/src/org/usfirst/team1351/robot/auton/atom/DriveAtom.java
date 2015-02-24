@@ -25,6 +25,7 @@ public class DriveAtom extends Atom
 	{
 		distance = f;
 		//incrementer = Definitions.AUTON_PID_INCREMENTER;
+		//INCREMENTER RESET - KILLS THE ACCUMULATED ERROR, MIGHT PREVENT THE LURCH WE MENTIONED WHEN RUNNING THE SAME CODE MULTIPLE TIMES
 		incrementer = 25;
 		threshold = 75;
 		p = Definitions.AUTON_DRIVE_P;
@@ -46,6 +47,8 @@ public class DriveAtom extends Atom
 			TKOHardware.getRightDrive().reverseSensor(false);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0); // resets encoders
+			TKOHardware.getLeftDrive().ClearIaccum();
+			TKOHardware.getRightDrive().ClearIaccum();//This clears out the I cum and will help stop the bouncing that happens when restarting auton 
 			Timer.delay(0.1);
 			TKOHardware.getLeftDrive().set(TKOHardware.getLeftDrive().getPosition());
 			TKOHardware.getRightDrive().set(TKOHardware.getRightDrive().getPosition());

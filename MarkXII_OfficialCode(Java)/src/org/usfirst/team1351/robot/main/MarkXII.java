@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Timer;
+//http://youtu.be/UOuRx9Ujsog
+//Watch this video for tuning with Ziegler-Nichols
 
 /*-----------TODO-------------
  * Write TKOLEDArduino lol rekt
@@ -53,6 +55,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class MarkXII extends SampleRobot
 {
 //	SerialPort arduino;
+	double tpi = 332.5020781; 
 	public MarkXII()
 	{
 		//don't put stuff here, use robotInit();
@@ -82,6 +85,9 @@ public class MarkXII extends SampleRobot
 	public void autonomous()
 	{
 		System.out.println("Enabling autonomous!");
+		
+		//SmartDashboard.
+		
 //		TKOLogger.getInstance().start();
 //		TKODataReporting.getInstance().start();
 		//TKOTalonSafety.getInstance().start();
@@ -101,14 +107,15 @@ public class MarkXII extends SampleRobot
 //		molecule.add(new GyroTurnAtom(-90)); 
 //		molecule.add(new DriveAtom(15000.));
 //		molecule.add(new GoUpAtom());
-		molecule.add(new DriveAtom(20000.));
-//		molecule.add(new GyroTurnAtom(90));
 //		molecule.add(new DriveAtom(20000.));
 //		molecule.add(new GyroTurnAtom(90));
 //		molecule.add(new DriveAtom(20000.));
 //		molecule.add(new GyroTurnAtom(90));
 //		molecule.add(new DriveAtom(20000.));
 //		molecule.add(new GyroTurnAtom(90));
+//		molecule.add(new DriveAtom(20000.));
+//		molecule.add(new GyroTurnAtom(90));
+		molecule.add(new GyroTurnAtom(tpi * 78)); //This numerical value is in inches, change and test TODO wipe this TODO and push when done 
 		System.out.println("Running molecule");
 		molecule.initAndRun();
 		System.out.println("Finished running molecule");

@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
+//332.5020781 pulses/inches TODO VERY IMPORTANT NOIMBERS 
+
 public class DriveAtom extends Atom
 {
 

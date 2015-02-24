@@ -101,14 +101,14 @@ public class MarkXII extends SampleRobot
 //		molecule.add(new GyroTurnAtom(-90)); 
 //		molecule.add(new DriveAtom(15000.));
 //		molecule.add(new GoUpAtom());
-		molecule.add(new DriveAtom(5000.));
-		molecule.add(new GyroTurnAtom(90));
-		molecule.add(new DriveAtom(5000.));
-		molecule.add(new GyroTurnAtom(90));
-		molecule.add(new DriveAtom(5000.));
-		molecule.add(new GyroTurnAtom(90));
-		molecule.add(new DriveAtom(5000.));
-		molecule.add(new GyroTurnAtom(90));
+		molecule.add(new DriveAtom(20000.));
+//		molecule.add(new GyroTurnAtom(90));
+//		molecule.add(new DriveAtom(20000.));
+//		molecule.add(new GyroTurnAtom(90));
+//		molecule.add(new DriveAtom(20000.));
+//		molecule.add(new GyroTurnAtom(90));
+//		molecule.add(new DriveAtom(20000.));
+//		molecule.add(new GyroTurnAtom(90));
 		System.out.println("Running molecule");
 		molecule.initAndRun();
 		System.out.println("Finished running molecule");
@@ -132,10 +132,10 @@ public class MarkXII extends SampleRobot
 	public void operatorControl()
 	{
 		System.out.println("Enabling teleop!");
-		TKOLogger.getInstance().start();
+//		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
-		TKODataReporting.getInstance().start();
+//		TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 
@@ -151,14 +151,14 @@ public class MarkXII extends SampleRobot
 			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
-			TKODataReporting.getInstance().stop();
-			TKODataReporting.getInstance().dataReportThread.join();
+//			TKODataReporting.getInstance().stop();
+//			TKODataReporting.getInstance().dataReportThread.join();
 			TKOPneumatics.getInstance().stop();
 			TKOPneumatics.getInstance().pneuThread.join();
 			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
-			TKOLogger.getInstance().stop();
-			TKOLogger.getInstance().loggerThread.join();
+//			TKOLogger.getInstance().stop();
+//			TKOLogger.getInstance().loggerThread.join();
 		}
 		catch (InterruptedException e)
 		{

@@ -27,7 +27,7 @@ public class GyroTurnAtom extends Atom
 		angle = f;
 		threshold = 1;
 		// incrementer = Definitions.AUTON_PID_INCREMENTER; //TODO CREATE NEW VARIABLE FOR THIS
-		incrementer = .5;
+		incrementer = .7; //.5 TODO Test
 		p = Definitions.AUTON_GYRO_TURN_P;
 		i = Definitions.AUTON_GYRO_TURN_I;
 		d = Definitions.AUTON_GYRO_TURN_D;
@@ -70,9 +70,7 @@ public class GyroTurnAtom extends Atom
 		try
 		{
 			pid.enable();
-			// The following may or may not work TODO Test it
 			// The following is designed as an incrementer for turn atom so that it will be smooth
-			// pid.onTarget might not work if the setInput method isnt called
 			if (angle >= 0)
 			{
 				while (DriverStation.getInstance().isEnabled() && pid.getSetpoint() < angle)

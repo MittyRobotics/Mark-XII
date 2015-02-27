@@ -1,5 +1,5 @@
 //Last edited by Adam Filiz
-//on 2/24/15
+//on 2/26/15
 
 package org.usfirst.frc.team1351.robot.vision;
 
@@ -12,6 +12,7 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ShapeMode;
+import com.ni.vision.NIVision.StructuringElement;
 
 import edu.wpi.first.wpilibj.CameraServer; 
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -23,8 +24,9 @@ public class TKOVision implements Runnable
 	public TKOThread visionThread = null;
 	private static TKOVision m_Instance = null; 
 	int session;
-    Image frame, afterThresh, afterMorph, afterFill;
+    Image frame, BinaryImage, MorphImage, FillImage;
     AxisCamera camera;
+    int hexa = 5; //dunno man
 	
 	protected TKOVision()
 	{
@@ -71,11 +73,7 @@ public class TKOVision implements Runnable
         while (isAutonomousControl() && isEnabled()) {
             camera.getImage(frame);
             CameraServer.getInstance().setImage(frame);
-            
             //TODO:acquire image, get values from image, do equation
-
-       
-            
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
@@ -85,19 +83,54 @@ public class TKOVision implements Runnable
     	
     }
     
-    public void processImage(){
-    	camera.getImage(frame);
-    	camera.writeBrightness(20); //20 for now - will edit later
-    	NIVision.imaqColorThreshold(frame, afterThresh, 0, HSV, Range(100, 140), Range(104, 255), Range(92, 132));
-    	//imaqColorThreshold(frame,); change later =  (Image dest, Image source, int replaceValue, ColorMode mode, Range plane1Range, Range plane2Range, Range plane3Range)
-    	NIVision.imaqMorphology(); //Morphology 1 step
-    	//imaqMorphology (Image dest, Image source, , StructuringElement structuringElement)
-    	NIVision.imaqMorphology(); //Morphology 2 step
-    	//imaqFillHoles (NIVision.Image dest,NIVision.Image source, int connectivity8) not sure what int connectivity8 is
+    public Boolean processImage(){ //VADIM I WILL FINISH THIS BY SATURDAY
     	
+    	System.out.println("Actually starting processing now!!!"); //declare to start function
+    
+    	camera.writeBrightness(20); //20 for now - will edit later
+    	camera.getImage(frame); //Get image from frame
+    	
+    	if(frame == null) {
+    		System.out.println("THERE AIN'T AN IMAGE TO PROCESS");
+    		return false;
+    	}
+    	
+    	System.out.println("THERE IS AN IMAGE TO PROCESS. YAY");
+    	
+    	if(camera.getInstance().getImage(frame) == false) { //sort of at an impass here
+    		System.out.println("RAW IMAGE DOESNT WORK BRO");
+    		}
+    	
+    	System.out.println("RAW IMAGE WORKS");
+    	
+    	
+    	NIVision.imaqColorThreshold(frame, BinaryImage, 0, HSV, NIVision.Range(), NIVision.Range(104, 255), NIVision.Range(92, 132)); //why u do dis
+    	//imaqColorThreshold(frame,); change later =  (Image dest, Image source, int replaceValue, ColorMode mode, Range plane1Range, Range plane2Range, Range plane3Range)
+    	System.out.println("Processed binary/color");
+    	
+    	NIVision.imaqMorphology(MorphImage, BinaryImage, NIVision.MorphologyMethod.ERODE, ); //Add structuringElement
+    	//imaqMorphology (Image dest, Image source, , StructuringElement structuringElement)
+    	System.out.println("Removed small objects");
+    	
+    	NIVision.imaqFillHoles(FillImage, MorphImage, 8); //wtfun is connectity8 broh
+    	//imaqFillHoles (NIVision.Image dest,NIVision.Image source, int connectivity8) not sure what int connectivity8 is
+    	System.out.println("Filled rest of objects");
+    	
+    	NIVision.ParticleReport(); //why aint it defined bruh
     	//imaqParticleReport or imaqGetROIBoundingBox - will find out later
+    	
+    	/*
+    	 if (NIVision.ParticleReport() < 0){
+    	  System.out.println("Did not get any particle values!!!!!");
+    	}
+    
+     	System.out.println("Particle Report SUCCESSFUL!!!!!");
+     	I am currently not sure how to get particle report values. Will inquire on Friday and Saturday (2/27, 2/28)
+    	 */
     	//TODO: Figure out values for these functions
     	
+    	
+    	//if(stick4.GetRawButton(10)) for tomorrow
     }
     
     public double distance() {

@@ -144,11 +144,7 @@ public class TKOHardware
 			acc = new BuiltInAccelerometer();
 
 		if (gyro == null)
-		{
 			gyro = new Gyro(Definitions.GYRO_ANALOG_CHANNEL);
-			gyro.setSensitivity(7. / 1000.);
-			gyro.reset();
-		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);

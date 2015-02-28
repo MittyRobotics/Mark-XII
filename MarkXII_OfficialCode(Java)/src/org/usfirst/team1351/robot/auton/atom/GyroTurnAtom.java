@@ -1,8 +1,5 @@
 package org.usfirst.team1351.robot.auton.atom;
 
-//LINE 81 (TKOHardware.java) IS WHERE PID VALUE ARE SET TODO TUNE THOSE ASAP AFTER THIS WORKS 
-//TODO TUNE PID - LINE 81 TKOHARDWARE.JAVA 
-//Current values are 1, 0, 0 
 import org.usfirst.team1351.robot.auton.Atom;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
@@ -14,6 +11,12 @@ import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 
+/* TODO
+ * tune incrementer
+ * fix timer
+ * set PID values in TKOHardware.java
+ */
+
 public class GyroTurnAtom extends Atom
 {
 	PIDController pid;
@@ -22,12 +25,11 @@ public class GyroTurnAtom extends Atom
 	double p, i, d;
 	int ncoder1, ncoder2;
 
-	public GyroTurnAtom(double f)
+	public GyroTurnAtom(double _angle)
 	{
-		angle = f;
+		angle = _angle;
 		threshold = 2;
-		// incrementer = Definitions.AUTON_PID_INCREMENTER; //TODO CREATE NEW VARIABLE FOR THIS
-		incrementer = .7; // .5 TODO Test
+		incrementer = Definitions.TURN_ATOM_INCREMENTER;
 		p = Definitions.AUTON_GYRO_TURN_P;
 		i = Definitions.AUTON_GYRO_TURN_I;
 		d = Definitions.AUTON_GYRO_TURN_D;
@@ -65,8 +67,7 @@ public class GyroTurnAtom extends Atom
 
 	@Override
 	public void execute()
-	{ // TODO get incrementer tuned, ensure that the system is fully working. May need to adjust the timer, seems to be somewhat
-		// overshooting
+	{
 		System.out.println("Starting execution of GYRO TURN");
 		try
 		{

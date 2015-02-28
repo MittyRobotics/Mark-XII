@@ -4,11 +4,13 @@
 package org.usfirst.team1351.robot.main;
 
 import org.usfirst.team1351.robot.auton.Molecule;
+import org.usfirst.team1351.robot.auton.atom.AutoCratePickupAtom;
+import org.usfirst.team1351.robot.auton.atom.CratePlaceAtom;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
 import org.usfirst.team1351.robot.auton.atom.GoUpAtom;
-import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
-import org.usfirst.team1351.robot.auton.atom.TrashcanGrabAndUp;
+//import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
 import org.usfirst.team1351.robot.drive.TKODrive;
+import org.usfirst.team1351.robot.evom.Lift;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
@@ -18,47 +20,38 @@ import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
+import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//http://youtu.be/UOuRx9Ujsog
-//Watch this video for tuning with Ziegler-Nichols
 
 /*-----------TODO-------------
- * Write TKOLEDArduino lol rekt
- * Test/fix StateMachine
+ * Current Project: Autonomous testing (drive, turn, pickup crate, place crate)
+ * 
+ * Watch this video for tuning with Ziegler-Nichols: http://youtu.be/UOuRx9Ujsog
+ * Do we care about StateMachine? Run everything manual?
+ * Lift MUST honor limit switches!
  * Recreate documentation for java
- * TODO Thread priorities
- * TODO don't forget to turn on all the subsystems
- * TODO Do we need to destroy hardware pointers when we are done with operator control loop
- * TODO Test the TKOException writing to log file - COMPLETE/NEEDS TESTING
- * TODO maybe its a bad idea to assume everywhere that TKOHardware has objects initialized?
+ * Thread priorities
+ * Don't forget to turn on all the subsystems
+ * Destroy hardware pointers after operator control loop?
+ * Check the TKOException writing to log file
+ * Check that TKOHardware has initialized objects in all files?
+ * Test TalonSafety!
+ * StateMachine assumes that TKOLift is enabled and configured: check if ok
  * 
- * TODO Test TalonSafety !!!!!!!!!!!!!!!!!!!!
- * TODO Lift needs to honor limit switches
- * 
- * TODO Lift autotuned using the Zeigler-Nichols method;
- * Calculate Kc by testing max p with i and d = 0 where stable oscilation 
- * Calculate max and min of oscilation and find the period between the max and min
+ * Calculate Kc by testing max p with i and d = 0 where stable oscillation 
+ * Calculate max and min of oscillation and find the period between the max and min
  * Kp = 0.6 Kc
  * Ki = 2*Kp/Pc
  * Kd = 0.125*Kp*Pc
  * 
- * TODO Important, StateMachine assumes that TKOLift is enabled and configured
- * 
- * TODO Auton
- * 	AutoCratePickupAtom - drives forward until crate engaged, automatically goes up immediately
-	CratePlaceAtom - places the stack of 3 (hardcoded) or maybe place stack based on current lift level
  */
 
 public class MarkXII extends SampleRobot
 {
-//	SerialPort arduino;
-	double tpi = 332.5020781; //This is correct 
-
 	SendableChooser autonChooser;
 	
 	public MarkXII()
@@ -71,29 +64,39 @@ public class MarkXII extends SampleRobot
 		System.out.println("-----WELCOME TO MARKXII 2015-----");
 		System.out.println("-----SYSTEM BOOT: " + Timer.getFPGATimestamp() + "-----");
 		TKOHardware.initObjects();
+
+		/**
+		 * TODO the initGyro() method takes 10+ seconds, figure out why
+		 * move these lines to initObjects() later
+		 */
+//		TKOHardware.getGyro().initGyro();
+//		TKOHardware.getGyro().setSensitivity(7. / 1000.);
+//		TKOHardware.getGyro().reset();
+//		System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
+
+		autonChooser = new SendableChooser();
+		autonChooser.addDefault("Drive", new Integer(0));
+		autonChooser.addObject("Drive, turn", new Integer(1));
+				
+		SmartDashboard.putData("Auton mode chooser", autonChooser);
+		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
+		SmartDashboard.putNumber("Drive I: ", Definitions.AUTON_DRIVE_I);
+		SmartDashboard.putNumber("Drive D: ", Definitions.AUTON_DRIVE_D);
+		SmartDashboard.putNumber("Turn P: ", Definitions.AUTON_GYRO_TURN_P);
+		SmartDashboard.putNumber("Turn I: ", Definitions.AUTON_GYRO_TURN_I);
+		SmartDashboard.putNumber("Turn D: ", Definitions.AUTON_GYRO_TURN_D);
+		
 		try
 		{
-			TKOHardware.getGyro().initGyro();
-		}
-		catch (TKOException e)
+			SmartDashboard.putNumber("CRATE DISTANCE: ", TKOHardware.getCrateDistance());
+			SmartDashboard.putBoolean("Top switch", TKOHardware.getLiftTop());
+			SmartDashboard.putBoolean("Bottom switch", TKOHardware.getLiftBottom());
+		} catch (TKOException e)
 		{
 			e.printStackTrace();
 		}
-		System.out.println("-----GYRO INITIALIZED: " + Timer.getFPGATimestamp() + "-----");
 		
-		autonChooser = new SendableChooser();
-		Integer dtd = new Integer(1);
-		Integer tdt = new Integer(2);
-		Integer drive = new Integer(3);
-		autonChooser.addDefault("Drive, turn, drive", dtd);
-		autonChooser.addObject("Turn, drive, turn", tdt);
-		autonChooser.addObject("Drive", drive);
-		SmartDashboard.putData("Auton mode chooser", autonChooser);
-		
-		SmartDashboard.putDouble("P", Definitions.AUTON_DRIVE_P);
-		SmartDashboard.putDouble("I", Definitions.AUTON_DRIVE_I);
-		SmartDashboard.putDouble("D", Definitions.AUTON_DRIVE_D);
-		System.out.println("DONE FINALLY!");
+		System.out.println("robotInit() finished");
 	}
 
 	public void disabled()
@@ -114,21 +117,25 @@ public class MarkXII extends SampleRobot
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		
 		Molecule molecule = new Molecule();
-		if (autonChooser.getSelected().equals(1))
+		
+		if (autonChooser.getSelected().equals(0))
 		{
-			molecule.add(new DriveAtom(tpi * 10)); 
-			molecule.add(new GyroTurnAtom(45));
-			//molecule.add(new DriveAtom(tpi * 24));
+			molecule.add(new DriveAtom(78 * Definitions.TICKS_PER_INCH)); 
 		}
-		if (autonChooser.getSelected().equals(2))
+		/*else if (autonChooser.getSelected().equals(1))
 		{
-			molecule.add(new GyroTurnAtom(45));
-			molecule.add(new DriveAtom(tpi * 78));
+			molecule.add(new DriveAtom(78 * Definitions.TICKS_PER_INCH)); 
 			molecule.add(new GyroTurnAtom(45));
 		}
-		if (autonChooser.getSelected().equals(3))
+		else if (autonChooser.getSelected().equals(2))
 		{
-			molecule.add(new DriveAtom(tpi * 78));
+			molecule.add(new GyroTurnAtom(45));
+			molecule.add(new DriveAtom(78 * Definitions.TICKS_PER_INCH)); 
+			molecule.add(new GyroTurnAtom(45));
+		}*/
+		else
+		{
+			System.out.println("Molecule empty why this");
 		}
 		
 		System.out.println("Running molecule");
@@ -192,36 +199,21 @@ public class MarkXII extends SampleRobot
 	 * Runs during test mode
 	 */
 	public void test()
-	{
-		System.out.println("Enabling test!");
+	{	
 		TKOHardware.initObjects();
-		TKOLogger.getInstance().start();
-		TKODrive.getInstance().start();
-		TKOPneumatics.getInstance().start();
-		TKODataReporting.getInstance().start();
-		TKOLift.getInstance().start();
-		System.out.println("STARTING STATE MACHINE");
-		StateMachine.getInstance().start();
+		System.out.println("Enabling test!");
+
+		Lift.getInstance().start();
 
 		while (isTest() && isEnabled())
-		{
-			Timer.delay(0.01); // wait for a motor update time
+		{			
+			Timer.delay(0.01);
 		}
 
 		try
 		{
-			StateMachine.getInstance().stop();
-			StateMachine.getInstance().stateThread.join();
-			TKOLift.getInstance().stop();
-			TKOLift.getInstance().conveyorThread.join();
-			TKODataReporting.getInstance().stop();
-			TKODataReporting.getInstance().dataReportThread.join();
-			TKOPneumatics.getInstance().stop();
-			TKOPneumatics.getInstance().pneuThread.join();
-			TKODrive.getInstance().stop();
-			TKODrive.getInstance().driveThread.join();
-			TKOLogger.getInstance().stop();
-			TKOLogger.getInstance().loggerThread.join();
+			Lift.getInstance().stop();
+			Lift.getInstance()._thread.join();
 		}
 		catch (InterruptedException e)
 		{

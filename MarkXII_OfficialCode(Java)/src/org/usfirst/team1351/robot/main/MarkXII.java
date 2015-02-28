@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //http://youtu.be/UOuRx9Ujsog
 //Watch this video for tuning with Ziegler-Nichols
 
@@ -55,7 +57,10 @@ import edu.wpi.first.wpilibj.Timer;
 public class MarkXII extends SampleRobot
 {
 //	SerialPort arduino;
-	double tpi = 332.5020781; 
+	double tpi = 332.5020781; //This is correct 
+
+	SendableChooser autonChooser;
+	
 	public MarkXII()
 	{
 		//don't put stuff here, use robotInit();
@@ -75,6 +80,20 @@ public class MarkXII extends SampleRobot
 			e.printStackTrace();
 		}
 		System.out.println("-----GYRO INITIALIZED: " + Timer.getFPGATimestamp() + "-----");
+		
+		autonChooser = new SendableChooser();
+		Integer dtd = new Integer(1);
+		Integer tdt = new Integer(2);
+		Integer drive = new Integer(3);
+		autonChooser.addDefault("Drive, turn, drive", dtd);
+		autonChooser.addObject("Turn, drive, turn", tdt);
+		autonChooser.addObject("Drive", drive);
+		SmartDashboard.putData("Auton mode chooser", autonChooser);
+		
+		SmartDashboard.putDouble("P", Definitions.AUTON_DRIVE_P);
+		SmartDashboard.putDouble("I", Definitions.AUTON_DRIVE_I);
+		SmartDashboard.putDouble("D", Definitions.AUTON_DRIVE_D);
+		System.out.println("DONE FINALLY!");
 	}
 
 	public void disabled()
@@ -86,36 +105,32 @@ public class MarkXII extends SampleRobot
 	{
 		System.out.println("Enabling autonomous!");
 		
-		//SmartDashboard.
-		
 //		TKOLogger.getInstance().start();
 //		TKODataReporting.getInstance().start();
-		//TKOTalonSafety.getInstance().start();
-	//	TKOLift.getInstance().start();
+//		TKOTalonSafety.getInstance().start();
+//		TKOLift.getInstance().start();
+		
 		TKOPneumatics.getInstance().start();
-
 		TKOPneumatics.getInstance().reset(); //TODO This may be bad
+		
 		Molecule molecule = new Molecule();
+		if (autonChooser.getSelected().equals(1))
+		{
+			molecule.add(new DriveAtom(tpi * 10)); 
+			molecule.add(new GyroTurnAtom(45));
+			//molecule.add(new DriveAtom(tpi * 24));
+		}
+		if (autonChooser.getSelected().equals(2))
+		{
+			molecule.add(new GyroTurnAtom(45));
+			molecule.add(new DriveAtom(tpi * 78));
+			molecule.add(new GyroTurnAtom(45));
+		}
+		if (autonChooser.getSelected().equals(3))
+		{
+			molecule.add(new DriveAtom(tpi * 78));
+		}
 		
-	//	molecule.add(new GyroTurnAtom(90));
-	//	molecule.add(new GyroTurnAtom(-90));
-		
-//		molecule.add(new TrashcanGrabAndUp());
-//		molecule.add(new DriveAtom(5000.));
-//		molecule.add(new GyroTurnAtom(90)); 
-//		molecule.add(new DriveAtom(8000.));
-//		molecule.add(new GyroTurnAtom(-90)); 
-//		molecule.add(new DriveAtom(15000.));
-//		molecule.add(new GoUpAtom());
-//		molecule.add(new DriveAtom(20000.));
-//		molecule.add(new GyroTurnAtom(90));
-//		molecule.add(new DriveAtom(20000.));
-//		molecule.add(new GyroTurnAtom(90));
-//		molecule.add(new DriveAtom(20000.));
-//		molecule.add(new GyroTurnAtom(90));
-//		molecule.add(new DriveAtom(20000.));
-//		molecule.add(new GyroTurnAtom(90));
-		molecule.add(new GyroTurnAtom(tpi * 78)); //This numerical value is in inches, change and test TODO wipe this TODO and push when done 
 		System.out.println("Running molecule");
 		molecule.initAndRun();
 		System.out.println("Finished running molecule");

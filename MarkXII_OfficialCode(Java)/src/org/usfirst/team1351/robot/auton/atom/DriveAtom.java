@@ -11,6 +11,7 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //332.5020781 pulses/inches TODO VERY IMPORTANT NOIMBERS 
 
@@ -23,14 +24,16 @@ public class DriveAtom extends Atom
 
 	public DriveAtom(double f)
 	{
+
+		p = SmartDashboard.getDouble("P");
+		i = SmartDashboard.getDouble("I");
+		d = SmartDashboard.getDouble("D");
+		
 		distance = f;
-		//incrementer = Definitions.AUTON_PID_INCREMENTER;
+		incrementer = Definitions.AUTON_PID_INCREMENTER;
+		
 		//INCREMENTER RESET - KILLS THE ACCUMULATED ERROR, MIGHT PREVENT THE LURCH WE MENTIONED WHEN RUNNING THE SAME CODE MULTIPLE TIMES
-		incrementer = 25;
 		threshold = 75;
-		p = Definitions.AUTON_DRIVE_P;
-		i = Definitions.AUTON_DRIVE_I;
-		d = Definitions.AUTON_DRIVE_D;
 		// Talons 0 and 2 are the ones with Ncoders plugged in, keep that in
 		// mind. 1 and 3 have already been declared as slaves.
 	}
@@ -39,6 +42,7 @@ public class DriveAtom extends Atom
 	{
 		try
 		{
+			
 			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.Position, p, i, d);
 			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.Position, p, i, d);
 			TKOHardware.getLeftDrive().reverseOutput(false);
@@ -52,7 +56,6 @@ public class DriveAtom extends Atom
 			Timer.delay(0.1);
 			TKOHardware.getLeftDrive().set(TKOHardware.getLeftDrive().getPosition());
 			TKOHardware.getRightDrive().set(TKOHardware.getRightDrive().getPosition());
-//			TKOHardware.getLeftDrive().s
 		}
 		catch (TKOException e)
 		{
@@ -70,7 +73,7 @@ public class DriveAtom extends Atom
 		{
 			if (distance > 0)
 			{
-			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getPosition() < distance)
+			while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() < distance)
 			{
 				TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() + incrementer);
 				TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() + incrementer);
@@ -80,7 +83,7 @@ public class DriveAtom extends Atom
 			}
 			else
 			{
-				while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getPosition() > distance)
+				while (DriverStation.getInstance().isEnabled() && TKOHardware.getDriveTalon(0).getSetpoint() > distance)
 				{
 					TKOHardware.getDriveTalon(0).set(TKOHardware.getDriveTalon(0).getSetpoint() - incrementer);
 					TKOHardware.getDriveTalon(2).set(TKOHardware.getDriveTalon(2).getSetpoint() - incrementer);

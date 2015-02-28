@@ -9,12 +9,17 @@ import org.usfirst.frc.team1351.robot.main.*;
 import org.usfirst.frc.team1351.robot.main.Definitions.*;
 
 import com.ni.vision.NIVision;
+import com.ni.vision.NIVision.ColorMode;
 import com.ni.vision.NIVision.DrawMode;
 import com.ni.vision.NIVision.Image;
 import com.ni.vision.NIVision.ShapeMode;
 import com.ni.vision.NIVision.StructuringElement;
+import com.ni.vision.NIVision.ParticleReport;
+import com.ni.vision.NIVision.Range;
+import com.ni.vision.NIVision.MeasurementValue;
 
 import edu.wpi.first.wpilibj.CameraServer; 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
@@ -24,9 +29,9 @@ public class TKOVision implements Runnable
 	public TKOThread visionThread = null;
 	private static TKOVision m_Instance = null; 
 	int session;
-    Image frame, BinaryImage, MorphImage, FillImage;
+    Image frame, BinaryImage, MorphImage, CloseImage, FillImage;
     AxisCamera camera;
-    int hexa = 5; //dunno man
+   double distanceToTote;
 	
 	protected TKOVision()
 	{
@@ -70,7 +75,7 @@ public class TKOVision implements Runnable
     public void autonomousControl() {
         NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
 
-        while (isAutonomousControl() && isEnabled()) {
+        while (DriverStation.getInstance().isAutonomous() && DriverStation.getInstance().isEnabled()) {
             camera.getImage(frame);
             CameraServer.getInstance().setImage(frame);
             //TODO:acquire image, get values from image, do equation
@@ -97,30 +102,30 @@ public class TKOVision implements Runnable
     	
     	System.out.println("THERE IS AN IMAGE TO PROCESS. YAY");
     	
-    	if(camera.getInstance().getImage(frame) == false) { //sort of at an impass here
+    	if(camera.getImage(frame) == false) { //sort of at an impass here
     		System.out.println("RAW IMAGE DOESNT WORK BRO");
     		}
     	
     	System.out.println("RAW IMAGE WORKS");
     	
     	
-    	NIVision.imaqColorThreshold(frame, BinaryImage, 0, HSV, NIVision.Range(), NIVision.Range(104, 255), NIVision.Range(92, 132)); //why u do dis
-    	//imaqColorThreshold(frame,); change later =  (Image dest, Image source, int replaceValue, ColorMode mode, Range plane1Range, Range plane2Range, Range plane3Range)
+    	NIVision.imaqColorThreshold(frame, BinaryImage, 0, ColorMode.HSV, new NIVision.Range(100, 140), new NIVision.Range(104, 255), new NIVision.Range(92, 132)); 
     	System.out.println("Processed binary/color");
     	
-    	NIVision.imaqMorphology(MorphImage, BinaryImage, NIVision.MorphologyMethod.ERODE, ); //Add structuringElement
-    	//imaqMorphology (Image dest, Image source, , StructuringElement structuringElement)
+    	NIVision.imaqMorphology(MorphImage, BinaryImage, NIVision.MorphologyMethod.HITMISS, new StructuringElement()); //Add structuringElement
     	System.out.println("Removed small objects");
     	
-    	NIVision.imaqFillHoles(FillImage, MorphImage, 8); //wtfun is connectity8 broh
-    	//imaqFillHoles (NIVision.Image dest,NIVision.Image source, int connectivity8) not sure what int connectivity8 is
+    	NIVision.imaqMorphology(CloseImage, MorphImage, NIVision.MorphologyMethod.CLOSE, new StructuringElement());
+    	System.out.println("Closed objects");
+    	
+    	NIVision.imaqFillHoles(FillImage, CloseImage, 1);
     	System.out.println("Filled rest of objects");
     	
-    	NIVision.ParticleReport(); //why aint it defined bruh
+    	//NIVision.ParticleReport(); //why aint it defined bruh
     	//imaqParticleReport or imaqGetROIBoundingBox - will find out later
     	
     	/*
-    	 if (NIVision.ParticleReport() < 0){
+    	 if (NIVision.ParticleReport(widthPar) < 0){
     	  System.out.println("Did not get any particle values!!!!!");
     	}
     
@@ -129,13 +134,19 @@ public class TKOVision implements Runnable
     	 */
     	//TODO: Figure out values for these functions
     	
-    	
+    	if(NIVision.ParticleReport(MeasurementValue.WIDTH) > 0){
+    		distanceToTote = distance(MeasurementValue.WIDTH);
+    		
+    		
+    		
+    		
+    	}
     	//if(stick4.GetRawButton(10)) for tomorrow
     }
     
-    public double distance() {
-    	double targetWidth_Px = 5.; //get n in px from something in WPILib later, and 5 is an example value
-    	double dist = 7/(targetWidth_Px * 1.324);
+    public double distance(MeasurementValue width) {
+    	MeasurementValue targetWidth = width; //get n in px from something in WPILib later, and 5 is an example value
+    	double dist = 7/(targetWidth = width * 1.324);
     
     	return dist;
    }

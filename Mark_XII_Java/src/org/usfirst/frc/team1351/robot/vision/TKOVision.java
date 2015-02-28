@@ -20,6 +20,7 @@ import com.ni.vision.NIVision.MeasurementValue;
 
 import edu.wpi.first.wpilibj.CameraServer; 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
@@ -31,7 +32,8 @@ public class TKOVision implements Runnable
 	int session;
     Image frame, BinaryImage, MorphImage, CloseImage, FillImage;
     AxisCamera camera;
-   double distanceToTote;
+   double distanceToTote, boundingWidthRight, boundingWidthLeft, trueBoundingWidth, midBoundingPoint, finalAngleValue;
+   int boundingWidth;
 	
 	protected TKOVision()
 	{
@@ -100,7 +102,7 @@ public class TKOVision implements Runnable
     		return false;
     	}
     	
-    	System.out.println("THERE IS AN IMAGE TO PROCESS. YAY");
+    	System.out.println("THERE IS AN IMAGE TO PROCESS");
     	
     	if(camera.getImage(frame) == false) { //sort of at an impass here
     		System.out.println("RAW IMAGE DOESNT WORK BRO");
@@ -110,54 +112,59 @@ public class TKOVision implements Runnable
     	
     	
     	NIVision.imaqColorThreshold(frame, BinaryImage, 0, ColorMode.HSV, new NIVision.Range(100, 140), new NIVision.Range(104, 255), new NIVision.Range(92, 132)); 
-    	System.out.println("Processed binary/color");
+    	System.out.println("Processed binary/color"); //turns raw image into binary image using color threshold
     	
     	NIVision.imaqMorphology(MorphImage, BinaryImage, NIVision.MorphologyMethod.HITMISS, new StructuringElement()); //Add structuringElement
-    	System.out.println("Removed small objects");
+    	System.out.println("Removed small objects"); //removes noise and extra particles that might turn up
     	
     	NIVision.imaqMorphology(CloseImage, MorphImage, NIVision.MorphologyMethod.CLOSE, new StructuringElement());
-    	System.out.println("Closed objects");
+    	System.out.println("Closed objects"); //closes the object to make sure it is solid
     	
-    	NIVision.imaqFillHoles(FillImage, CloseImage, 1);
-    	System.out.println("Filled rest of objects");
+    	NIVision.imaqFillHoles(FillImage, CloseImage, 4);
+    	System.out.println("Filled rest of objects"); //fills any holes that might still exist
     	
-    	//NIVision.ParticleReport(); //why aint it defined bruh
-    	//imaqParticleReport or imaqGetROIBoundingBox - will find out later
+    	MeasurementValue.WIDTH.getValue(); //This is what is supposed to get the bounding box width from FillImage
+    	//Still not sure how to use it to get that value, since there is no argument for processing an image
     	
-    	/*
-    	 if (NIVision.ParticleReport(widthPar) < 0){
-    	  System.out.println("Did not get any particle values!!!!!");
+  
+    	//TODO: Get widths of both bounding boxes
+    	
+    	
+    	
+    if(boundingWidth > 0){
+    		System.out.println("Particle analysis did not return values!");
+    		return false;
+
     	}
     
-     	System.out.println("Particle Report SUCCESSFUL!!!!!");
-     	I am currently not sure how to get particle report values. Will inquire on Friday and Saturday (2/27, 2/28)
-    	 */
-    	//TODO: Figure out values for these functions
-    	
-    	if(NIVision.ParticleReport(MeasurementValue.WIDTH) > 0){
-    		distanceToTote = distance(MeasurementValue.WIDTH);
-    		
-    		
-    		
-    		
-    	}
-    	//if(stick4.GetRawButton(10)) for tomorrow
+    System.out.println("Particle analysis worked!");
+    
+    distanceToTote = distance(boundingWidth);
+    
+    System.out.println("The current distance to tote is: " + distanceToTote);
+    
+    
+    
+   
     }
     
-    public double distance(MeasurementValue width) {
-    	MeasurementValue targetWidth = width; //get n in px from something in WPILib later, and 5 is an example value
-    	double dist = 7/(targetWidth = width * 1.324);
+    public double distance(int width) {
+    	double dist = 7/(width * 1.324); //TODO: fix distance equation later. Change values and use average bounding box distance
     
-    	return dist;
+    	return dist; //TODO: Make the calculated boundingBox width the average of the two bounding boxes' widths
    }
     
-   /* public double offAngle(){
+   public double offAngle(){ //gets the offset angle needed for the robot to turn the right amount of degrees
     	double angle = 0;
-    	
+    	trueBoundingWidth = (boundingWidthRight + boundingWidthLeft)/2 ;
+    	finalAngleValue = (7 * (midBoundingPoint - 320))/(trueBoundingWidth * distanceToTote);
+  
+    	Math.asin(finalAngleValue); //until we figure out if this is fast enough or how to set up dynamic tables for getting inverse sin of answer, this is what we will use
     	
     	return angle;
     }
-    */
+   //TODO: How the heck do you get the bounding box widths of each bounding box and the point between left and right bounding boxes
+    
 	@Override
 	public void run() 
 	{

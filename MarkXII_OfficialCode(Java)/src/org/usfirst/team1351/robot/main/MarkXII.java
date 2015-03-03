@@ -5,23 +5,17 @@ package org.usfirst.team1351.robot.main;
 
 import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.auton.atom.AutoCratePickupAtom;
-import org.usfirst.team1351.robot.auton.atom.CratePlaceAtom;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
 import org.usfirst.team1351.robot.auton.atom.GoUpAtom;
-//import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
+import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
+import org.usfirst.team1351.robot.auton.atom.TrashcanGrabAndUp;
 import org.usfirst.team1351.robot.drive.TKODrive;
-import org.usfirst.team1351.robot.evom.Lift;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
-import org.usfirst.team1351.robot.logger.TKOLogger;
-import org.usfirst.team1351.robot.statemachine.StateMachine;
-import org.usfirst.team1351.robot.util.TKODataReporting;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
-import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -48,6 +42,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Ki = 2*Kp/Pc
  * Kd = 0.125*Kp*Pc
  * 
+ * PUT STACK OF THREE TOTES ON MIDDLE STEP
+ * GO DOWN A TAD WITH LIFT WITH JOYSTICK
+ * 
  */
 
 public class MarkXII extends SampleRobot
@@ -69,22 +66,46 @@ public class MarkXII extends SampleRobot
 		 * TODO the initGyro() method takes 10+ seconds, figure out why
 		 * move these lines to initObjects() later
 		 */
-//		TKOHardware.getGyro().initGyro();
-//		TKOHardware.getGyro().setSensitivity(7. / 1000.);
-//		TKOHardware.getGyro().reset();
-//		System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
+		try
+		{
+			TKOHardware.getGyro().initGyro();
+			TKOHardware.getGyro().setSensitivity(7. / 1000.);
+			TKOHardware.getGyro().reset();
+		} catch (TKOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
 
 		autonChooser = new SendableChooser();
 		autonChooser.addDefault("Drive", new Integer(0));
 		autonChooser.addObject("Drive, turn", new Integer(1));
+		autonChooser.addObject("Turn", new Integer(2));
+		autonChooser.addObject("Drive, pickup", new Integer(3));
+		autonChooser.addObject("Box", new Integer(4));
+		autonChooser.addObject("Auto Pickup", new Integer(5));
+		autonChooser.addObject("RC And Tote", new Integer(6));
 				
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
 		SmartDashboard.putNumber("Drive I: ", Definitions.AUTON_DRIVE_I);
 		SmartDashboard.putNumber("Drive D: ", Definitions.AUTON_DRIVE_D);
 		SmartDashboard.putNumber("Turn P: ", Definitions.AUTON_GYRO_TURN_P);
-		SmartDashboard.putNumber("Turn I: ", Definitions.AUTON_GYRO_TURN_I);
+		SmartDashboard.putNumber("Turn I: ", Definitions.AUTON_GYRO_TURN_I * 1000.);
 		SmartDashboard.putNumber("Turn D: ", Definitions.AUTON_GYRO_TURN_D);
+		
+		SmartDashboard.putNumber("Lift P: ", Definitions.LIFT_P);
+		SmartDashboard.putNumber("Lift I: ", Definitions.LIFT_I);
+		SmartDashboard.putNumber("Lift D: ", Definitions.LIFT_D);
+		
+		SmartDashboard.putNumber("Drive atom distance: ", 24.);
+		SmartDashboard.putNumber("Turn atom angle: ", 85);
+		SmartDashboard.putNumber("Turn Incrementer: ", Definitions.TURN_ATOM_INCREMENTER);
+		
+		SmartDashboard.putNumber("Lift P: ", Definitions.LIFT_P);
+		SmartDashboard.putNumber("Lift I: ", Definitions.LIFT_I);
+		SmartDashboard.putNumber("Lift D: ", Definitions.LIFT_D);
 		
 		try
 		{
@@ -111,28 +132,56 @@ public class MarkXII extends SampleRobot
 //		TKOLogger.getInstance().start();
 //		TKODataReporting.getInstance().start();
 //		TKOTalonSafety.getInstance().start();
-//		TKOLift.getInstance().start();
-		
-		TKOPneumatics.getInstance().start();
-		TKOPneumatics.getInstance().reset(); //TODO This may be bad
+		TKOLift.getInstance().start();
+//		TKOPneumatics.getInstance().start();
+//		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		
 		Molecule molecule = new Molecule();
 		
+		double dist = SmartDashboard.getNumber("Drive atom distance: ");
+		double angle = SmartDashboard.getNumber("Turn atom angle: ");
+		
 		if (autonChooser.getSelected().equals(0))
 		{
-			molecule.add(new DriveAtom(78 * Definitions.TICKS_PER_INCH)); 
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH)); 
 		}
-		/*else if (autonChooser.getSelected().equals(1))
+		else if (autonChooser.getSelected().equals(1))
 		{
-			molecule.add(new DriveAtom(78 * Definitions.TICKS_PER_INCH)); 
-			molecule.add(new GyroTurnAtom(45));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH)); 
+			molecule.add(new GyroTurnAtom(angle));
 		}
 		else if (autonChooser.getSelected().equals(2))
 		{
-			molecule.add(new GyroTurnAtom(45));
-			molecule.add(new DriveAtom(78 * Definitions.TICKS_PER_INCH)); 
-			molecule.add(new GyroTurnAtom(45));
-		}*/
+			molecule.add(new GyroTurnAtom(angle));
+		}
+		else if (autonChooser.getSelected().equals(3))
+		{
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GoUpAtom());
+		}
+		else if (autonChooser.getSelected().equals(4))
+		{
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
+		}
+		else if (autonChooser.getSelected().equals(5))
+			molecule.add(new AutoCratePickupAtom());
+		else if (autonChooser.getSelected().equals(6))
+		{
+			molecule.add(new TrashcanGrabAndUp());
+			molecule.add(new DriveAtom(-36 * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(85));
+			molecule.add(new DriveAtom(24 * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(-85));
+			molecule.add(new DriveAtom(30 * Definitions.TICKS_PER_INCH));
+			molecule.add(new AutoCratePickupAtom());
+		}
 		else
 		{
 			System.out.println("Molecule empty why this");
@@ -144,10 +193,10 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			TKOPneumatics.getInstance().stop();
-			TKOPneumatics.getInstance().pneuThread.join();
-//			TKOLift.getInstance().stop();
-//			TKOLift.getInstance().conveyorThread.join();
+//			TKOPneumatics.getInstance().stop();
+//			TKOPneumatics.getInstance().pneuThread.join();
+			TKOLift.getInstance().stop();
+			TKOLift.getInstance().conveyorThread.join();
 //			TKODataReporting.getInstance().stop();
 //			TKODataReporting.getInstance().dataReportThread.join();
 //			TKOLogger.getInstance().stop();
@@ -164,7 +213,7 @@ public class MarkXII extends SampleRobot
 //		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
-//		TKODataReporting.getInstance().start();
+//		TKODataRep\[]orting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 
@@ -200,24 +249,6 @@ public class MarkXII extends SampleRobot
 	 */
 	public void test()
 	{	
-		TKOHardware.initObjects();
-		System.out.println("Enabling test!");
-
-		Lift.getInstance().start();
-
-		while (isTest() && isEnabled())
-		{			
-			Timer.delay(0.01);
-		}
-
-		try
-		{
-			Lift.getInstance().stop();
-			Lift.getInstance()._thread.join();
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		
 	}
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* TODO
  * tune incrementer
@@ -29,10 +30,11 @@ public class GyroTurnAtom extends Atom
 	{
 		angle = _angle;
 		threshold = 2;
-		incrementer = Definitions.TURN_ATOM_INCREMENTER;
-		p = Definitions.AUTON_GYRO_TURN_P;
-		i = Definitions.AUTON_GYRO_TURN_I;
-		d = Definitions.AUTON_GYRO_TURN_D;
+		//incrementer = Definitions.TURN_ATOM_INCREMENTER;
+		incrementer = SmartDashboard.getNumber("Turn Incrementer: " );
+		p = SmartDashboard.getNumber("Turn P: ");
+		i = SmartDashboard.getNumber("Turn I: ") / 1000.;
+		d = SmartDashboard.getNumber("Turn D: ");
 	}
 
 	public void init()
@@ -45,6 +47,8 @@ public class GyroTurnAtom extends Atom
 			TKOHardware.getRightDrive().reverseOutput(true);
 			TKOHardware.getLeftDrive().reverseSensor(true);
 			TKOHardware.getRightDrive().reverseSensor(false);
+			TKOHardware.getLeftDrive().enableBrakeMode(true);
+			TKOHardware.getRightDrive().enableBrakeMode(true);
 			TKOHardware.getLeftDrive().setPosition(0);
 			TKOHardware.getRightDrive().setPosition(0); // resets encoders
 			Timer.delay(0.1);
@@ -58,9 +62,9 @@ public class GyroTurnAtom extends Atom
 
 		gyro.reset();
 		pid.reset();
-		pid.setOutputRange(-0.5, 0.5);
+		pid.setOutputRange(-1, 1);
 		pid.setContinuous();
-		pid.setAbsoluteTolerance(2);
+		pid.setAbsoluteTolerance(1);
 
 		System.out.println("Initialized");
 	}

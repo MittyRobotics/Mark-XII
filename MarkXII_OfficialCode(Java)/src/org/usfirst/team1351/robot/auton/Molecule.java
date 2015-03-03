@@ -2,6 +2,8 @@ package org.usfirst.team1351.robot.auton;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class Molecule {
 	
 	ArrayList<Atom> chain = new ArrayList<Atom>();
@@ -48,6 +50,7 @@ public class Molecule {
 		{
 			a.init();
 			a.execute();
+			Timer.delay(0.5);
 		}
 	}
 }

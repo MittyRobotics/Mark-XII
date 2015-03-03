@@ -22,9 +22,9 @@ public class DriveAtom extends Atom
 	public DriveAtom(double _dist)
 	{
 
-		p = SmartDashboard.getNumber("Drive P");
-		i = SmartDashboard.getNumber("Drive I");
-		d = SmartDashboard.getNumber("Drive D");
+		p = SmartDashboard.getNumber("Drive P: ");
+		i = SmartDashboard.getNumber("Drive I: ");
+		d = SmartDashboard.getNumber("Drive D: ");
 
 		distance = _dist;
 		incrementer = Definitions.DRIVE_ATOM_INCREMENTER;
@@ -41,6 +41,8 @@ public class DriveAtom extends Atom
 			TKOHardware.getRightDrive().reverseOutput(true);
 			TKOHardware.getLeftDrive().reverseSensor(true);
 			TKOHardware.getRightDrive().reverseSensor(false);
+			TKOHardware.getLeftDrive().enableBrakeMode(true);
+			TKOHardware.getRightDrive().enableBrakeMode(true);
 			TKOHardware.getLeftDrive().setPosition(0); // resets encoder
 			TKOHardware.getRightDrive().setPosition(0);
 			TKOHardware.getLeftDrive().ClearIaccum(); // stops bounce

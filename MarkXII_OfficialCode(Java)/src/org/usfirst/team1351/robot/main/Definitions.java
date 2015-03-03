@@ -16,11 +16,11 @@ public class Definitions
 	public static final double AUTON_DRIVE_P = 0.370; // .5
 	public static final double AUTON_DRIVE_I = -0.1; // -0.1
 	public static final double AUTON_DRIVE_D = 0.0;
-	public static final double AUTON_GYRO_TURN_P = 0.01;
-	public static final double AUTON_GYRO_TURN_I = 0.005; // 0.1
-	public static final double AUTON_GYRO_TURN_D = 0.00;
-	public static final double DRIVE_ATOM_INCREMENTER = 130.;
-	public static final double TURN_ATOM_INCREMENTER = 0.7;
+	public static final double AUTON_GYRO_TURN_P = 0.025;
+	public static final double AUTON_GYRO_TURN_I = 0.001; // 0.1
+	public static final double AUTON_GYRO_TURN_D = 0.1;
+	public static final double DRIVE_ATOM_INCREMENTER = 75.;
+	public static final double TURN_ATOM_INCREMENTER = 0.35;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;
 
 	public static final double CRATE_DISTANCE_THRESHOLD = 5.2;

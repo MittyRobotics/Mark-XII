@@ -13,31 +13,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * @author Vadim
- * @version 02/09/15
+ * @version 03/05/15
  * 
  *          TODO We may need to figure out how to shutdown properly
  * 
- *          BUGS
- * 
- *          TODO Cannot go up with fourth crate on the ground, needs to go up about half a level from that point
- * 
- *          TODO Sometimes need to press go up to go down; sometimes pressing up or down does nothing
- * 
- *          TODO On lift start, calculateLevel sometimes doesnt work. Also fails after trashcan pickup, gets confused
- * 
- *          TODO From trashcan level - going to next level up, skips a level
- * 
- *          TODO Going down from level 3-2-0 skips a level
- * 
- *          TODO What happens if pressing goDown on trashcan level? Same with goToFullPosition() and goUp()
+ *          BUGS	
  * 
  *          TODO level variable needs to be reset when pressing goUp?
  * 
  *          TODO Test code with lift encoder unplugged; what happens?
  * 
  *          TODO Test validation, validate for above^?
- * 
- *          TODO DropCrates doesnt work, need to hold button?!?
  */
 
 public class TKOLift implements Runnable // implements Runnable is important to make this class support the Thread (run method)
@@ -85,7 +71,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public static final double trashcanPickupPosition = softLevelBot + 0.1;
 	public static final double fullOfCratesPosition = softLevelTop - 0.1;
+	public static final double threeCratesOnStepLevel = 0.5; //TODO Calculate this
 	public static final double dropOffsetDistance = 0.75;
+	public static final double liftManualIncrementer = 0.5; //TODO Calculate this
 	
 	public static double liftP = Definitions.LIFT_P;
 	public static double liftI = Definitions.LIFT_I;
@@ -271,6 +259,32 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// level = fullOfCratesPosition;
 			goToLevel(fullOfCratesPosition);
 		}
+	}
+
+	public synchronized void goToStepPlaceLevel()
+	{
+		if (currentAction == Action.DONE)
+		{
+			goToLevel(threeCratesOnStepLevel);
+		}
+	}
+
+	public synchronized void goToNearestRealToteLevel()
+	{
+		if (currentAction != Action.DONE)
+			return;
+		long intPartOfLevel;
+		double floatPartOfLevel;
+		double tarLevel;
+		intPartOfLevel = (long) num;
+		floatPartOfLevel = level - iPart;
+
+		if (floatPartOfLevel < 0.5)
+			tarLevel = intPartOfLevel;
+		else
+			tarLevel = intPartOfLevel + 1;
+		
+		goToLevel(tarLevel);
 	}
 
 	public synchronized void goToLevel(double newLevel)
@@ -663,6 +677,25 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(10))
 					{
 						goToDropCratesBasedOnLevel();
+					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK - 1).getTrigger())
+					{
+						double tarLevel = level + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
+						if (tarLevel > softLevelTop)
+						{
+							if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() > 0)
+								tarLevel = softLevelTop;
+							else
+								tarLevel = softLevelTop + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
+						}
+						if (tarLevel < softLevelBottom)
+						{
+							if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() < 0)
+                                                                tarLevel = softLevelBottom;
+                                                        else                               
+				                                 tarLevel = softLevelBottom + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
+						}
+						goToLevel(tarLevel);
 					}
 				}
 

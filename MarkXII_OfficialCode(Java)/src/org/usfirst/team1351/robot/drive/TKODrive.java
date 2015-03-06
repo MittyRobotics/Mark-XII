@@ -38,11 +38,13 @@ public class TKODrive implements Runnable
 		try
 		{
 			double moveValue = TKOHardware.getJoystick(0).getY();
-			if (TKOHardware.getJoystick(0).getRawButton(2))
-				moveValue = TKOHardware.getJoystick(0).getY() * 0.6;
-			double rotateValue = TKOHardware.getJoystick(1).getX() * 0.8;
 			if (TKOHardware.getJoystick(0).getTrigger())
-				rotateValue = TKOHardware.getJoystick(0).getY() * 0.6;
+				moveValue = TKOHardware.getJoystick(0).getY() * 0.6;
+			
+			double rotateValue = TKOHardware.getJoystick(1).getX() * 0.8;
+			if (TKOHardware.getJoystick(1).getTrigger())
+				rotateValue = TKOHardware.getJoystick(1).getX() * 0.6;
+			
 			double leftMotorSpeed;
 			double rightMotorSpeed;
 

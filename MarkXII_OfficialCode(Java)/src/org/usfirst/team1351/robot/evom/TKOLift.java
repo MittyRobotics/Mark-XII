@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  *          TODO We may need to figure out how to shutdown properly
  * 
- *          BUGS	
+ *          BUGS
  * 
  *          TODO level variable needs to be reset when pressing goUp?
  * 
@@ -71,10 +71,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public static final double trashcanPickupPosition = softLevelBot + 0.1;
 	public static final double fullOfCratesPosition = softLevelTop - 0.1;
-	public static final double threeCratesOnStepLevel = 0.5; //TODO Calculate this
+	public static final double threeCratesOnStepLevel = 0.5; // TODO Calculate this
 	public static final double dropOffsetDistance = 0.75;
-	public static final double liftManualIncrementer = 0.5; //TODO Calculate this
-	
+	public static final double liftManualIncrementer = 0.5; // TODO Calculate this
+
 	public static double liftP = Definitions.LIFT_P;
 	public static double liftI = Definitions.LIFT_I;
 	public static double liftD = Definitions.LIFT_D;
@@ -122,8 +122,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// return true;
 			System.out.println("STARTING LIFT CALIBRATION");
 			CANTalon lmotor = TKOHardware.getLiftTalon();
-			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, liftP, liftI,
-					liftD);
+			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, liftP, liftI, liftD);
 
 			lmotor.reverseOutput(true);
 			lmotor.setSafetyEnabled(false);
@@ -169,8 +168,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.PercentVbus)
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus, liftP,
-						liftI, liftD);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus, liftP, liftI, liftD);
 			TKOHardware.getLiftTalon().set(
 					TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * Definitions.LIFT_CALIBRATION_POWER);
 		}
@@ -276,14 +274,14 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		long intPartOfLevel;
 		double floatPartOfLevel;
 		double tarLevel;
-		intPartOfLevel = (long) num;
-		floatPartOfLevel = level - iPart;
+		intPartOfLevel = (long) level;
+		floatPartOfLevel = level - intPartOfLevel;
 
 		if (floatPartOfLevel < 0.5)
 			tarLevel = intPartOfLevel;
 		else
 			tarLevel = intPartOfLevel + 1;
-		
+
 		goToLevel(tarLevel);
 	}
 
@@ -318,14 +316,13 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	 */
 	public synchronized void goToPosition(double position)
 	{
-		//System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
+		// System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
 			{
 				// TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.Position);
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP,
-						liftI, liftD);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP, liftI, liftD);
 				TKOHardware.getLiftTalon().enableControl();
 			}
 
@@ -560,8 +557,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			/*
 			 * if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position) { //
 			 * TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.Position);
-			 * TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP,
-			 * liftI, liftD); TKOHardware.getLiftTalon().enableControl(); }
+			 * TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP, liftI, liftD);
+			 * TKOHardware.getLiftTalon().enableControl(); }
 			 */
 
 			double p = 0.1, i = 0., d = 0.;
@@ -678,6 +675,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					{
 						goToDropCratesBasedOnLevel();
 					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK - 1).getRawButton(10))
+					{
+						goToStepPlaceLevel();
+					}
 					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK - 1).getTrigger())
 					{
 						double tarLevel = level + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
@@ -686,14 +687,16 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 							if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() > 0)
 								tarLevel = softLevelTop;
 							else
-								tarLevel = softLevelTop + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
+								tarLevel = softLevelTop + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY()
+										* liftManualIncrementer;
 						}
-						if (tarLevel < softLevelBottom)
+						if (tarLevel < softLevelBot)
 						{
 							if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() < 0)
-                                                                tarLevel = softLevelBottom;
-                                                        else                               
-				                                 tarLevel = softLevelBottom + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
+								tarLevel = softLevelBot;
+							else
+								tarLevel = softLevelBot + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY()
+										* liftManualIncrementer;
 						}
 						goToLevel(tarLevel);
 					}
@@ -732,26 +735,26 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		// System.out.println("CurAct: " + currentAction);
 		// System.out.println("CurrentOp: " + operation);
 		// System.out.println("Level: " + level);
-//		try
-//		{
-//			System.out.println("CRATE: " + TKOHardware.getCrateDistance());
-//			System.out.println("CRATE TF: " + TKOHardware.cratePresent());
-//		}
-//		catch (TKOException e)
-//		{
-//			e.printStackTrace();
-//		}
-//		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
-//
-//		try
-//		{
-//			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
-//			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
-//		}
-//		catch (TKOException e)
-//		{
-//			e.printStackTrace();
-//		}
+		// try
+		// {
+		// System.out.println("CRATE: " + TKOHardware.getCrateDistance());
+		// System.out.println("CRATE TF: " + TKOHardware.cratePresent());
+		// }
+		// catch (TKOException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// // System.out.println("Lift talon set to: " + currentPIDSetpoint);
+		//
+		// try
+		// {
+		// System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+		// System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
+		// }
+		// catch (TKOException e)
+		// {
+		// e.printStackTrace();
+		// }
 	}
 
 	public void setStartPosition()
@@ -765,8 +768,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP,
-						liftI, liftD);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP, liftI, liftD);
 
 			TKOHardware.getLiftTalon().set(TKOHardware.getLiftTalon().getPosition());
 			// sets talon target to current position? figure out what to do on restart

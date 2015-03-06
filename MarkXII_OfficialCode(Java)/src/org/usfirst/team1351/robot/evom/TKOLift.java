@@ -744,9 +744,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private synchronized void printMessages()
 	{
-		// System.out.println("CurAct: " + currentAction);
+		System.out.println("CurAct: " + currentAction);
 		// System.out.println("CurrentOp: " + operation);
-		// System.out.println("Level: " + level);
+		System.out.println("Level: " + level);
 		// try
 		// {
 		// System.out.println("CRATE: " + TKOHardware.getCrateDistance());

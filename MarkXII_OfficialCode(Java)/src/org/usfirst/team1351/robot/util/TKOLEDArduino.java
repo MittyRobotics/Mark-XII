@@ -105,7 +105,8 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			while (ledArduinoThread.isThreadRunning())
 			{
-				arduino.flush();
+				if (arduino != null)
+					arduino.flush();
 				
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{

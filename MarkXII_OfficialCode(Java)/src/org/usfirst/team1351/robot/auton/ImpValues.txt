@@ -1,0 +1,22 @@
+Very slow, low gear - 7 seconds 
+59.5 
+60.0 
+59.75
+59.5 
+58.5 
+60.75 
+60.5
+61.75
+60 
+60.75
+60.5
+60.25
+59.5
+60.5 
+60.5 
+
+
+Average: 60.15 inches 
+20000 pulses reported 
+
+332.5020781 pulses/inches 

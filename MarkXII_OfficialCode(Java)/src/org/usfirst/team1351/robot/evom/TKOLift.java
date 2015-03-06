@@ -1,6 +1,5 @@
 package org.usfirst.team1351.robot.evom;
 
-import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
@@ -10,31 +9,20 @@ import org.usfirst.team1351.robot.util.TKOThread;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * @author Vadim
- * @version 02/09/15
+ * @version 03/05/15
  * 
- *          TODO We may need to figure out how to shutdown properly 
- *           
+ *          TODO We may need to figure out how to shutdown properly
+ * 
  *          BUGS
  * 
- *          TODO Cannot go up with fourth crate on the ground, needs to go up about half a level from that point
- * 
- *          TODO Sometimes need to press go up to go down; sometimes pressing up or down does nothing
- * 
- *          TODO On lift start, calculateLevel sometimes doesnt work. Also fails after trashcan pickup, gets confused
- * 
- *          TODO From trashcan level - going to next level up, skips a level
- * 
- *          TODO Going down from level 3-2-0 skips a level
- *          
- *          TODO What happens if pressing goDown on trashcan level? Same with goToFullPosition() and goUp() 
- *          
  *          TODO level variable needs to be reset when pressing goUp?
- *          
+ * 
  *          TODO Test code with lift encoder unplugged; what happens?
- *          
+ * 
  *          TODO Test validation, validate for above^?
  */
 
@@ -57,26 +45,39 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public TKOThread conveyorThread = null;
 	private static TKOLift m_Instance = null;
 
-	private int level;
-	private Action currentAction;
-	private boolean calibrated;
-	private double softBottom, softTop;
-	private int currentPIDSetpoint, customPositionTarget;
+	private double level; // changes the level
+	private Action currentAction; // figures out if you are ascending or descending
+	public boolean calibrated; // calibrates
+	private double softBottom; // Soft bottom and top set to ensure no damage is done to the robot through running ti
+	private double currentPIDSetpoint;
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final int oneLevel = 4850; // TODO 4750 before
-	public static final int minLevel = 0; // zero based
-	public static final int maxLevel = 3; // 4th crate
-	public static final int startLevel = 0;
-	public static final int bottomOffset = 4515;
-	public static final int softBottomOffset = 0; // safety offset
-	public static final int softTopOffset = 100; // safety offset
-	public static final int encoderThreshold = 100;
-	
-	public static final int trashcanPickupPosition = softBottomOffset;
-	public static final int fullOfCratesPosition = (int) (3.6 * oneLevel + bottomOffset);
-	public static final int dropOffsetDistance = (int) (0.5 * oneLevel);
+	public static final double oneLevel = 5000; // TODO 4750 before
+	public static final byte minLevel = 0; // zero based
+	public static final byte maxLevel = 3; // 4th crate
+	public static final byte startLevel = 0;
+	public static final double bottomOffset = 4700;
+	public static final double dropoffPerLevel = 0.2; // TODO CALCULATE
+	public static final double softBottomOffset = 0; // safety offset
+	public static final double softTopOffset = 100; // safety offset
+	public static final double encoderThreshold = 100;
+	public static final long liftThreadSleep = 20; // used to be 20
+
+	public static final double softTop = 22500 - softTopOffset;
+
+	public static final double softLevelTop = (-softTopOffset + softTop - bottomOffset) / oneLevel;
+	public static final double softLevelBot = (softBottomOffset - bottomOffset) / oneLevel;
+
+	public static final double trashcanPickupPosition = softLevelBot + 0.1;
+	public static final double fullOfCratesPosition = softLevelTop - 0.1;
+	public static final double threeCratesOnStepLevel = 0.5; // TODO Calculate this
+	public static final double dropOffsetDistance = 0.75;
+	public static final double liftManualIncrementer = 0.5; // TODO Calculate this
+
+	public static double liftP = Definitions.LIFT_P;
+	public static double liftI = Definitions.LIFT_I;
+	public static double liftD = Definitions.LIFT_D;
 
 	private boolean manualEnabled = true;
 
@@ -86,38 +87,30 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		level = -1;
 		currentAction = Action.DONE;
 		currentPIDSetpoint = 0;
-		customPositionTarget = 0;
 		calibrated = false;
 		softBottom = 0.;
-		softTop = 0.;
 		manualEnabled = true;
 	}
 
-	private int calculateLevel()
+	private double calculateLevel()
 	{
-		int calculatedLevel = minLevel;
+		double calLevel = 0;
 		try
 		{
-			calculatedLevel = Math.floorDiv(TKOHardware.getLiftTalon().getEncPosition() - bottomOffset, oneLevel);
+			calLevel = calculateLevel(TKOHardware.getLiftTalon().getEncPosition());
 		}
 		catch (TKOException e)
 		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (calculatedLevel < minLevel)
-			return minLevel;
-		if (calculatedLevel > maxLevel)
-			return maxLevel;
-		return calculatedLevel;
+		return calLevel;
 	}
 
-	private int calculateLevel(int encPosition)
+	private double calculateLevel(int encPosition)
 	{
-		int calculatedLevel = Math.floorDiv(encPosition - bottomOffset, oneLevel);
-		if (calculatedLevel < minLevel)
-			return minLevel;
-		if (calculatedLevel > maxLevel)
-			return maxLevel;
+		double calculatedLevel = (encPosition - bottomOffset) / oneLevel;
+		System.out.println("Calculated level: " + calculatedLevel + " pos: " + encPosition);
 		return calculatedLevel;
 	}
 
@@ -129,37 +122,39 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			// return true;
 			System.out.println("STARTING LIFT CALIBRATION");
 			CANTalon lmotor = TKOHardware.getLiftTalon();
-			currentPIDSetpoint = lmotor.getEncPosition();
-			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P, Definitions.LIFT_I,
-					Definitions.LIFT_D);
-			TKOHardware.getLiftTalon().reverseOutput(true);
+			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.PercentVbus, liftP, liftI, liftD);
+
+			lmotor.reverseOutput(true);
+			lmotor.setSafetyEnabled(false);
 
 			while (!TKOHardware.getLiftBottom() && DriverStation.getInstance().isEnabled())
 			{
 				lmotor.set(Definitions.LIFT_CALIBRATION_POWER);
+				System.out.println("Pos: " + lmotor.getPosition());
 			}
 			if (!DriverStation.getInstance().isEnabled())
 				return false;
 			lmotor.set(0); // stop motor
+			Timer.delay(0.1);
+			System.out.println("POSITION: " + lmotor.getPosition());
 			lmotor.setPosition(0); // reset encoder
+			Timer.delay(0.25);
+			System.out.println("POSITION AFTER RESET: " + lmotor.getPosition());
 			softBottom = lmotor.getPosition() + softBottomOffset;
-			Timer.delay(.1);
+			/*
+			 * Timer.delay(.1);
+			 * 
+			 * while (!TKOHardware.getLiftTop() && DriverStation.getInstance().isEnabled()) {
+			 * lmotor.set(-Definitions.LIFT_CALIBRATION_POWER); } if (!DriverStation.getInstance().isEnabled()) return false; lmotor.set(0);
+			 * // stop motor if (lmotor.getPosition() == 0) { System.out.println("CRITICAL ERROR ENCODER PROBABLY NOT PLUGGED IN"); throw
+			 * new TKORuntimeException("CRITICAL ERROR ENCODER PROBABLY NOT PLUGGED IN"); } System.out.println("POSITION: " +
+			 * lmotor.getPosition()); softTop = lmotor.getPosition() - softTopOffset;
+			 */
 
-			while (!TKOHardware.getLiftTop() && DriverStation.getInstance().isEnabled())
-			{
-				lmotor.set(-Definitions.LIFT_CALIBRATION_POWER);
-			}
-			if (!DriverStation.getInstance().isEnabled())
-				return false;
-			lmotor.set(0); // stop motor
-			softTop = lmotor.getPosition() - softTopOffset;
-
-			lmotor.setSafetyEnabled(false);
-			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D);
+			TKOHardware.changeTalonMode(lmotor, CANTalon.ControlMode.Position, liftP, liftI, liftD);
 			setStartPosition(); // goto starting place
 			currentPIDSetpoint = lmotor.getEncPosition();
-			customPositionTarget = lmotor.getEncPosition();
-			System.out.println("DONE CALIBRATING");
+			System.out.println("DONE CALIBRATING " + currentPIDSetpoint);
 		}
 		catch (TKOException e)
 		{
@@ -173,8 +168,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.PercentVbus)
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus, Definitions.LIFT_P,
-						Definitions.LIFT_I, Definitions.LIFT_D);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.PercentVbus, liftP, liftI, liftD);
 			TKOHardware.getLiftTalon().set(
 					TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * Definitions.LIFT_CALIBRATION_POWER);
 		}
@@ -184,7 +178,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		}
 	}
 
-	public int getCurrentLevel()
+	public double getCurrentLevel()
 	{
 		return calculateLevel(getEncoderPosition());
 	}
@@ -217,7 +211,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		return 0.;
 	}
 
-	public int getTargetLevel()
+	public double getTargetLevel()
 	{
 		return level;
 	}
@@ -226,27 +220,32 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		if (currentAction == Action.DONE)
 		{
-			System.out.println("SHOULD BE GOING DOWN");
-			if (level == minLevel)
+			// System.out.println("SHOULD BE GOING DOWN");
+			if (level <= minLevel)
 			{
 				goToTrashcanPickup();
 				return;
 			}
-			System.out.println("GOING DOWN A LEVEL");
+			else if (level > maxLevel)
+			{
+				goToLevel(maxLevel);
+				return;
+			}
 			goDown(1);
 		}
 	}
 
 	public void goDown(int n)
 	{
+		System.out.println("GOING DOWN");
 		if (currentAction == Action.DONE)
 		{
-			if (level == minLevel)
+			if (level <= minLevel)
 			{
 				goToTrashcanPickup();
 				return;
 			}
-			goToLevel(this.level - n);
+			goToLevel(level - n);
 		}
 	}
 
@@ -254,46 +253,47 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		if (currentAction == Action.DONE)
 		{
-			operation = Operation.CUSTOM_POSITION;
-			customPositionTarget = fullOfCratesPosition;
+			System.out.println("FULL POSITION TIME");
+			// level = fullOfCratesPosition;
+			goToLevel(fullOfCratesPosition);
 		}
 	}
 
-	public synchronized void goToLevel(int newLevel)
+	public synchronized void goToStepPlaceLevel()
 	{
-		System.out.println("GOING TO LEVEL " + newLevel);
-		boolean usingDiff = false;
-		int diff = 0;
-		if (operation != Operation.PID_CRATES) // TODO TEST NEW CODE
+		if (currentAction == Action.DONE)
 		{
-			diff = newLevel - this.level;
-			usingDiff = true;
-			this.level = calculateLevel();
+			goToLevel(threeCratesOnStepLevel);
 		}
-		operation = Operation.PID_CRATES;
-		currentAction = Action.THINKING;
-		if (newLevel < minLevel)
-		{
-			TKOLogger.getInstance().addMessage("ERROR LIFT REQUESTED TO GO BELOW MINIMUM LEVEL");
-			currentAction = Action.DONE;
-			return;
-		}
-		if (newLevel > maxLevel)
-		{
-			TKOLogger.getInstance().addMessage("ERROR LIFT REQUESTED TO GO BELOW MAXIMUM LEVEL");
-			currentAction = Action.DONE;
-			return;
-		}
-		if (newLevel == this.level)
-		{
-			currentAction = Action.DONE;
-			return;
-		}
+	}
 
-		if (!usingDiff) // TODO TEST NEW CODE
-			this.level = newLevel;
+	public synchronized void goToNearestRealToteLevel()
+	{
+		if (currentAction != Action.DONE)
+			return;
+		long intPartOfLevel;
+		double floatPartOfLevel;
+		double tarLevel;
+		intPartOfLevel = (long) level;
+		floatPartOfLevel = level - intPartOfLevel;
+
+		if (floatPartOfLevel < 0.5)
+			tarLevel = intPartOfLevel;
 		else
-			this.level -= diff;
+			tarLevel = intPartOfLevel + 1;
+
+		goToLevel(tarLevel);
+	}
+
+	public synchronized void goToLevel(double newLevel)
+	{
+		if (DriverStation.getInstance().isDisabled())
+			return;
+
+		System.out.println("GOING TO LEVEL " + newLevel);
+		System.out.println("TARGET LEVEL POSITION: " + (newLevel * oneLevel + bottomOffset));
+
+		level = newLevel;
 
 		if (calculateLevel() > this.level)
 			this.currentAction = Action.DESCENDING;
@@ -302,7 +302,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		else
 		{
 			System.out.println("WAT");
-			currentAction = Action.DONE;
+			if (getEncoderPosition() > (bottomOffset + oneLevel * level))
+				currentAction = Action.DESCENDING;
+			else if (getEncoderPosition() < (bottomOffset + oneLevel * level))
+				currentAction = Action.ASCENDING;
 		}
 	}
 
@@ -311,57 +314,61 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	 * 
 	 * @param position
 	 */
-	public synchronized void goToPosition(int position, Action _currentAction)
+	public synchronized void goToPosition(double position)
 	{
-		// System.out.println("Tar Pos: " + position + " CURRENT ACTION " + currentAction);
+		// System.out.println("Tar Pos: " + position + " Setpoint: " + currentPIDSetpoint);
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
 			{
 				// TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.Position);
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, Definitions.LIFT_P,
-						Definitions.LIFT_I, Definitions.LIFT_D);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP, liftI, liftD);
 				TKOHardware.getLiftTalon().enableControl();
 			}
 
-			if (_currentAction == Action.ASCENDING) // while ascending and not above the target
+			if (currentAction == Action.ASCENDING) // while ascending and not above the target
 			{
 				if (currentPIDSetpoint >= position)
 				{
 					if (getEncoderPosition() >= (position - encoderThreshold) && getEncoderPosition() <= (position + encoderThreshold))
 					{
-						_currentAction = Action.DONE;
+						currentAction = Action.DONE;
 						// done ascending
 					}
+					currentPIDSetpoint = position; // TODO DANGER
+					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
+					System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
 				}
 				else if (currentPIDSetpoint <= getSoftTop())
 				{
-					currentPIDSetpoint += Definitions.LIFT_PID_INCREMENTER;
+					currentPIDSetpoint += (Definitions.LIFT_PID_INCREMENTER);
 				}
 				else
 				{
+					System.out.println(currentAction);
+					System.out.println("TRYING TO DRIVE LIFT BEYOND MAX: " + currentPIDSetpoint);
 					currentPIDSetpoint = (int) getSoftTop();
-					System.out.println("TRYING TO DRIVE LIFT BEYOND MAX");
-					throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MAX");
+					throw new TKORuntimeException("TRYING TO DRIVE LIFT BEYOND MAX: " + currentPIDSetpoint);
 				}
 			}
-			else if (_currentAction == Action.DESCENDING)
+			else if (currentAction == Action.DESCENDING)
 			{
 				if (currentPIDSetpoint <= position)
 				{
 					if (getEncoderPosition() <= (position + encoderThreshold) && getEncoderPosition() >= (position - encoderThreshold))
 					{
-						_currentAction = Action.DONE;
+						currentAction = Action.DONE;
 						// done ascending
 					}
+					currentPIDSetpoint = position; // TODO DANGER
 					System.out.println("WAITING FOR MOTOR " + getEncoderPosition());
 					System.out.println("TarPos: " + position);
 					// setpoint above target but we still havent reached the position with the motor
 				}
 				else if (currentPIDSetpoint >= getSoftBottom())
 				{
-					currentPIDSetpoint -= Definitions.LIFT_PID_INCREMENTER;
+					currentPIDSetpoint -= (Definitions.LIFT_PID_INCREMENTER);
 				}
 				else
 				{
@@ -385,8 +392,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("TRASHCAN TIME");
-			operation = Operation.CUSTOM_POSITION;
-			customPositionTarget = trashcanPickupPosition;
+			// level = trashcanPickupPosition;
+			goToLevel(trashcanPickupPosition);
 		}
 	}
 
@@ -395,8 +402,18 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction == Action.DONE)
 		{
 			System.out.println("DROPPING STACK TIME");
-			operation = Operation.CUSTOM_POSITION;
-			customPositionTarget = getEncoderPosition() - dropOffsetDistance;
+			// level = calculateLevel() - dropOffsetDistance;
+			goToLevel(calculateLevel() - dropOffsetDistance);
+		}
+	}
+
+	public void goToDropCratesBasedOnLevel()
+	{
+		if (currentAction == Action.DONE)
+		{
+			System.out.println("DROPPING STACK TIME BASED ON LEVEL");
+			// level = calculateLevel() - (level * dropoffPerLevel);
+			goToLevel(calculateLevel() - (level * dropoffPerLevel));
 		}
 	}
 
@@ -404,9 +421,14 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		if (currentAction == Action.DONE)
 		{
-			if (level == maxLevel)
+			if (level >= maxLevel)
 			{
 				goToFullPosition();
+				return;
+			}
+			else if (level < minLevel)
+			{
+				goToLevel(minLevel);
 				return;
 			}
 			goUp(1);
@@ -426,9 +448,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		 */
 		if (currentAction == Action.DONE)
 		{
-			if (level == maxLevel)
+			if (level >= maxLevel)
 			{
-				goToTrashcanPickup(); // TODO THIS IS PROBABLY A REALLY BAD IDEA
+				goToFullPosition(); // TODO THIS IS PROBABLY A REALLY BAD IDEA
 				return;
 			}
 			goToLevel(this.level + n);
@@ -437,6 +459,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private void init()
 	{
+		liftP = SmartDashboard.getNumber("Lift P: ");
+		liftI = SmartDashboard.getNumber("Lift I: ");
+		liftD = SmartDashboard.getNumber("Lift D: ");
 		if (!calibrated)
 			calibrated = calibrate();
 
@@ -449,6 +474,143 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		if (currentAction != Action.DONE)
 			return true;
 		return false;
+	}
+
+	/**
+	 * TODO Lift autotuned using the Zeigler-Nichols method; Calculate Kc by testing max p with i and d = 0 where stable oscilation
+	 * Calculate max and min of oscilation and find the period between the max and min Kp = 0.6 Kc Ki = 2*Kp/Pc Kd = 0.125*Kp*Pc
+	 */
+	public void PIDTuneZeiglerNichols()
+	{
+		try
+		{
+			double p = 1.0, i = 0., d = 0.;
+			boolean tuning = true;
+
+			while (tuning)
+			{
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, p, i, d);
+				System.out.println(TKOHardware.getLiftTalon().getP());
+				System.out.println(TKOHardware.getLiftTalon().getI());
+				System.out.println(TKOHardware.getLiftTalon().getD());
+				TKOHardware.getLiftTalon().enableControl();
+
+				// int pos = getEncoderPosition();
+				double target = softTop - 10000;
+				/*
+				 * if (pos > target) currentAction = Action.DESCENDING; if (pos < target) currentAction = Action.ASCENDING;
+				 */
+				goToLevel((target - bottomOffset) / oneLevel);
+
+				while (isMoving() && DriverStation.getInstance().isEnabled())
+				{
+					goToPosition(target);
+				}
+
+				Timer t = new Timer();
+				t.start();
+				double max = Double.MIN_VALUE;
+				double min = Double.MAX_VALUE;
+				double timeMax = 0;
+				double timeMin = 0;
+				while (t.get() < 5)
+				{
+					if (TKOHardware.getLiftTalon().getPosition() > max)
+					{
+						max = TKOHardware.getLiftTalon().getPosition();
+						timeMax = t.get();
+					}
+					if (TKOHardware.getLiftTalon().getPosition() < min)
+					{
+						min = TKOHardware.getLiftTalon().getPosition();
+						timeMin = t.get();
+					}
+				}
+				double period = Math.abs(timeMax - timeMin);
+
+				System.out.println("Tested p: " + p);
+				System.out.println("Period of oscilation with current p: " + Math.abs(timeMax - timeMin));
+				System.out.println("MAX: " + max);
+				System.out.println("MIN: " + min);
+				System.out.println("Suggested i: " + (2 * p / period));
+				System.out.println("Suggested d: " + (2 * p / period));
+
+				// tuning = false;
+
+				p++;
+				if (p > 20)
+					tuning = false;
+			}
+
+		}
+		catch (TKOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void PIDTune()
+	{
+		try
+		{
+			/*
+			 * if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position) { //
+			 * TKOHardware.getLiftTalon().changeControlMode(CANTalon.ControlMode.Position);
+			 * TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP, liftI, liftD);
+			 * TKOHardware.getLiftTalon().enableControl(); }
+			 */
+
+			double p = 0.1, i = 0., d = 0.;
+			boolean tuning = true;
+
+			while (tuning)
+			{
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, p, i, d);
+				System.out.println(TKOHardware.getLiftTalon().getP());
+				System.out.println(TKOHardware.getLiftTalon().getI());
+				System.out.println(TKOHardware.getLiftTalon().getD());
+				TKOHardware.getLiftTalon().enableControl();
+
+				// int pos = getEncoderPosition();
+				double target = softTop - 10000;
+				/*
+				 * if (pos > target) currentAction = Action.DESCENDING; if (pos < target) currentAction = Action.ASCENDING;
+				 */
+				goToLevel((target - bottomOffset) / oneLevel);
+
+				while (isMoving() && DriverStation.getInstance().isEnabled())
+				{
+					goToPosition(target);
+				}
+
+				target = softBottom + 10000;
+				/*
+				 * if (pos < target) currentAction = Action.ASCENDING; if (pos > target) currentAction = Action.DESCENDING;
+				 */
+
+				goToLevel((target - bottomOffset) / oneLevel);
+
+				while (isMoving() && DriverStation.getInstance().isEnabled())
+				{
+					goToPosition(target);
+				}
+
+				i += 0.01;
+				if (i > .1)
+				{
+					i = 0.;
+					p += 1.;
+					if (p > 10.)
+						tuning = false;
+				}
+			}
+		}
+		catch (TKOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -466,10 +628,19 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	{
 		try
 		{
+			boolean PIDTuning = false;
 			while (conveyorThread.isThreadRunning())
 			{
+				if (PIDTuning)
+				{
+					PIDTune();
+					return;
+				}
 				if (manualEnabled)
 				{
+					/*
+					 * If you are at the top then press goToTrashcanPickup, then press goDown, it does to level 2 (from theoretical level 3)
+					 */
 					if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(4))
 					{
 						goDown();
@@ -491,29 +662,60 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 						if (TKOHardware.cratePresent())
 							goUp();
 					}
-					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(8))
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(7))
 					{
-						if (!TKOHardware.cratePresent())
-							goToDropCrates();
+						// if (!TKOHardware.cratePresent())
+						goToDropCrates();
+					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(6))
+					{
+						operation = Operation.MANUAL_VBUS;
+					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(10))
+					{
+						goToDropCratesBasedOnLevel();
+					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK - 1).getRawButton(10))
+					{
+						goToStepPlaceLevel();
+					}
+					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK - 1).getTrigger())
+					{
+						double tarLevel = level + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() * liftManualIncrementer;
+						if (tarLevel > softLevelTop)
+						{
+							if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() > 0)
+								tarLevel = softLevelTop;
+							else
+								tarLevel = softLevelTop + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY()
+										* liftManualIncrementer;
+						}
+						if (tarLevel < softLevelBot)
+						{
+							if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY() < 0)
+								tarLevel = softLevelBot;
+							else
+								tarLevel = softLevelBot + TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getY()
+										* liftManualIncrementer;
+						}
+						goToLevel(tarLevel);
 					}
 				}
 
 				if (!calibrated)
 					operation = Operation.MANUAL_VBUS;
 
-				// printMessages();
+				printMessages();
 				validate(); // TODO have validate throw and if catch, continue
 
 				if (operation == Operation.PID_CRATES)
 					updateCrateLevelTarget();
-				else if (operation == Operation.CUSTOM_POSITION)
-					updateCustomPositionTarget();
 				else if (operation == Operation.MANUAL_VBUS)
 					completeManualJoystickControl();
 
 				synchronized (conveyorThread) // synchronized per the thread to make sure that we wait safely
 				{
-					conveyorThread.wait(20); // the wait time that the thread sleeps, in milliseconds
+					conveyorThread.wait(liftThreadSleep); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		}
@@ -528,29 +730,36 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private synchronized void printMessages()
 	{
-		System.out.println("CurAct: " + currentAction);
-		System.out.println("CurrentOp: " + operation);
-		System.out.println("Level: " + level);
-		// System.out.println("Lift talon set to: " + currentPIDSetpoint);
-
-		// try {
-		// System.out.println("Lift Position: "
-		// + TKOHardware.getLiftTalon().getPosition());
-		// System.out.println("Crate: " + TKOHardware.getCrateDistance());
-		// System.out.println("PID ERROR?: "
-		// + TKOHardware.getLiftTalon().getClosedLoopError());
-		// } catch (TKOException e) {
+		// System.out.println("CurAct: " + currentAction);
+		// System.out.println("CurrentOp: " + operation);
+		// System.out.println("Level: " + level);
+		// try
+		// {
+		// System.out.println("CRATE: " + TKOHardware.getCrateDistance());
+		// System.out.println("CRATE TF: " + TKOHardware.cratePresent());
+		// }
+		// catch (TKOException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// // System.out.println("Lift talon set to: " + currentPIDSetpoint);
+		//
+		// try
+		// {
+		// System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+		// System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
+		// }
+		// catch (TKOException e)
+		// {
 		// e.printStackTrace();
 		// }
 	}
 
 	public void setStartPosition()
 	{
-		currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
-		customPositionTarget = startLevel * oneLevel + bottomOffset;
+		// currentPIDSetpoint = startLevel * oneLevel + bottomOffset;
 		goToLevel(startLevel);
 	}
 
@@ -559,8 +768,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		try
 		{
 			if (TKOHardware.getLiftTalon().getControlMode() != CANTalon.ControlMode.Position)
-				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, Definitions.LIFT_P,
-						Definitions.LIFT_I, Definitions.LIFT_D);
+				TKOHardware.changeTalonMode(TKOHardware.getLiftTalon(), CANTalon.ControlMode.Position, liftP, liftI, liftD);
 
 			TKOHardware.getLiftTalon().set(TKOHardware.getLiftTalon().getPosition());
 			// sets talon target to current position? figure out what to do on restart
@@ -613,53 +821,11 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	public synchronized void updateCrateLevelTarget()
 	{
-		int target = oneLevel * level + bottomOffset;
-		goToPosition(target, currentAction); // TODO is it bad we don't check currentAction here?
+		double target = oneLevel * level + bottomOffset;
+		goToPosition(target); // TODO is it bad we don't check currentAction here?
 	}
 
-	public synchronized void updateCustomPositionTarget()
-	{
-		System.out.println("UPDATE CUSTOM POSITION");
-		currentAction = Action.THINKING;
-
-		if (customPositionTarget < softBottom)
-		{
-			System.out.println("ERROR LIFT REQUESTED TO GO BELOW MINIMUM LEVEL");
-			TKOLogger.getInstance().addMessage("ERROR LIFT REQUESTED TO GO BELOW MINIMUM LEVEL");
-			currentAction = Action.DONE;
-			return;
-		}
-		if (customPositionTarget > softTop)
-		{
-			System.out.println("ERROR LIFT REQUESTED TO GO BEYOND MAXIMUM LEVEL");
-			TKOLogger.getInstance().addMessage("ERROR LIFT REQUESTED TO GO BEYOND MAXIMUM LEVEL");
-			currentAction = Action.DONE;
-			return;
-		}
-		if (customPositionTarget <= (getEncoderPosition() + encoderThreshold)
-				&& customPositionTarget >= (getEncoderPosition() - encoderThreshold))
-		{
-			currentAction = Action.DONE;
-			System.out.println("CLOSE ENOUGH TO THE TARGET");
-			return;
-		}
-
-		if (getEncoderPosition() > customPositionTarget)
-			this.currentAction = Action.DESCENDING;
-		else if (getEncoderPosition() < customPositionTarget)
-			this.currentAction = Action.ASCENDING;
-		else
-		{
-			System.out.println("Done? Though this should not really be the case?");
-			currentAction = Action.DONE;
-		}
-		System.out.println("CUSTOM POSITION: " + customPositionTarget);
-		System.out.println("ACTION: " + currentAction);
-		System.out.println("ENC: " + getEncoderPosition());
-		goToPosition(customPositionTarget, currentAction);
-	}
-
-	private void validate() throws TKOException //TODO Test
+	private void validate() throws TKOException // TODO Test
 	{
 		// TKOHardware.getLiftTalon().enableLimitSwitch(true, true);
 		// TKOHardware.getLiftTalon().setForwardSoftLimit(forwardLimit);
@@ -667,13 +833,13 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 		if (level < minLevel || level > maxLevel)
 		{
-			throw new TKORuntimeException("CRITICAL ERROR LEVEL OUT OF BOUNDS HOW IS THIS EVEN POSSIBLE?");
+			// throw new TKORuntimeException("CRITICAL ERROR LEVEL OUT OF BOUNDS HOW IS THIS EVEN POSSIBLE?");
 		}
 		int error = TKOHardware.getLiftTalon().getClosedLoopError();
-		if (error > (Definitions.LIFT_PID_INCREMENTER + encoderThreshold))
+		if (error > ((Definitions.LIFT_PID_INCREMENTER) + encoderThreshold))
 		{
 			System.out.println("PROBLEM WHY IS OUR CLOSED LOOP ERROR LARGER THAN IT SHOULD BE: " + error);
-			throw new TKORuntimeException("PROBLEM WHY IS OUR CLOSED LOOP ERROR LARGER THAN IT SHOULD BE: " + error);
+			// throw new TKORuntimeException("PROBLEM WHY IS OUR CLOSED LOOP ERROR LARGER THAN IT SHOULD BE: " + error);
 		}
 		// check action out of bounds
 		// check timeouts?

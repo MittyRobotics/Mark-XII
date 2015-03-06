@@ -2,6 +2,8 @@ package org.usfirst.team1351.robot.auton;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class Molecule {
 	
 	ArrayList<Atom> chain = new ArrayList<Atom>();
@@ -21,7 +23,12 @@ public class Molecule {
 		chain.clear();
 	}
 	
-	public void init()
+	/**
+	 * DO NOT CALL INIT
+	 * @deprecated
+	 */
+	@SuppressWarnings("unused")
+	private void init()
 	{
 		for (Atom a : chain)
 		{
@@ -34,6 +41,16 @@ public class Molecule {
 		for (Atom a : chain)
 		{
 			a.execute();
+		}
+	}
+	
+	public void initAndRun()
+	{
+		for (Atom a : chain)
+		{
+			a.init();
+			a.execute();
+			Timer.delay(0.5);
 		}
 	}
 }

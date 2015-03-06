@@ -74,7 +74,7 @@ public class TKOLogger implements Runnable
 	public void addMessage(String message)
 	{
 		// String str = "Time: " + DriverStation.getInstance().getMatchTime() + ";Message: " + message;
-		String str = "Time(s): " + (System.nanoTime() / 1000000000) + " Message:" + message;
+		String str = "Time(s): " + ((System.nanoTime() - startTime) / 1000000000) + " Message:" + message;
 		m_MessageBuffer.add(str);
 	}
 

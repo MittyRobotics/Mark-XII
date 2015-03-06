@@ -3,6 +3,7 @@ package org.usfirst.team1351.robot.evom;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOLEDArduino;
 import org.usfirst.team1351.robot.util.TKORuntimeException;
 import org.usfirst.team1351.robot.util.TKOThread;
 
@@ -56,7 +57,6 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final double oneLevel = 5000; // TODO 4750 before
 	public static final byte minLevel = 0; // zero based
 	public static final byte maxLevel = 3; // 4th crate
-	public static final byte startLevel = 0;
 	public static final double bottomOffset = 4700;
 	public static final double dropoffPerLevel = 0.2; // TODO CALCULATE
 	public static final double softBottomOffset = 0; // safety offset
@@ -70,6 +70,7 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final double softLevelBot = (softBottomOffset - bottomOffset) / oneLevel;
 
 	public static final double trashcanPickupPosition = softLevelBot + 0.1;
+	public static final double startLevel = trashcanPickupPosition;
 	public static final double fullOfCratesPosition = softLevelTop - 0.1;
 	public static final double threeCratesOnStepLevel = 0.5; // TODO Calculate this
 	public static final double dropOffsetDistance = 0.75;
@@ -612,6 +613,15 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 			e.printStackTrace();
 		}
 	}
+	
+	public void ledStripUpdateColorBasedOnLevel()
+	{
+		double converted = level - softLevelBot;
+		converted /= (softLevelTop - softLevelBot);
+		converted *= 14; //max pattern number
+		short target = (short) converted;
+		TKOLEDArduino.getInstance().setPattern(target);
+	}
 
 	/**
 	 * The run method is what the thread actually calls once. The continual running of the thread loop is done by the while loop, controlled
@@ -712,6 +722,8 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					updateCrateLevelTarget();
 				else if (operation == Operation.MANUAL_VBUS)
 					completeManualJoystickControl();
+				
+				ledStripUpdateColorBasedOnLevel();
 
 				synchronized (conveyorThread) // synchronized per the thread to make sure that we wait safely
 				{

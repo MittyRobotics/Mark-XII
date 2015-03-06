@@ -2,6 +2,12 @@ package org.usfirst.team1351.robot.util;
 
 import org.usfirst.team1351.robot.main.Definitions;
 
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.Parity;
+import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.StopBits;
+import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
+
 
 /**
  * This is an example of how to make a class that runs as a thread. The most important reason for making TKOThread was to make the thread
@@ -18,6 +24,8 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 	 */
 	public TKOThread ledArduinoThread = null;
 	private static TKOLEDArduino m_Instance = null;
+	
+	private SerialPort arduino = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKOLEDArduino()
@@ -36,6 +44,15 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 			m_Instance.ledArduinoThread = new TKOThread(m_Instance);
 		}
 		return m_Instance;
+	}
+	
+	public synchronized void setPattern(int pattern)
+	{
+		if (arduino == null)
+			return;
+		String patternString = new String("R ");
+		patternString += pattern;
+		arduino.writeString(patternString);
 	}
 
 	/**
@@ -58,6 +75,9 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			ledArduinoThread.setThreadRunning(true);
 		}
+		arduino = new SerialPort(9600, Port.kUSB, 8, Parity.kNone, StopBits.kTwo);
+		arduino.setWriteBufferMode(WriteBufferMode.kFlushOnAccess);
+		arduino.reset();
 	}
 
 	/**
@@ -70,6 +90,8 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			ledArduinoThread.setThreadRunning(false);
 		}
+		arduino.free();
+		arduino = null;
 	}
 
 	/**
@@ -83,13 +105,11 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			while (ledArduinoThread.isThreadRunning())
 			{
-				System.out.println("THREAD RAN!");
-				/*
-				 * THIS IS WHERE YOU PUT ALL OF YOUR CODEZ
-				 */
+				arduino.flush();
+				
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{
-					ledArduinoThread.wait(1000); // the wait time that the thread sleeps, in milliseconds
+					ledArduinoThread.wait(500); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (Exception e)

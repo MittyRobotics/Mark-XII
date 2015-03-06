@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
 
@@ -144,7 +145,16 @@ public class TKOHardware
 			acc = new BuiltInAccelerometer();
 
 		if (gyro == null)
+		{
 			gyro = new Gyro(Definitions.GYRO_ANALOG_CHANNEL);
+
+			gyro.initGyro();
+			gyro.setSensitivity(7. / 1000.);
+			gyro.reset();
+			
+			System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
+
+		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);

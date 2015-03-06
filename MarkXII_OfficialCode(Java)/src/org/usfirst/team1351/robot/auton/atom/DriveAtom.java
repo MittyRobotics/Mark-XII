@@ -5,6 +5,7 @@ package org.usfirst.team1351.robot.auton.atom;
  */
 
 import org.usfirst.team1351.robot.auton.Atom;
+import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
@@ -73,6 +74,10 @@ public class DriveAtom extends Atom
 					System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
 							+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: "
 							+ TKOHardware.getDriveTalon(0).getSetpoint());
+					TKOLogger.getInstance().addMessage("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
+							+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: "
+							+ TKOHardware.getDriveTalon(0).getSetpoint());
+					Timer.delay(0.001);
 				}
 			} else
 			{
@@ -83,6 +88,10 @@ public class DriveAtom extends Atom
 					System.out.println("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
 							+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: "
 							+ TKOHardware.getDriveTalon(0).getSetpoint());
+					TKOLogger.getInstance().addMessage("Ncoder Left: " + TKOHardware.getDriveTalon(0).getPosition() + "\t Ncoder Rgith: "
+							+ TKOHardware.getDriveTalon(2).getPosition() + "\t Left Setpoint: "
+							+ TKOHardware.getDriveTalon(0).getSetpoint());
+					Timer.delay(0.001);
 				}
 			}
 
@@ -92,6 +101,8 @@ public class DriveAtom extends Atom
 			while (Math.abs(TKOHardware.getLeftDrive().getPosition() - distance) > threshold && DriverStation.getInstance().isEnabled())
 			{
 				// not close enough doe; actually gets stuck here
+				TKOLogger.getInstance().addMessage("NOT CLOSE ENOUGH TO TARGET DIST: " + (TKOHardware.getLeftDrive().getPosition() - distance));
+				Timer.delay(0.001);
 			}
 
 		} catch (TKOException e1)

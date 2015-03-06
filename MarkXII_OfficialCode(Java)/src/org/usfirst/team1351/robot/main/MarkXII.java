@@ -12,8 +12,10 @@ import org.usfirst.team1351.robot.auton.atom.TrashcanGrabAndUp;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.evom.TKOPneumatics;
+import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOLEDArduino;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -62,22 +64,6 @@ public class MarkXII extends SampleRobot
 		System.out.println("-----SYSTEM BOOT: " + Timer.getFPGATimestamp() + "-----");
 		TKOHardware.initObjects();
 
-		/**
-		 * TODO the initGyro() method takes 10+ seconds, figure out why
-		 * move these lines to initObjects() later
-		 */
-		try
-		{
-			TKOHardware.getGyro().initGyro();
-			TKOHardware.getGyro().setSensitivity(7. / 1000.);
-			TKOHardware.getGyro().reset();
-		} catch (TKOException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
-
 		autonChooser = new SendableChooser();
 		autonChooser.addDefault("Drive", new Integer(0));
 		autonChooser.addObject("Drive, turn", new Integer(1));
@@ -103,10 +89,6 @@ public class MarkXII extends SampleRobot
 		SmartDashboard.putNumber("Turn atom angle: ", 85);
 		SmartDashboard.putNumber("Turn Incrementer: ", Definitions.TURN_ATOM_INCREMENTER);
 		
-		SmartDashboard.putNumber("Lift P: ", Definitions.LIFT_P);
-		SmartDashboard.putNumber("Lift I: ", Definitions.LIFT_I);
-		SmartDashboard.putNumber("Lift D: ", Definitions.LIFT_D);
-		
 		try
 		{
 			SmartDashboard.putNumber("CRATE DISTANCE: ", TKOHardware.getCrateDistance());
@@ -129,11 +111,12 @@ public class MarkXII extends SampleRobot
 	{
 		System.out.println("Enabling autonomous!");
 		
-//		TKOLogger.getInstance().start();
+		TKOLogger.getInstance().start();
 //		TKODataReporting.getInstance().start();
 //		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-//		TKOPneumatics.getInstance().start();
+		TKOLEDArduino.getInstance().start();
+		TKOPneumatics.getInstance().start();
 //		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		
 		Molecule molecule = new Molecule();
@@ -175,12 +158,13 @@ public class MarkXII extends SampleRobot
 		else if (autonChooser.getSelected().equals(6))
 		{
 			molecule.add(new TrashcanGrabAndUp());
-			molecule.add(new DriveAtom(-36 * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(85));
-			molecule.add(new DriveAtom(24 * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(-85));
-			molecule.add(new DriveAtom(30 * Definitions.TICKS_PER_INCH));
+			molecule.add(new DriveAtom(-dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(-angle));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom((dist - 2) * Definitions.TICKS_PER_INCH));
 			molecule.add(new AutoCratePickupAtom());
+			molecule.add(new DriveAtom((dist * 4) * Definitions.TICKS_PER_INCH));
 		}
 		else
 		{
@@ -193,14 +177,14 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-//			TKOPneumatics.getInstance().stop();
-//			TKOPneumatics.getInstance().pneuThread.join();
+			TKOPneumatics.getInstance().stop();
+			TKOPneumatics.getInstance().pneuThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
 //			TKODataReporting.getInstance().stop();
 //			TKODataReporting.getInstance().dataReportThread.join();
-//			TKOLogger.getInstance().stop();
-//			TKOLogger.getInstance().loggerThread.join();
+			TKOLogger.getInstance().stop();
+			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
@@ -210,12 +194,13 @@ public class MarkXII extends SampleRobot
 	public void operatorControl()
 	{
 		System.out.println("Enabling teleop!");
-//		TKOLogger.getInstance().start();
+		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
-//		TKODataRep\[]orting.getInstance().start();
+//		TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
+		TKOLEDArduino.getInstance().start();
 
 		while (isOperatorControl() && isEnabled())
 		{			
@@ -225,6 +210,8 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
+			TKOLEDArduino.getInstance().stop();
+			TKOLEDArduino.getInstance().ledArduinoThread.join();
 			TKOTalonSafety.getInstance().stop();
 			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
@@ -235,8 +222,8 @@ public class MarkXII extends SampleRobot
 			TKOPneumatics.getInstance().pneuThread.join();
 			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
-//			TKOLogger.getInstance().stop();
-//			TKOLogger.getInstance().loggerThread.join();
+			TKOLogger.getInstance().stop();
+			TKOLogger.getInstance().loggerThread.join();
 		}
 		catch (InterruptedException e)
 		{

@@ -1,6 +1,7 @@
 package org.usfirst.team1351.robot.auton.atom;
 
 import org.usfirst.team1351.robot.auton.Atom;
+import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
@@ -30,8 +31,8 @@ public class GyroTurnAtom extends Atom
 	{
 		angle = _angle;
 		threshold = 2;
-		//incrementer = Definitions.TURN_ATOM_INCREMENTER;
-		incrementer = SmartDashboard.getNumber("Turn Incrementer: " );
+		// incrementer = Definitions.TURN_ATOM_INCREMENTER;
+		incrementer = SmartDashboard.getNumber("Turn Incrementer: ");
 		p = SmartDashboard.getNumber("Turn P: ");
 		i = SmartDashboard.getNumber("Turn I: ") / 1000.;
 		d = SmartDashboard.getNumber("Turn D: ");
@@ -73,6 +74,7 @@ public class GyroTurnAtom extends Atom
 	public void execute()
 	{
 		System.out.println("Starting execution of GYRO TURN");
+		TKOLogger.getInstance().addMessage("Starting execution of GYRO TURN");
 		try
 		{
 			pid.enable();
@@ -85,6 +87,8 @@ public class GyroTurnAtom extends Atom
 					TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
 					System.out.println("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: "
 							+ TKOHardware.getRightDrive().get() + "\t Setpoint: " + pid.getSetpoint());
+					TKOLogger.getInstance().addMessage("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: "
+							+ TKOHardware.getRightDrive().get() + "\t Setpoint: " + pid.getSetpoint());
 					Timer.delay(0.001);
 				}
 			} else if (angle < 0)
@@ -94,6 +98,8 @@ public class GyroTurnAtom extends Atom
 					pid.setSetpoint(pid.getSetpoint() - incrementer);
 					TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
 					System.out.println("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: "
+							+ TKOHardware.getRightDrive().get() + "\t Setpoint: " + pid.getSetpoint());
+					TKOLogger.getInstance().addMessage("LEFT GET: " + TKOHardware.getLeftDrive().get() + "\t RIGHT GET: "
 							+ TKOHardware.getRightDrive().get() + "\t Setpoint: " + pid.getSetpoint());
 					Timer.delay(0.001);
 				}
@@ -116,7 +122,9 @@ public class GyroTurnAtom extends Atom
 				TKOHardware.getRightDrive().set(TKOHardware.getLeftDrive().get());
 				System.out.println("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: "
 						+ gyro.getAngle());
-				// Timer.delay(0.001);
+				TKOLogger.getInstance().addMessage("Target Angle: " + pid.getSetpoint() + " \t PID Error: " + pid.getError() + "\t Gyro Get: "
+						+ gyro.getAngle());
+				Timer.delay(0.001);
 			}
 			t.stop();
 			TKOHardware.getDriveTalon(0).set(0);

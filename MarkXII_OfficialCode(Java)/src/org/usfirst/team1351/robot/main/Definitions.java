@@ -24,7 +24,7 @@ public class Definitions
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;
 
 	public static final double CRATE_DISTANCE_THRESHOLD = 5.2;
-	public static final int CRATE_SENSOR_ID = 3;
+	public static final int CRATE_SENSOR_ID = 2;
 
 	public static final long[] CURRENT_TIMEOUT_LENGTH =
 	{ 1000L, 1000L, 1000L, 1000L, 1000L, 1000L };
@@ -77,7 +77,7 @@ public class Definitions
 	public static final double LIFT_D = 0.1;
 	// public static final double LIFT_I = 0.02;
 	// public static final double LIFT_D = 0.1;
-	public static final double LIFT_PID_INCREMENTER = 100.;
+	public static final double LIFT_PID_INCREMENTER = 150.;
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
 	{ true, false };

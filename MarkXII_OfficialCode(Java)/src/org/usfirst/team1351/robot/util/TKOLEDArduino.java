@@ -1,5 +1,8 @@
 package org.usfirst.team1351.robot.util;
 
+import java.util.Random;
+
+import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.SerialPort;
@@ -24,7 +27,7 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 	 */
 	public TKOThread ledArduinoThread = null;
 	private static TKOLEDArduino m_Instance = null;
-	
+	private Random r = new Random();
 	private SerialPort arduino = null;
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
@@ -46,13 +49,57 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		return m_Instance;
 	}
 	
+	public void ledStripGradientBasedOnLevel()
+	{
+		double lvl = TKOLift.getInstance().getCurrentLevel() - TKOLift.softLevelBot;
+		lvl /= (TKOLift.softLevelTop - TKOLift.softLevelBot);
+		double R = 0;
+		double G = 255 * (lvl);
+		double B = 255 * (1-lvl);
+		setRGB((int) R, (int) G, (int) B);
+	}
+	
+	public void ledStripUpdateColorTestPatterns()
+	{
+		double converted = TKOLift.getInstance().getCurrentLevel() - TKOLift.softLevelBot;
+		converted /= (TKOLift.softLevelTop - TKOLift.softLevelBot);
+		converted *= 14; //max pattern number
+		short target = (short) converted;
+		System.out.println("Setting pattern");
+		setPattern(target);
+		System.out.println("Set pattern");
+	}
+	
+	public void ledStripRandomColor()
+	{
+		int randomR = r.nextInt(255);
+		int randomG = r.nextInt(255);
+		int randomB = r.nextInt(255);
+		System.out.println("Setting pattern");
+		setRGB(randomR, randomG, randomB);
+		System.out.println("Set pattern");
+	}
+	
+	public synchronized void setRGB (int R, int G, int B)
+	{
+		if (arduino == null)
+			return;
+		String patternString = new String("R 10 ");
+		patternString = patternString + R + " " + G + " " + B;
+		System.out.println("WRITING STRING: " + patternString);
+		arduino.writeString(patternString);
+		System.out.println("DONE WRITING STRING");
+	}
+	
 	public synchronized void setPattern(int pattern)
 	{
 		if (arduino == null)
 			return;
 		String patternString = new String("R ");
 		patternString += pattern;
+		System.out.println("WRITING STRING");
 		arduino.writeString(patternString);
+		System.out.println("DONE WRITING STRING");
 	}
 
 	/**
@@ -106,11 +153,15 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 			while (ledArduinoThread.isThreadRunning())
 			{
 				if (arduino != null)
+				{
+					//ledStripUpdateColorTestPatterns();
+					ledStripRandomColor();
 					arduino.flush();
+				}
 				
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{
-					ledArduinoThread.wait(500); // the wait time that the thread sleeps, in milliseconds
+					ledArduinoThread.wait(1000); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (Exception e)

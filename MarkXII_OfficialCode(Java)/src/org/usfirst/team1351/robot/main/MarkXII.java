@@ -85,10 +85,10 @@ public class MarkXII extends SampleRobot
 			a.addObject("Tote drop", "Tote drop");
 		}
 
-		SmartDashboard.putData("Atom 1 chooser", atom1);
-		SmartDashboard.putData("Atom 2 chooser", atom2);
-		SmartDashboard.putData("Atom 3 chooser", atom3);
-		SmartDashboard.putData("Atom 4 chooser", atom4);
+		SmartDashboard.putData("Atom 1 chooser", atoms.get(0));
+		SmartDashboard.putData("Atom 2 chooser", atoms.get(1));
+		SmartDashboard.putData("Atom 3 chooser", atoms.get(2));
+		SmartDashboard.putData("Atom 4 chooser", atoms.get(3));
 
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
 		SmartDashboard.putNumber("Drive I: ", Definitions.AUTON_DRIVE_I);
@@ -182,7 +182,7 @@ public class MarkXII extends SampleRobot
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
-		TKODataReporting.getInstance().start();
+//		TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 		TKOLEDArduino.getInstance().start();
@@ -210,8 +210,8 @@ public class MarkXII extends SampleRobot
 			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
-			TKODataReporting.getInstance().stop();
-			TKODataReporting.getInstance().dataReportThread.join();
+//			TKODataReporting.getInstance().stop();
+//			TKODataReporting.getInstance().dataReportThread.join();
 			TKOPneumatics.getInstance().stop();
 			TKOPneumatics.getInstance().pneuThread.join();
 			TKODrive.getInstance().stop();

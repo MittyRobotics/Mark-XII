@@ -27,8 +27,8 @@ public class TrashcanGrabAndUp extends Atom
 		System.out.println("Starting execution");
 		try
 		{
-
-			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
 
 			while ((TKOLift.getInstance().isMoving() || !TKOLift.getInstance().calibrated) && DriverStation.getInstance().isEnabled())
 			{
@@ -42,7 +42,7 @@ public class TrashcanGrabAndUp extends Atom
 				// System.out.println("MOVING");
 			}
 
-			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
+			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
 			Timer.delay(0.5);
 
 			TKOLift.getInstance().goUp();

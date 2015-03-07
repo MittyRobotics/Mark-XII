@@ -161,7 +161,7 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 				
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{
-					ledArduinoThread.wait(1000); // the wait time that the thread sleeps, in milliseconds
+					ledArduinoThread.wait(5000); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
 		} catch (Exception e)

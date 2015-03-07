@@ -66,14 +66,14 @@ public class MarkXII extends SampleRobot
 		TKOHardware.initObjects();
 
 		autonChooser = new SendableChooser();
-		autonChooser.addDefault("RC, Drive", new Integer(6));
+		autonChooser.addDefault("RC, Drive, Turn", new Integer(7));
+		autonChooser.addObject("RC, Drive", new Integer(6));
 		autonChooser.addObject("Drive", new Integer(0));
 		autonChooser.addObject("Drive, turn", new Integer(1));
 		autonChooser.addObject("Turn", new Integer(2));
 		autonChooser.addObject("Drive, pickup", new Integer(3));
 		autonChooser.addObject("Box", new Integer(4));
 		autonChooser.addObject("Auto Pickup", new Integer(5));
-		autonChooser.addObject("RC, Drive, Turn", new Integer(7));
 				
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);

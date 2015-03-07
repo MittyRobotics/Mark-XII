@@ -18,6 +18,7 @@ import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOLEDArduino;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -65,13 +66,14 @@ public class MarkXII extends SampleRobot
 		TKOHardware.initObjects();
 
 		autonChooser = new SendableChooser();
-		autonChooser.addDefault("RC And Tote", new Integer(6));
+		autonChooser.addDefault("RC, Drive", new Integer(6));
 		autonChooser.addObject("Drive", new Integer(0));
 		autonChooser.addObject("Drive, turn", new Integer(1));
 		autonChooser.addObject("Turn", new Integer(2));
 		autonChooser.addObject("Drive, pickup", new Integer(3));
 		autonChooser.addObject("Box", new Integer(4));
 		autonChooser.addObject("Auto Pickup", new Integer(5));
+		autonChooser.addObject("RC, Drive, Turn", new Integer(7));
 				
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
@@ -85,10 +87,9 @@ public class MarkXII extends SampleRobot
 		SmartDashboard.putNumber("Lift I: ", Definitions.LIFT_I);
 		SmartDashboard.putNumber("Lift D: ", Definitions.LIFT_D);
 		
-		SmartDashboard.putNumber("Drive atom distance: ", -84.);
+		SmartDashboard.putNumber("Drive atom distance: ", -90.);
 		SmartDashboard.putNumber("Turn atom angle: ", 85);
 		SmartDashboard.putNumber("Turn Incrementer: ", Definitions.TURN_ATOM_INCREMENTER);
-		
 		try
 		{
 			SmartDashboard.putNumber("CRATE DISTANCE: ", TKOHardware.getCrateDistance());
@@ -115,11 +116,12 @@ public class MarkXII extends SampleRobot
 //		TKODataReporting.getInstance().start();
 //		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-		TKOLEDArduino.getInstance().start();
+//		TKOLEDArduino.getInstance().start();
 		TKOPneumatics.getInstance().start();
 //		TKOPneumatics.getInstance().reset(); //TODO This may be bad
 		
 		Molecule molecule = new Molecule();
+		molecule.clear();
 		
 		double dist = SmartDashboard.getNumber("Drive atom distance: ");
 		double angle = SmartDashboard.getNumber("Turn atom angle: ");
@@ -166,6 +168,12 @@ public class MarkXII extends SampleRobot
 //			molecule.add(new AutoCratePickupAtom());
 //			molecule.add(new DriveAtom((dist * 4) * Definitions.TICKS_PER_INCH));
 		}
+		else if (autonChooser.getSelected().equals(7))
+		{
+			molecule.add(new TrashcanGrabAndUp());
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
+		}
 		else
 		{
 			System.out.println("Molecule empty why this");
@@ -197,14 +205,23 @@ public class MarkXII extends SampleRobot
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
-//		TKODataReporting.getInstance().start();
+		//TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
 		TKOLEDArduino.getInstance().start();
-
+		
 		while (isOperatorControl() && isEnabled())
-		{			
-			Timer.delay(0.01); // wait for a motor update time
+		{
+			try
+			{
+				SmartDashboard.putNumber("CRATE DISTANCE: ", TKOHardware.getCrateDistance());
+				SmartDashboard.putBoolean("Top switch", TKOHardware.getLiftTop());
+				SmartDashboard.putBoolean("Bottom switch", TKOHardware.getLiftBottom());
+			} catch (TKOException e)
+			{
+				e.printStackTrace();
+			}
+			Timer.delay(0.1); // wait for a motor update time
 			//TODO This will make it so robot lags after disabling, need to make it sorta small
 		}
 

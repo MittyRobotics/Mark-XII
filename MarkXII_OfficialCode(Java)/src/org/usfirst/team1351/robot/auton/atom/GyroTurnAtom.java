@@ -30,7 +30,7 @@ public class GyroTurnAtom extends Atom
 	public GyroTurnAtom(double _angle)
 	{
 		angle = _angle;
-		threshold = 2;
+		threshold = 5;
 		// incrementer = Definitions.TURN_ATOM_INCREMENTER;
 		incrementer = SmartDashboard.getNumber("Turn Incrementer: ");
 		p = SmartDashboard.getNumber("Turn P: ");
@@ -115,7 +115,7 @@ public class GyroTurnAtom extends Atom
 					t.reset();
 					pid.setSetpoint(angle);
 				}
-				if (t.get() > .5)
+				if (t.get() > .25)
 				{
 					break;
 				}

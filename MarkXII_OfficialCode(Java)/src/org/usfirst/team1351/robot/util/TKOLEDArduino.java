@@ -91,6 +91,39 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		System.out.println("DONE WRITING STRING");
 	}
 	
+	public synchronized void setRainbow()
+	{
+		if (arduino == null)
+			return;
+		String patternString = new String("R 1");
+		System.out.println("WRITING STRING: " + patternString);
+		arduino.writeString(patternString);
+		arduino.flush();
+		System.out.println("DONE WRITING STRING");	
+	}
+	
+	public synchronized void setBlue()
+	{
+		if (arduino == null)
+			return;
+		String patternString = new String("R 4");
+		System.out.println("WRITING STRING: " + patternString);
+		arduino.writeString(patternString);
+		arduino.flush();
+		System.out.println("DONE WRITING STRING");	
+	}
+	
+	public synchronized void setRed()
+	{
+		if (arduino == null)
+			return;
+		String patternString = new String("R 3 ");
+		System.out.println("WRITING STRING: " + patternString);
+		arduino.writeString(patternString);
+		arduino.flush();
+		System.out.println("DONE WRITING STRING");
+	}
+	
 	public synchronized void setPattern(int pattern)
 	{
 		if (arduino == null)
@@ -154,9 +187,16 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 			{
 				if (arduino != null)
 				{
+					/*if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue)
+						TKOLEDArduino.getInstance().setBlue();
+					else if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)
+						TKOLEDArduino.getInstance().setRed();
+					else*/
+					TKOLEDArduino.getInstance().setRainbow();
+
 					//ledStripUpdateColorTestPatterns();
-					ledStripRandomColor();
-					arduino.flush();
+					//ledStripRandomColor();
+					//arduino.flush();
 				}
 				
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely

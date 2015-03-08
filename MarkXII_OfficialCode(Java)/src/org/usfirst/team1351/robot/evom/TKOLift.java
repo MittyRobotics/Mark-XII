@@ -749,15 +749,15 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		// }
 		// // System.out.println("Lift talon set to: " + currentPIDSetpoint);
 		//
-		try
-		{
-			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
-			System.out.println("Current Level: " + getCurrentLevel());
-			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
-		} catch (TKOException e)
-		{
-			e.printStackTrace();
-		}
+//		try
+//		{
+//			System.out.println("Lift Position: " + TKOHardware.getLiftTalon().getPosition());
+//			System.out.println("Current Level: " + getCurrentLevel());
+//			System.out.println("PID ERROR?: " + TKOHardware.getLiftTalon().getClosedLoopError());
+//		} catch (TKOException e)
+//		{
+//			e.printStackTrace();
+//		}
 	}
 
 	public void setStartPosition()

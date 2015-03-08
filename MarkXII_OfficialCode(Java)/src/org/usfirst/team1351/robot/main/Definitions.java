@@ -77,7 +77,7 @@ public class Definitions
 	public static final double LIFT_D = 0.1;
 	// public static final double LIFT_I = 0.02;
 	// public static final double LIFT_D = 0.1;
-	public static final double LIFT_PID_INCREMENTER = 150.;
+	public static final double LIFT_PID_INCREMENTER = 200.;
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
 	{ true, false };

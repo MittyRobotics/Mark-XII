@@ -15,7 +15,6 @@ import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
-import org.usfirst.team1351.robot.util.TKOLEDArduino;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -207,7 +206,7 @@ public class MarkXII extends SampleRobot
 		//TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-		TKOLEDArduino.getInstance().start();
+		//TKOLEDArduino.getInstance().start();
 		
 		while (isOperatorControl() && isEnabled())
 		{
@@ -226,8 +225,8 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			TKOLEDArduino.getInstance().stop();
-			TKOLEDArduino.getInstance().ledArduinoThread.join();
+//			TKOLEDArduino.getInstance().stop();
+//			TKOLEDArduino.getInstance().ledArduinoThread.join();
 			TKOTalonSafety.getInstance().stop();
 			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();

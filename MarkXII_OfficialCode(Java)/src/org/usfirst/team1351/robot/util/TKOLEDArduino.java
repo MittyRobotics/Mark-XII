@@ -192,7 +192,7 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 					else if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)
 						TKOLEDArduino.getInstance().setRed();
 					else*/
-					TKOLEDArduino.getInstance().setRainbow();
+					//TKOLEDArduino.getInstance().setRainbow();
 
 					//ledStripUpdateColorTestPatterns();
 					//ledStripRandomColor();

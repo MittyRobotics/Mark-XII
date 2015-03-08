@@ -11,6 +11,7 @@ import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,6 +52,7 @@ public class DriveAtom extends Atom
 			Timer.delay(0.1);
 			TKOHardware.getLeftDrive().set(TKOHardware.getLeftDrive().getPosition());
 			TKOHardware.getRightDrive().set(TKOHardware.getRightDrive().getPosition());
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
 		} catch (TKOException e)
 		{
 			e.printStackTrace();

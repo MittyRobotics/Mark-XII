@@ -72,12 +72,13 @@ public class Definitions
 	public static final CANTalon.FeedbackDevice LIFT_ENCODER_TYPE = CANTalon.FeedbackDevice.QuadEncoder;
 	public static final int LIFT_GRIPPER_SWITCH = 2;
 
+//	public static final double LIFT_P = 1;
+//	public static final double LIFT_I = 0.005;
+//	public static final double LIFT_D = 0.1;
 	public static final double LIFT_P = 1;
-	public static final double LIFT_I = 0.005;
+	public static final double LIFT_I = 0.01;
 	public static final double LIFT_D = 0.1;
-	// public static final double LIFT_I = 0.02;
-	// public static final double LIFT_D = 0.1;
-	public static final double LIFT_PID_INCREMENTER = 200.;
+	public static final double LIFT_PID_INCREMENTER = 250.;
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
 	{ true, false };

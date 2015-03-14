@@ -3,6 +3,8 @@
 
 package org.usfirst.team1351.robot.main;
 
+import java.sql.DriverPropertyInfo;
+
 import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.auton.atom.AutoCratePickupAtom;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
@@ -64,14 +66,13 @@ public class MarkXII extends SampleRobot
 		TKOHardware.initObjects();
 
 		autonChooser = new SendableChooser();
-		autonChooser.addDefault("RC, Drive, Turn", new Integer(7));
-		autonChooser.addObject("RC, Drive", new Integer(6));
-		autonChooser.addObject("Drive", new Integer(0));
-		autonChooser.addObject("Drive, turn", new Integer(1));
-		autonChooser.addObject("Turn", new Integer(2));
-		autonChooser.addObject("Drive, pickup", new Integer(3));
-		autonChooser.addObject("Box", new Integer(4));
-		autonChooser.addObject("Auto Pickup", new Integer(5));
+		autonChooser.addDefault("RC, Drive, Turn", new Integer(0));
+		autonChooser.addObject("RC, Drive", new Integer(1));
+		autonChooser.addObject("Drive", new Integer(2));
+		autonChooser.addObject("Turn", new Integer(3));
+		autonChooser.addObject("Drive, Turn", new Integer(4));
+		autonChooser.addObject("Auton Pickup, Drive", new Integer(5));
+		autonChooser.addObject("RC, Mush, Drive", new Integer(6));
 				
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
@@ -126,51 +127,41 @@ public class MarkXII extends SampleRobot
 		
 		if (autonChooser.getSelected().equals(0))
 		{
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH)); 
+			molecule.add(new TrashcanGrabAndUp());
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(angle));
 		}
 		else if (autonChooser.getSelected().equals(1))
 		{
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH)); 
-			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new TrashcanGrabAndUp());
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		}
 		else if (autonChooser.getSelected().equals(2))
 		{
-			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		}
 		else if (autonChooser.getSelected().equals(3))
 		{
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-			molecule.add(new GoUpAtom());
+			molecule.add(new GyroTurnAtom(angle));
 		}
 		else if (autonChooser.getSelected().equals(4))
 		{
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(angle));
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(angle));
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(angle));
 		}
 		else if (autonChooser.getSelected().equals(5))
+		{
 			molecule.add(new AutoCratePickupAtom());
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+		}
 		else if (autonChooser.getSelected().equals(6))
 		{
 			molecule.add(new TrashcanGrabAndUp());
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-//			molecule.add(new GyroTurnAtom(-angle));
-//			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-//			molecule.add(new GyroTurnAtom(angle));
-//			molecule.add(new DriveAtom((dist - 2) * Definitions.TICKS_PER_INCH));
-//			molecule.add(new AutoCratePickupAtom());
-//			molecule.add(new DriveAtom((dist * 4) * Definitions.TICKS_PER_INCH));
-		}
-		else if (autonChooser.getSelected().equals(7))
-		{
-			molecule.add(new TrashcanGrabAndUp());
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
+			
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		}
 		else
 		{

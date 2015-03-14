@@ -1,0 +1,21 @@
+DRIVE
+	Stay in low gear when carrying 3+ crates?
+
+LIFT
+	Switching between Position and PercentVbus - potentially very bad
+	Test if encoder works while robot disabled
+	Test crate sensor w/ new mount
+	Test if possible to pickup trash can off step
+	Manual stack drop - WORKS
+	Dropping based on position - potentially very bad
+	Error recover: if tote falls, retract wheelie bars and move one level down
+	Fix bugs in DataReporting, Logger, TalonSafety
+
+AUTONOMOUS
+	Pickup trash can, drive, turn - WORKS
+	Pickup trash can and mush - TEST
+
+VISION
+	Add documentation for DNS setup for cameras, etc.
+	Calculate distance w/ tote sensor + vision processing?
+	Add indicator for when tote sensor distance is in range

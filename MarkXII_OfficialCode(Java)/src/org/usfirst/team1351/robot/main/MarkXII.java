@@ -125,11 +125,12 @@ public class MarkXII extends SampleRobot
 		double dist = SmartDashboard.getNumber("Drive atom distance: ");
 		double angle = SmartDashboard.getNumber("Turn atom angle: ");
 		
-		if (autonChooser.getSelected().equals(0))
+		if (autonChooser.getSelected().equals(0)) //default
 		{
 			molecule.add(new TrashcanGrabAndUp());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
+			molecule.add(new DriveAtom(-12 * Definitions.TICKS_PER_INCH));
 		}
 		else if (autonChooser.getSelected().equals(1))
 		{

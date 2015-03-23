@@ -23,7 +23,7 @@ public class Definitions
 	public static final double TURN_ATOM_INCREMENTER = 0.35;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;
 
-	public static final double CRATE_DISTANCE_THRESHOLD = 5.2;
+	public static final double CRATE_DISTANCE_THRESHOLD = 4.8;
 	public static final int CRATE_SENSOR_ID = 2;
 
 	public static final long[] CURRENT_TIMEOUT_LENGTH =
@@ -75,8 +75,8 @@ public class Definitions
 //	public static final double LIFT_P = 1;
 //	public static final double LIFT_I = 0.005;
 //	public static final double LIFT_D = 0.1;
-	public static final double LIFT_P = 1;
-	public static final double LIFT_I = 0.01;
+	public static final double LIFT_P = 1.1;
+	public static final double LIFT_I = 0.02;
 	public static final double LIFT_D = 0.1;
 	public static final double LIFT_PID_INCREMENTER = 250.;
 

@@ -32,6 +32,7 @@ public class TKOHardware
 	protected static Joystick joysticks[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	protected static CANTalon driveTalons[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
 	protected static CANTalon liftTalons[] = new CANTalon[Definitions.NUM_LIFT_TALONS];
+	protected static CANTalon pickupTalons[] = new CANTalon[Definitions.NUM_PICKUP_TALONS];
 	protected static DoubleSolenoid pistonSolenoids[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
 	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
@@ -55,6 +56,10 @@ public class TKOHardware
 		for (int i = 0; i < Definitions.NUM_LIFT_TALONS; i++)
 		{
 			liftTalons[i] = null;
+		}
+		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
+		{
+			pickupTalons[i] = null;
 		}
 		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
 		{
@@ -119,6 +124,23 @@ public class TKOHardware
 				}
 			}
 		}
+		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
+		{
+			if (pickupTalons[i] == null)
+			{
+				try
+				{
+					pickupTalons[i] = new CANTalon(Definitions.LIFT_TALON_ID[i]);
+					talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null; // null means not initialized
+				}
+				catch (AllocationException | CANMessageNotFoundException e)
+				{
+					e.printStackTrace();
+					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
+					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
+				}
+			}
+		}
 
 		if (pistonSolenoids[0] == null)
 			pistonSolenoids[0] = new DoubleSolenoid(Definitions.SHIFTER_A, Definitions.SHIFTER_B);
@@ -151,13 +173,14 @@ public class TKOHardware
 			gyro.initGyro();
 			gyro.setSensitivity(7. / 1000.);
 			gyro.reset();
-			
+
 			System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
 
 		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
 		configLiftTalons(Definitions.LIFT_P, Definitions.LIFT_I, Definitions.LIFT_D, Definitions.LIFT_TALONS_NORMAL_CONTROL_MODE);
+		configPickupTalons();
 
 		if (analog[0] == null)
 			analog[0] = new AnalogInput(Definitions.CRATE_SENSOR_ID);
@@ -225,6 +248,11 @@ public class TKOHardware
 					liftTalons[i].changeControlMode(liftTalonsNormalControlMode);
 					liftTalons[i].setFeedbackDevice(Definitions.LIFT_ENCODER_TYPE);
 					liftTalons[i].setPID(liftP, liftI, liftD);
+					// liftTalons[i].enableLimitSwitch(true, true);
+					// liftTalons[i].enableForwardSoftLimit(true);
+					// liftTalons[i].enableReverseSoftLimit(true);
+					// liftTalons[i].ConfigFwdLimitSwitchNormallyOpen(false);
+					// liftTalons[i].ConfigRevLimitSwitchNormallyOpen(false);
 					talonModes[Definitions.NUM_DRIVE_TALONS + i] = liftTalonsNormalControlMode;
 				}
 				liftTalons[i].enableBrakeMode(Definitions.LIFT_BRAKE_MODE[i]);
@@ -233,6 +261,27 @@ public class TKOHardware
 				liftTalons[i].setSafetyEnabled(false);
 			}
 		}
+	}
+
+	public static synchronized void configPickupTalons()
+	{
+		CANTalon.ControlMode mode = ControlMode.PercentVbus;
+		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
+		{
+			pickupTalons[i].delete();
+			pickupTalons[i] = null;
+			pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
+			pickupTalons[i] = null;
+			if (pickupTalons[i] != null)
+			{
+				driveTalons[i].changeControlMode(mode);
+				talonModes[i] = mode;
+
+				driveTalons[i].enableBrakeMode(Definitions.PICKUP_BRAKE_MODE[i]);
+				driveTalons[i].reverseOutput(Definitions.PICKUP_REVERSE_OUTPUT_MODE[i]);
+			}
+		}
+
 	}
 
 	// public static synchronized void changeTalonMode(CANTalon target, CANTalon.ControlMode newMode) throws TKOException

@@ -52,6 +52,9 @@ public class Definitions
 
 	public static final int[] DRIVE_TALON_ID =
 	{ 0, 1, 2, 3 };
+	
+	public static final int[] PICKUP_TALON_ID =
+	{ 6, 7 };
 
 	public static final CANTalon.ControlMode DRIVE_TALONS_NORMAL_CONTROL_MODE = CANTalon.ControlMode.Current;
 	public static final int GRIPPER_A = 6; // gripper piston
@@ -79,6 +82,9 @@ public class Definitions
 	public static final double LIFT_I = 0.02;
 	public static final double LIFT_D = 0.1;
 	public static final double LIFT_PID_INCREMENTER = 250.;
+	
+	public static final boolean[] PICKUP_REVERSE_OUTPUT_MODE =
+		{ false, false };
 
 	public static final boolean[] LIFT_REVERSE_OUTPUT_MODE =
 	{ true, false };
@@ -116,6 +122,8 @@ public class Definitions
 
 	public static final int WHEELIE_A = 0; // piston for left side of wheelie bar
 	public static final int WHEELIE_B = 1;
+
+	public static final int NUM_PICKUP_TALONS = 2;
 
 	public static void addThreadName(String name)
 	{

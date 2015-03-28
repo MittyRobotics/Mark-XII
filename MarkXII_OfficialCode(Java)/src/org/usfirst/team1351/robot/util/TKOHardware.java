@@ -41,7 +41,7 @@ public class TKOHardware
 	protected static AnalogInput analog[] = new AnalogInput[Definitions.NUM_ANALOG];
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
-			+ Definitions.NUM_LIFT_TALONS]; // encompasses all talons
+			+ Definitions.NUM_LIFT_TALONS + Definitions.NUM_PICKUP_TALONS]; // encompasses all talons
 
 	public TKOHardware()
 	{
@@ -130,7 +130,7 @@ public class TKOHardware
 			{
 				try
 				{
-					pickupTalons[i] = new CANTalon(Definitions.LIFT_TALON_ID[i]);
+					pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
 					talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null; // null means not initialized
 				}
 				catch (AllocationException | CANMessageNotFoundException e)
@@ -271,14 +271,14 @@ public class TKOHardware
 			pickupTalons[i].delete();
 			pickupTalons[i] = null;
 			pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
-			pickupTalons[i] = null;
+			talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null;
 			if (pickupTalons[i] != null)
 			{
-				driveTalons[i].changeControlMode(mode);
-				talonModes[i] = mode;
+				pickupTalons[i].changeControlMode(mode);
+				talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = mode;
 
-				driveTalons[i].enableBrakeMode(Definitions.PICKUP_BRAKE_MODE[i]);
-				driveTalons[i].reverseOutput(Definitions.PICKUP_REVERSE_OUTPUT_MODE[i]);
+				pickupTalons[i].enableBrakeMode(true);
+				pickupTalons[i].reverseOutput(Definitions.PICKUP_REVERSE_OUTPUT_MODE[i]);
 			}
 		}
 
@@ -472,6 +472,25 @@ public class TKOHardware
 			return joysticks[num];
 		else
 			throw new TKOException("Joystick " + (num) + "(array value) is null");
+	}
+	
+	public static synchronized CANTalon getPickupTalon(int num) throws TKOException
+	{
+		if (num >= Definitions.NUM_PICKUP_TALONS)
+		{
+			throw new TKOException("Pickup talon requested out of bounds");
+		}
+		if (pickupTalons[num] != null)
+		{
+			if (pickupTalons[num].getControlMode() == CANTalon.ControlMode.Follower)
+				throw new TKOException("WARNING CANNOT ACCESS FOLLOWER TALON!");
+			else if (talonModes[num] == null)
+				throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE UNSET!");
+			else
+				return pickupTalons[num];
+		}
+		else
+			throw new TKOException("Pickup talon " + (num) + "(array value) is null");
 	}
 
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException

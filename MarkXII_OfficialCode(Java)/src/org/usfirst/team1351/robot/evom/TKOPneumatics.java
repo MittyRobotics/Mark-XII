@@ -156,6 +156,20 @@ public class TKOPneumatics implements Runnable
 			e.printStackTrace();
 		}
 	}
+	
+	public synchronized void pickupRollerControl()
+	{
+		try
+		{
+			TKOHardware.getPickupTalon(0).set(TKOHardware.getJoystick(2).getY());
+			TKOHardware.getPickupTalon(1).set(TKOHardware.getJoystick(2).getY());
+		}
+		catch (TKOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * The pistonControl() method runs continuously in the run() method. The try-catch loop exists since getPiston(i) can throw a
@@ -225,6 +239,7 @@ public class TKOPneumatics implements Runnable
 			while (pneuThread.isThreadRunning())
 			{
 				pistonControl();
+				pickupRollerControl();
 
 				synchronized (pneuThread)
 				{

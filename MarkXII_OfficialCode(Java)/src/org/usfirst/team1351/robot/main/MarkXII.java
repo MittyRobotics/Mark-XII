@@ -10,6 +10,7 @@ import org.usfirst.team1351.robot.auton.atom.AutoCratePickupAtom;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
 import org.usfirst.team1351.robot.auton.atom.GoUpAtom;
 import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
+import org.usfirst.team1351.robot.auton.atom.MushDown;
 import org.usfirst.team1351.robot.auton.atom.TrashcanGrabAndUp;
 import org.usfirst.team1351.robot.drive.TKODrive;
 import org.usfirst.team1351.robot.evom.TKOLift;
@@ -155,13 +156,12 @@ public class MarkXII extends SampleRobot
 			molecule.add(new AutoCratePickupAtom());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		}
-		else if (autonChooser.getSelected().equals(6))
+		else if (autonChooser.getSelected().equals(6)) //mush down in autonomous
 		{
 			molecule.add(new TrashcanGrabAndUp());
-			molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(angle));
-			molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
-			
+			molecule.add(new GyroTurnAtom(-25));
+			molecule.add(new MushDown());
+			molecule.add(new GyroTurnAtom(25));
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		}
 		else

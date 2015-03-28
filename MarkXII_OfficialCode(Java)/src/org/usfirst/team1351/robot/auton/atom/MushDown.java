@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
-public class TrashcanGrabAndUp extends Atom
+public class MushDown extends Atom
 {
-	public TrashcanGrabAndUp()
+	public MushDown()
 	{
 
 	}
@@ -27,25 +27,22 @@ public class TrashcanGrabAndUp extends Atom
 		System.out.println("Starting execution");
 		try
 		{
-//			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
-//			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
 			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-
 			while ((TKOLift.getInstance().isMoving() || !TKOLift.getInstance().calibrated) && DriverStation.getInstance().isEnabled())
 			{
 				// System.out.println("NOT READY TO GO UP");
 			}
-
-			Timer.delay(1); //CAUTION WARNING BE CAREFUL
-			TKOLift.getInstance().goToTrashcanPickup();
+			
+			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
+			TKOLift.getInstance().goToForceTrashcanDown();
 
 			while ((TKOLift.getInstance().isMoving()) && DriverStation.getInstance().isEnabled())
 			{
 				// System.out.println("MOVING");
 			}
-
+			
 			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+
 			Timer.delay(0.5);
 
 			TKOLift.getInstance().goUp();

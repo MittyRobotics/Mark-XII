@@ -161,8 +161,8 @@ public class TKOPneumatics implements Runnable
 	{
 		try
 		{
-			TKOHardware.getPickupTalon(0).set(TKOHardware.getJoystick(2).getY());
-			TKOHardware.getPickupTalon(1).set(TKOHardware.getJoystick(2).getY());
+			TKOHardware.getPickupTalon(0).set(TKOHardware.getJoystick(2).getY() * 0.5);
+			TKOHardware.getPickupTalon(1).set(-TKOHardware.getJoystick(3).getY() * 0.5);
 		}
 		catch (TKOException e)
 		{

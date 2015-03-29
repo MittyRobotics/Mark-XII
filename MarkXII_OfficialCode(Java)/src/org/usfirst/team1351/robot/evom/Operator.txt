@@ -1,21 +1,24 @@
 Driver Controls:
 STICK 1
-- Button 4: shift forward
-- Button 5: shift reverse
-STICK 2
-- 
+- Button 4: low gear
+- Button 5: high gear
 
 Operator Controls:
 STICK 3
 - Button 2: open gripper
 - Button 3: close gripper
+- Button 9: go to mush position
 STICK 4
-- Button 2: lower wheelie bar
-- Button 3: raise wheelie bar
+- Button 2: extend wheelie bar
+- Button 3: retract wheelie bar
 - Button 4: lower lift one level
 - Button 5: raise lift one level
 - Button 8: go to RC pickup position
 - Button 9: go to highest position
+
+Stick 3 Trigger + Stick 4 Y-Axis: manually adjust lift
+Stick 3 Y-Axis: left roller (- is in, + is out)
+Stick 4 Y-Axis: right roller (- is in, + is out)
 
 Piston 0: drive train shift
 Piston 1: gripper

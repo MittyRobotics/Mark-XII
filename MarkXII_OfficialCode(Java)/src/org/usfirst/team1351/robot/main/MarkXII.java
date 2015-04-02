@@ -3,12 +3,9 @@
 
 package org.usfirst.team1351.robot.main;
 
-import java.sql.DriverPropertyInfo;
-
 import org.usfirst.team1351.robot.auton.Molecule;
 import org.usfirst.team1351.robot.auton.atom.AutoCratePickupAtom;
 import org.usfirst.team1351.robot.auton.atom.DriveAtom;
-import org.usfirst.team1351.robot.auton.atom.GoUpAtom;
 import org.usfirst.team1351.robot.auton.atom.GyroTurnAtom;
 import org.usfirst.team1351.robot.auton.atom.MushDown;
 import org.usfirst.team1351.robot.auton.atom.TrashcanGrabAndUp;
@@ -49,6 +46,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * PUT STACK OF THREE TOTES ON MIDDLE STEP
  * GO DOWN A TAD WITH LIFT WITH JOYSTICK
  * 
+ * 
+ * SVR PRIORITIES
+ * Check pneumatics default states (code vs electrical)
+ * 			Make sure second robot changes still work on first robot
+ * Roller speed cap?
+ * Driving shifter?
+ * Does autonomous still work on first robot?
+ * 			Pneumatics starting configurations
+ * ADJUST LIFT CONSTANTS
  */
 
 public class MarkXII extends SampleRobot

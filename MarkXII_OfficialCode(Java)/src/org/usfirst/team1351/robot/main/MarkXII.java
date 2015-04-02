@@ -60,10 +60,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class MarkXII extends SampleRobot
 {
 	SendableChooser autonChooser;
-	
+
 	public MarkXII()
 	{
-		//don't put stuff here, use robotInit();
+		// don't put stuff here, use robotInit();
 	}
 
 	public void robotInit()
@@ -80,7 +80,7 @@ public class MarkXII extends SampleRobot
 		autonChooser.addObject("Drive, Turn", new Integer(4));
 		autonChooser.addObject("Auton Pickup, Drive", new Integer(5));
 		autonChooser.addObject("RC, Mush, Drive", new Integer(6));
-				
+
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
 		SmartDashboard.putNumber("Drive I: ", Definitions.AUTON_DRIVE_I);
@@ -88,11 +88,11 @@ public class MarkXII extends SampleRobot
 		SmartDashboard.putNumber("Turn P: ", Definitions.AUTON_GYRO_TURN_P);
 		SmartDashboard.putNumber("Turn I: ", Definitions.AUTON_GYRO_TURN_I * 1000.);
 		SmartDashboard.putNumber("Turn D: ", Definitions.AUTON_GYRO_TURN_D);
-		
+
 		SmartDashboard.putNumber("Lift P: ", Definitions.LIFT_P);
 		SmartDashboard.putNumber("Lift I: ", Definitions.LIFT_I);
 		SmartDashboard.putNumber("Lift D: ", Definitions.LIFT_D);
-		
+
 		SmartDashboard.putNumber("Drive atom distance: ", -90.);
 		SmartDashboard.putNumber("Turn atom angle: ", 85);
 		SmartDashboard.putNumber("Turn Incrementer: ", Definitions.TURN_ATOM_INCREMENTER);
@@ -105,7 +105,7 @@ public class MarkXII extends SampleRobot
 		{
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("robotInit() finished");
 	}
 
@@ -117,64 +117,57 @@ public class MarkXII extends SampleRobot
 	public void autonomous()
 	{
 		System.out.println("Enabling autonomous!");
-		
+
 		TKOLogger.getInstance().start();
-//		TKODataReporting.getInstance().start();
-//		TKOTalonSafety.getInstance().start();
+		// TKODataReporting.getInstance().start();
+		// TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-//		TKOLEDArduino.getInstance().start();
+		// TKOLEDArduino.getInstance().start();
 		TKOPneumatics.getInstance().start();
-//		TKOPneumatics.getInstance().reset(); //TODO This may be bad
-		
+		// TKOPneumatics.getInstance().reset(); //TODO This may be bad
+
 		Molecule molecule = new Molecule();
 		molecule.clear();
-		
+
 		double dist = SmartDashboard.getNumber("Drive atom distance: ");
 		double angle = SmartDashboard.getNumber("Turn atom angle: ");
-		
-		if (autonChooser.getSelected().equals(0)) //default
+
+		if (autonChooser.getSelected().equals(0)) // default
 		{
 			molecule.add(new TrashcanGrabAndUp());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
-			molecule.add(new DriveAtom(-12 * Definitions.TICKS_PER_INCH));
-		}
-		else if (autonChooser.getSelected().equals(1))
+			molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
+		} else if (autonChooser.getSelected().equals(1))
 		{
 			molecule.add(new TrashcanGrabAndUp());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-		}
-		else if (autonChooser.getSelected().equals(2))
+		} else if (autonChooser.getSelected().equals(2))
 		{
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-		}
-		else if (autonChooser.getSelected().equals(3))
+		} else if (autonChooser.getSelected().equals(3))
 		{
 			molecule.add(new GyroTurnAtom(angle));
-		}
-		else if (autonChooser.getSelected().equals(4))
+		} else if (autonChooser.getSelected().equals(4))
 		{
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
-		}
-		else if (autonChooser.getSelected().equals(5))
+		} else if (autonChooser.getSelected().equals(5))
 		{
 			molecule.add(new AutoCratePickupAtom());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-		}
-		else if (autonChooser.getSelected().equals(6)) //mush down in autonomous
+		} else if (autonChooser.getSelected().equals(6)) // mush down in autonomous
 		{
 			molecule.add(new TrashcanGrabAndUp());
-			molecule.add(new GyroTurnAtom(-25));
+			molecule.add(new GyroTurnAtom(-20));
 			molecule.add(new MushDown());
-			molecule.add(new GyroTurnAtom(25));
+			molecule.add(new GyroTurnAtom(20));
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-		}
-		else
+		} else
 		{
 			System.out.println("Molecule empty why this");
 		}
-		
+
 		System.out.println("Running molecule");
 		molecule.initAndRun();
 		System.out.println("Finished running molecule");
@@ -185,8 +178,8 @@ public class MarkXII extends SampleRobot
 			TKOPneumatics.getInstance().pneuThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
-//			TKODataReporting.getInstance().stop();
-//			TKODataReporting.getInstance().dataReportThread.join();
+			// TKODataReporting.getInstance().stop();
+			// TKODataReporting.getInstance().dataReportThread.join();
 			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
 		} catch (InterruptedException e)
@@ -201,11 +194,11 @@ public class MarkXII extends SampleRobot
 		TKOLogger.getInstance().start();
 		TKODrive.getInstance().start();
 		TKOPneumatics.getInstance().start();
-		//TKODataReporting.getInstance().start();
+		// TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-		//TKOLEDArduino.getInstance().start();
-		
+		// TKOLEDArduino.getInstance().start();
+
 		while (isOperatorControl() && isEnabled())
 		{
 			try
@@ -218,27 +211,26 @@ public class MarkXII extends SampleRobot
 				e.printStackTrace();
 			}
 			Timer.delay(0.1); // wait for a motor update time
-			//TODO This will make it so robot lags after disabling, need to make it sorta small
+			// TODO This will make it so robot lags after disabling, need to make it sorta small
 		}
 
 		try
 		{
-//			TKOLEDArduino.getInstance().stop();
-//			TKOLEDArduino.getInstance().ledArduinoThread.join();
+			// TKOLEDArduino.getInstance().stop();
+			// TKOLEDArduino.getInstance().ledArduinoThread.join();
 			TKOTalonSafety.getInstance().stop();
 			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();
 			TKOLift.getInstance().conveyorThread.join();
-//			TKODataReporting.getInstance().stop();
-//			TKODataReporting.getInstance().dataReportThread.join();
+			// TKODataReporting.getInstance().stop();
+			// TKODataReporting.getInstance().dataReportThread.join();
 			TKOPneumatics.getInstance().stop();
 			TKOPneumatics.getInstance().pneuThread.join();
 			TKODrive.getInstance().stop();
 			TKODrive.getInstance().driveThread.join();
 			TKOLogger.getInstance().stop();
 			TKOLogger.getInstance().loggerThread.join();
-		}
-		catch (InterruptedException e)
+		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
@@ -248,7 +240,37 @@ public class MarkXII extends SampleRobot
 	 * Runs during test mode
 	 */
 	public void test()
-	{	
-		
+	{
+		System.out.println("Enabling test!");
+		try
+		{
+			while (!TKOHardware.getCompressor().getPressureSwitchValue() && isEnabled())
+			{
+				System.out.println("Waiting for pressure");
+				Timer.delay(0.1);
+			}
+		} catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+		while (isEnabled() && isTest())
+		{
+			try
+			{
+				System.out.println("LOW GEAR, CLOSED GRIPPER, RETRACTED WHEELIE");
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
+				TKOHardware.getPiston(1).set(Definitions.GRIPPER_CLOSED);
+				TKOHardware.getPiston(2).set(Definitions.WHEELIE_RETRACT);
+				Timer.delay(15);
+				System.out.println("HIGH GEAR, OPEN GRIPPER, EXTENDED WHEELIE");
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_HIGH);
+				TKOHardware.getPiston(1).set(Definitions.GRIPPER_OPEN);
+				TKOHardware.getPiston(2).set(Definitions.WHEELIE_EXTEND);
+				Timer.delay(15);
+			} catch (TKOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }

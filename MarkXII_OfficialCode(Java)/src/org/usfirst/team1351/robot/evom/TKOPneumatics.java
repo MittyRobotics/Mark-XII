@@ -15,7 +15,6 @@ import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 import org.usfirst.team1351.robot.util.TKOThread;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 /**
@@ -97,9 +96,9 @@ public class TKOPneumatics implements Runnable
 	{
 		try
 		{
-			TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
-			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
+			TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
+			TKOHardware.getPiston(1).set(Definitions.GRIPPER_CLOSED);
+			TKOHardware.getPiston(2).set(Definitions.WHEELIE_RETRACT);
 		}
 		catch (TKOException e)
 		{
@@ -168,8 +167,8 @@ public class TKOPneumatics implements Runnable
 	{
 		try
 		{
-			TKOHardware.getPickupTalon(0).set(TKOHardware.getJoystick(2).getY() * 0.5);
-			TKOHardware.getPickupTalon(1).set(-TKOHardware.getJoystick(3).getY() * 0.5);
+			TKOHardware.getPickupTalon(1).set(TKOHardware.getJoystick(2).getY() * 0.5);
+			TKOHardware.getPickupTalon(0).set(-TKOHardware.getJoystick(3).getY() * 0.5);
 		}
 		catch (TKOException e)
 		{
@@ -193,20 +192,20 @@ public class TKOPneumatics implements Runnable
 			 * TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward); }
 			 */
 
-			if (manualEnabled) // gripper
+			if (manualEnabled) // wheelie
 			{
 				if (TKOHardware.getJoystick(2).getRawButton(2))
 				{
-					if (System.currentTimeMillis() - toggledPistonTime[1] > 250)
+					if (System.currentTimeMillis() - toggledPistonTime[2] > 250)
 					{
-						Value currVal = TKOHardware.getPiston(1).get();
+						Value currVal = TKOHardware.getPiston(2).get();
 						Value newVal = currVal;
 						if (currVal == Value.kForward)
 							newVal = Value.kReverse;
 						else if (currVal == Value.kReverse)
 							newVal = Value.kForward;
-						TKOHardware.getPiston(1).set(newVal);
-						toggledPistonTime[1] = System.currentTimeMillis();
+						TKOHardware.getPiston(2).set(newVal);
+						toggledPistonTime[2] = System.currentTimeMillis();
 					}
 				}
 				// if (TKOHardware.getJoystick(2).getRawButton(2))
@@ -218,18 +217,18 @@ public class TKOPneumatics implements Runnable
 				// TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kReverse);
 				// }
 			}
-			if (TKOHardware.getJoystick(3).getRawButton(2)) // wheelie bars
+			if (TKOHardware.getJoystick(3).getRawButton(2)) // gripper
 			{
-				if (System.currentTimeMillis() - toggledPistonTime[2] > 250)
+				if (System.currentTimeMillis() - toggledPistonTime[1] > 250)
 				{
-					Value currVal = TKOHardware.getPiston(2).get();
+					Value currVal = TKOHardware.getPiston(1).get();
 					Value newVal = currVal;
 					if (currVal == Value.kForward)
 						newVal = Value.kReverse;
 					else if (currVal == Value.kReverse)
 						newVal = Value.kForward;
-					TKOHardware.getPiston(2).set(newVal);
-					toggledPistonTime[2] = System.currentTimeMillis();
+					TKOHardware.getPiston(1).set(newVal);
+					toggledPistonTime[1] = System.currentTimeMillis();
 				}
 			}
 			// if (TKOHardware.getJoystick(3).getRawButton(2))
@@ -243,12 +242,12 @@ public class TKOPneumatics implements Runnable
 			// }
 			if (TKOHardware.getJoystick(0).getRawButton(4))
 			{
-				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kForward);
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_HIGH);
 				lastShiftTime = System.currentTimeMillis();
 			}
 			else if (TKOHardware.getJoystick(0).getRawButton(5))
 			{
-				TKOHardware.getPiston(0).set(DoubleSolenoid.Value.kReverse);
+				TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
 				lastShiftTime = System.currentTimeMillis();
 			}
 			else

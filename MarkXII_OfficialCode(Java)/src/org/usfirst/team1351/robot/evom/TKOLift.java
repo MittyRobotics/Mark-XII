@@ -8,7 +8,6 @@ import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -57,14 +56,15 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final double oneLevel = 5000; // TODO 4750 before; 4900 before
 	public static final byte minLevel = 0; // zero based
 	public static final byte maxLevel = 4; // 5th crate
-	public static final double bottomOffset = 2145;
+	public static final double bottomOffset = 2500;//2145;
 	public static final double dropoffPerLevel = 0.2; // TODO CALCULATE
 	public static final double softBottomOffset = 0; // safety offset
 	public static final double softTopOffset = 100; // safety offset
 	public static final double encoderThreshold = 100;
 	public static final long liftThreadSleep = 20; // used to be 20
 
-	public static final double softTop = 23400 - softTopOffset;
+	//public static final double softTop = 23400 - softTopOffset;
+	public static final double softTop = 23000 - softTopOffset;
 
 	public static final double softLevelTop = (-softTopOffset + softTop - bottomOffset) / oneLevel;
 	public static final double softLevelBot = (softBottomOffset - bottomOffset) / oneLevel;

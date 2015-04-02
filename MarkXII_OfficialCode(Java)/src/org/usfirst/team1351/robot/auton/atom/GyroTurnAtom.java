@@ -2,7 +2,6 @@ package org.usfirst.team1351.robot.auton.atom;
 
 import org.usfirst.team1351.robot.auton.Atom;
 import org.usfirst.team1351.robot.logger.TKOLogger;
-import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 

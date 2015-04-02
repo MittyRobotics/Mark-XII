@@ -2,10 +2,10 @@ package org.usfirst.team1351.robot.auton.atom;
 
 import org.usfirst.team1351.robot.auton.Atom;
 import org.usfirst.team1351.robot.evom.TKOLift;
+import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -27,13 +27,13 @@ public class MushDown extends Atom
 		System.out.println("Starting execution");
 		try
 		{
-			TKOHardware.getPiston(1).set(DoubleSolenoid.Value.kForward);
+			TKOHardware.getPiston(1).set(Definitions.GRIPPER_OPEN);
+			TKOHardware.getPiston(2).set(Definitions.WHEELIE_RETRACT);
 			while ((TKOLift.getInstance().isMoving() || !TKOLift.getInstance().calibrated) && DriverStation.getInstance().isEnabled())
 			{
 				// System.out.println("NOT READY TO GO UP");
 			}
 			
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kForward);
 			TKOLift.getInstance().goToForceTrashcanDown();
 
 			while ((TKOLift.getInstance().isMoving()) && DriverStation.getInstance().isEnabled())
@@ -41,7 +41,7 @@ public class MushDown extends Atom
 				// System.out.println("MOVING");
 			}
 			
-			TKOHardware.getPiston(2).set(DoubleSolenoid.Value.kReverse);
+			TKOHardware.getPiston(1).set(Definitions.GRIPPER_CLOSED);
 
 			Timer.delay(0.5);
 

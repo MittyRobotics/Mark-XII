@@ -111,6 +111,10 @@ public class Definitions
 
 	public static final DoubleSolenoid.Value SHIFTER_LOW = DoubleSolenoid.Value.kForward;
 	public static final DoubleSolenoid.Value SHIFTER_HIGH = DoubleSolenoid.Value.kReverse;
+	public static final DoubleSolenoid.Value GRIPPER_CLOSED = DoubleSolenoid.Value.kReverse;
+	public static final DoubleSolenoid.Value GRIPPER_OPEN = DoubleSolenoid.Value.kForward;
+	public static final DoubleSolenoid.Value WHEELIE_EXTEND = DoubleSolenoid.Value.kForward;
+	public static final DoubleSolenoid.Value WHEELIE_RETRACT = DoubleSolenoid.Value.kReverse;
 
 	public static final int SHIFTER_A = 2; // drive train shifting piston
 	public static final int SHIFTER_B = 3;

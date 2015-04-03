@@ -48,13 +48,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  * 
  * SVR PRIORITIES
- * Check pneumatics default states (code vs electrical)
- * 			Make sure second robot changes still work on first robot
  * Roller speed cap?
  * Driving shifter?
- * Does autonomous still work on first robot?
- * 			Pneumatics starting configurations
- * ADJUST LIFT CONSTANTS
  */
 
 public class MarkXII extends SampleRobot

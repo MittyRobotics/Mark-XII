@@ -10,6 +10,7 @@ import org.usfirst.team1351.robot.util.TKOThread;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 public class TKODrive implements Runnable
 {
@@ -40,11 +41,11 @@ public class TKODrive implements Runnable
 			double moveValue = TKOHardware.getJoystick(0).getY();
 			if (TKOHardware.getJoystick(0).getTrigger())
 				moveValue = TKOHardware.getJoystick(0).getY() * 0.6;
-			
+
 			double rotateValue = TKOHardware.getJoystick(1).getX() * 0.8;
 			if (TKOHardware.getJoystick(1).getTrigger())
 				rotateValue = TKOHardware.getJoystick(1).getX() * 0.6;
-			
+
 			double leftMotorSpeed;
 			double rightMotorSpeed;
 
@@ -201,13 +202,44 @@ public class TKODrive implements Runnable
 		TKODataReporting.getInstance().stopCollectingDriveData();
 	}
 
+	private void overTheLipPositioner()
+	{
+		try
+		{
+			TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
+			TKOHardware.getLeftDrive().enableBrakeMode(true);
+			TKOHardware.getRightDrive().enableBrakeMode(true);
+			while (TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MAX
+					|| TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MIN)
+			{
+				if (TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MAX)
+				{
+					setLeftRightMotorOutputsPercentVBus(.2, .2);
+				}
+				else if (TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MIN)
+				{
+					setLeftRightMotorOutputsPercentVBus(-.2, -.2);
+				}
+			}
+			TKOHardware.getLeftDrive().set(0);
+			TKOHardware.getRightDrive().set(0);
+			Timer.delay(.25);
+			TKOHardware.getLeftDrive().enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[0]);
+			TKOHardware.getRightDrive().enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[2]);
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void run()
 	{
 		try
 		{
 			// boolean calibRan = false;
-			tankDrive();
+			// tankDrive();
 			while (driveThread.isThreadRunning())
 			{
 				// System.out.println("DRIVE THREAD RAN!");
@@ -218,6 +250,8 @@ public class TKODrive implements Runnable
 				// // calibRan = true;
 				// }
 				// tankDrive();
+				if (TKOHardware.getJoystick(2).getRawButton(3))
+					overTheLipPositioner();
 				arcadeDrive();
 				// currentModeTankDrive();
 				synchronized (driveThread)

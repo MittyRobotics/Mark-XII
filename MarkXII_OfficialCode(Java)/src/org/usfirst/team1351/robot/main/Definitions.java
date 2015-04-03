@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.vision.AxisCamera;
 
 public class Definitions
 {	
@@ -129,6 +128,9 @@ public class Definitions
 	public static final int WHEELIE_B = 1;
 
 	public static final int NUM_PICKUP_TALONS = 2;
+
+	public static final double TRASHCAN_POSITIONING_MAX = 6.7;
+	public static final double TRASHCAN_POSITIONING_MIN = 6.3;
 
 	public static void addThreadName(String name)
 	{

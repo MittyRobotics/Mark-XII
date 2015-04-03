@@ -7,18 +7,15 @@ import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogOutput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.ControlMode;
-import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -40,7 +37,7 @@ public class TKOHardware
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
 	protected static Gyro gyro;
-	protected static PWM arduino = null;
+	protected static AnalogOutput arduinoSignal = null;
 	protected static AnalogInput analog[] = new AnalogInput[Definitions.NUM_ANALOG];
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
@@ -79,7 +76,7 @@ public class TKOHardware
 		compressor = null;
 		acc = null;
 		gyro = null;
-		arduino = null;
+		arduinoSignal = null;
 		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
 		{
 			analog[i] = null;
@@ -182,12 +179,9 @@ public class TKOHardware
 
 		}
 		
-		if (arduino == null)
+		if (arduinoSignal == null)
 		{
-//			Servo s = new Servo(9);
-//			s.
-			arduino = new PWM(9);
-			arduino.setBounds(255, 128, 127, 126, 0);
+			arduinoSignal = new AnalogOutput(0);
 		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
@@ -277,7 +271,7 @@ public class TKOHardware
 
 	public static synchronized void configPickupTalons()
 	{
-		CANTalon.ControlMode mode = ControlMode.PercentVbus;
+//		CANTalon.ControlMode mode = ControlMode.PercentVbus;
 		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
 		{
 //			pickupTalons[i].delete();
@@ -432,6 +426,12 @@ public class TKOHardware
 				analog[i].free();
 				analog[i] = null;
 			}
+		}
+		
+		if (arduinoSignal != null)
+		{
+			arduinoSignal.free();
+			arduinoSignal = null;
 		}
 	}
 
@@ -676,12 +676,12 @@ public class TKOHardware
 		return pistonSolenoids;
 	}
 	
-	public static synchronized void arduinoWrite(int sig) throws TKOException
+	public static synchronized void arduinoWrite(double voltage) throws TKOException
 	{
-		if (arduino == null)
-			throw new TKOException("ARDUINO PWM CHANNEL NULL");
-		if (sig < 0 || sig > 255)
-			throw new TKOException("PWM SIGNAL OUT OF BOUNDS");
-		arduino.setRaw(sig);
+		if (arduinoSignal == null)
+			throw new TKOException("ARDUINO ANALOGOUT CHANNEL NULL");
+		if (voltage < 0. || voltage > 5.)
+			throw new TKOException("VOLTAGE OUT OF BOUNDS");
+		arduinoSignal.setVoltage(voltage);
 	}
 }

@@ -1,16 +1,7 @@
 package org.usfirst.team1351.robot.util;
 
-import java.util.Random;
-
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.main.Definitions;
-
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.SerialPort.Parity;
-import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.SerialPort.StopBits;
-import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
-
 
 /**
  * This is an example of how to make a class that runs as a thread. The most important reason for making TKOThread was to make the thread
@@ -27,17 +18,17 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 	 */
 	public TKOThread ledArduinoThread = null;
 	private static TKOLEDArduino m_Instance = null;
-	private Random r = new Random();
-	private SerialPort arduino = null;
+//	private Random r = new Random();
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKOLEDArduino()
 	{
 
 	}
+
 	/**
 	 * This function makes the class a singleton, so that there can only be one instance of the class even though the class is not static
-	 * This is needed for the Thread to work properly. 
+	 * This is needed for the Thread to work properly.
 	 */
 	public static synchronized TKOLEDArduino getInstance()
 	{
@@ -48,92 +39,6 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		}
 		return m_Instance;
 	}
-	
-	public void ledStripGradientBasedOnLevel()
-	{
-		double lvl = TKOLift.getInstance().getCurrentLevel() - TKOLift.softLevelBot;
-		lvl /= (TKOLift.softLevelTop - TKOLift.softLevelBot);
-		double R = 0;
-		double G = 255 * (lvl);
-		double B = 255 * (1-lvl);
-		setRGB((int) R, (int) G, (int) B);
-	}
-	
-	public void ledStripUpdateColorTestPatterns()
-	{
-		double converted = TKOLift.getInstance().getCurrentLevel() - TKOLift.softLevelBot;
-		converted /= (TKOLift.softLevelTop - TKOLift.softLevelBot);
-		converted *= 14; //max pattern number
-		short target = (short) converted;
-		System.out.println("Setting pattern");
-		setPattern(target);
-		System.out.println("Set pattern");
-	}
-	
-	public void ledStripRandomColor()
-	{
-		int randomR = r.nextInt(255);
-		int randomG = r.nextInt(255);
-		int randomB = r.nextInt(255);
-		System.out.println("Setting pattern");
-		setRGB(randomR, randomG, randomB);
-		System.out.println("Set pattern");
-	}
-	
-	public synchronized void setRGB (int R, int G, int B)
-	{
-		if (arduino == null)
-			return;
-		String patternString = new String("R 10 ");
-		patternString = patternString + R + " " + G + " " + B;
-		System.out.println("WRITING STRING: " + patternString);
-		arduino.writeString(patternString);
-		System.out.println("DONE WRITING STRING");
-	}
-	
-	public synchronized void setRainbow()
-	{
-		if (arduino == null)
-			return;
-		String patternString = new String("R 1");
-		System.out.println("WRITING STRING: " + patternString);
-		arduino.writeString(patternString);
-		arduino.flush();
-		System.out.println("DONE WRITING STRING");	
-	}
-	
-	public synchronized void setBlue()
-	{
-		if (arduino == null)
-			return;
-		String patternString = new String("R 4");
-		System.out.println("WRITING STRING: " + patternString);
-		arduino.writeString(patternString);
-		arduino.flush();
-		System.out.println("DONE WRITING STRING");	
-	}
-	
-	public synchronized void setRed()
-	{
-		if (arduino == null)
-			return;
-		String patternString = new String("R 3 ");
-		System.out.println("WRITING STRING: " + patternString);
-		arduino.writeString(patternString);
-		arduino.flush();
-		System.out.println("DONE WRITING STRING");
-	}
-	
-	public synchronized void setPattern(int pattern)
-	{
-		if (arduino == null)
-			return;
-		String patternString = new String("R ");
-		patternString += pattern;
-		System.out.println("WRITING STRING");
-		arduino.writeString(patternString);
-		System.out.println("DONE WRITING STRING");
-	}
 
 	/**
 	 * The {@code start} method starts the thread, making it call the run method (only once) but can do this for threads in different
@@ -143,6 +48,8 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 	 * thread. This function is completely thread safe.
 	 * 
 	 * @category
+	 
+	 
 	 */
 	public void start()
 	{
@@ -155,9 +62,6 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			ledArduinoThread.setThreadRunning(true);
 		}
-		arduino = new SerialPort(9600, Port.kUSB, 8, Parity.kNone, StopBits.kTwo);
-		arduino.setWriteBufferMode(WriteBufferMode.kFlushOnAccess);
-		arduino.reset();
 	}
 
 	/**
@@ -170,8 +74,44 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			ledArduinoThread.setThreadRunning(false);
 		}
-		arduino.free();
-		arduino = null;
+	}
+
+	public boolean colorForTrashcanOnLip()
+	{
+		try
+		{
+			boolean inRange = false;
+			if (TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MAX
+					|| TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MIN)
+				inRange = true;
+
+			if (inRange)
+			{
+				TKOHardware.arduinoWrite(.25);
+				return true;
+			}
+			else
+				TKOHardware.arduinoWrite(0.);
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public void colorBasedOnLevel()
+	{
+		try
+		{
+			double range = TKOLift.softLevelTop - TKOLift.softLevelBot;
+			TKOHardware.arduinoWrite(TKOLift.getInstance().getCurrentLevel() / range * 4. + 0.5);
+		
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -185,29 +125,17 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		{
 			while (ledArduinoThread.isThreadRunning())
 			{
-				if (arduino != null)
-				{
-					/*if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue)
-						TKOLEDArduino.getInstance().setBlue();
-					else if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red)
-						TKOLEDArduino.getInstance().setRed();
-					else*/
-					//TKOLEDArduino.getInstance().setRainbow();
-
-					//ledStripUpdateColorTestPatterns();
-					//ledStripRandomColor();
-					//arduino.flush();
-				}
-				
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{
-					ledArduinoThread.wait(5000); // the wait time that the thread sleeps, in milliseconds
+					if (!colorForTrashcanOnLip())
+						colorBasedOnLevel();
+					ledArduinoThread.wait(50); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 }
-

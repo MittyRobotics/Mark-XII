@@ -158,6 +158,13 @@ public class MarkXII extends SampleRobot
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		} else if (autonChooser.getSelected().equals(6)) // mush down in autonomous
 		{
+//			molecule.add(new TrashcanGrabAndUp());
+//			molecule.add(new GyroTurnAtom(-20));
+//			molecule.add(new MushDown());
+//			molecule.add(new GyroTurnAtom(20));
+//			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(45));
+			molecule.add(new GyroTurnAtom(-45));
 			molecule.add(new TrashcanGrabAndUp());
 			molecule.add(new GyroTurnAtom(-20));
 			molecule.add(new MushDown());
@@ -203,6 +210,7 @@ public class MarkXII extends SampleRobot
 		{
 			try
 			{
+				TKOHardware.arduinoWrite(1);
 				SmartDashboard.putNumber("CRATE DISTANCE: ", TKOHardware.getCrateDistance());
 				SmartDashboard.putBoolean("Top switch", TKOHardware.getLiftTop());
 				SmartDashboard.putBoolean("Bottom switch", TKOHardware.getLiftBottom());

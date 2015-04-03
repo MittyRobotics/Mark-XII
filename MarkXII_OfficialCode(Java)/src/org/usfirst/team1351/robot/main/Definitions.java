@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.vision.AxisCamera;
 
 public class Definitions
 {	
@@ -23,7 +24,7 @@ public class Definitions
 	public static final double TURN_ATOM_INCREMENTER = 0.35;
 	public static final double AUTON_DRIVE_VBUS_MULT = 0.3;
 
-	public static final double CRATE_DISTANCE_THRESHOLD = 4.8;
+	public static final double CRATE_DISTANCE_THRESHOLD = 5.1;
 	public static final int CRATE_SENSOR_ID = 2;
 
 	public static final long[] CURRENT_TIMEOUT_LENGTH =

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.ControlMode;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.can.CANMessageNotFoundException;
 import edu.wpi.first.wpilibj.util.AllocationException;
@@ -32,12 +34,13 @@ public class TKOHardware
 	protected static Joystick joysticks[] = new Joystick[Definitions.NUM_JOYSTICKS];
 	protected static CANTalon driveTalons[] = new CANTalon[Definitions.NUM_DRIVE_TALONS];
 	protected static CANTalon liftTalons[] = new CANTalon[Definitions.NUM_LIFT_TALONS];
-	protected static CANTalon pickupTalons[] = new CANTalon[Definitions.NUM_PICKUP_TALONS];
+//	protected static CANTalon pickupTalons[] = new CANTalon[Definitions.NUM_PICKUP_TALONS];
 	protected static DoubleSolenoid pistonSolenoids[] = new DoubleSolenoid[Definitions.NUM_PISTONS];
 	protected static DigitalInput limitSwitches[] = new DigitalInput[Definitions.NUM_SWITCHES];
 	protected static Compressor compressor;
 	protected static BuiltInAccelerometer acc;
 	protected static Gyro gyro;
+	protected static PWM arduino = null;
 	protected static AnalogInput analog[] = new AnalogInput[Definitions.NUM_ANALOG];
 
 	protected static CANTalon.ControlMode talonModes[] = new CANTalon.ControlMode[Definitions.NUM_DRIVE_TALONS
@@ -59,7 +62,7 @@ public class TKOHardware
 		}
 		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
 		{
-			pickupTalons[i] = null;
+//			pickupTalons[i] = null;
 		}
 		for (int i = 0; i < Definitions.NUM_PISTONS; i++)
 		{
@@ -76,6 +79,7 @@ public class TKOHardware
 		compressor = null;
 		acc = null;
 		gyro = null;
+		arduino = null;
 		for (int i = 0; i < Definitions.NUM_ANALOG; i++)
 		{
 			analog[i] = null;
@@ -126,20 +130,20 @@ public class TKOHardware
 		}
 		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
 		{
-			if (pickupTalons[i] == null)
-			{
-				try
-				{
-					pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
-					talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null; // null means not initialized
-				}
-				catch (AllocationException | CANMessageNotFoundException e)
-				{
-					e.printStackTrace();
-					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
-					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
-				}
-			}
+//			if (pickupTalons[i] == null)
+//			{
+//				try
+//				{
+//					pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
+//					talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null; // null means not initialized
+//				}
+//				catch (AllocationException | CANMessageNotFoundException e)
+//				{
+//					e.printStackTrace();
+//					System.out.println("MOTOR CONTROLLER " + i + " NOT FOUND OR IN USE");
+//					TKOLogger.getInstance().addMessage("MOTOR CONTROLLER " + i + " CAN ERROR");
+//				}
+//			}
 		}
 
 		if (pistonSolenoids[0] == null)
@@ -176,6 +180,14 @@ public class TKOHardware
 
 			System.out.println("Gyro initialized: " + Timer.getFPGATimestamp());
 
+		}
+		
+		if (arduino == null)
+		{
+//			Servo s = new Servo(9);
+//			s.
+			arduino = new PWM(9);
+			arduino.setBounds(255, 128, 127, 126, 0);
 		}
 
 		configDriveTalons(Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D, Definitions.DRIVE_TALONS_NORMAL_CONTROL_MODE);
@@ -268,18 +280,18 @@ public class TKOHardware
 		CANTalon.ControlMode mode = ControlMode.PercentVbus;
 		for (int i = 0; i < Definitions.NUM_PICKUP_TALONS; i++)
 		{
-			pickupTalons[i].delete();
-			pickupTalons[i] = null;
-			pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
-			talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null;
-			if (pickupTalons[i] != null)
-			{
-				pickupTalons[i].changeControlMode(mode);
-				talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = mode;
-
-				pickupTalons[i].enableBrakeMode(true);
-				pickupTalons[i].reverseOutput(Definitions.PICKUP_REVERSE_OUTPUT_MODE[i]);
-			}
+//			pickupTalons[i].delete();
+//			pickupTalons[i] = null;
+//			pickupTalons[i] = new CANTalon(Definitions.PICKUP_TALON_ID[i]);
+//			talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = null;
+//			if (pickupTalons[i] != null)
+//			{
+//				pickupTalons[i].changeControlMode(mode);
+//				talonModes[Definitions.NUM_DRIVE_TALONS + Definitions.NUM_LIFT_TALONS + i] = mode;
+//
+//				pickupTalons[i].enableBrakeMode(true);
+//				pickupTalons[i].reverseOutput(Definitions.PICKUP_REVERSE_OUTPUT_MODE[i]);
+//			}
 		}
 
 	}
@@ -474,24 +486,24 @@ public class TKOHardware
 			throw new TKOException("Joystick " + (num) + "(array value) is null");
 	}
 	
-	public static synchronized CANTalon getPickupTalon(int num) throws TKOException
-	{
-		if (num >= Definitions.NUM_PICKUP_TALONS)
-		{
-			throw new TKOException("Pickup talon requested out of bounds");
-		}
-		if (pickupTalons[num] != null)
-		{
-			if (pickupTalons[num].getControlMode() == CANTalon.ControlMode.Follower)
-				throw new TKOException("WARNING CANNOT ACCESS FOLLOWER TALON!");
-			else if (talonModes[num] == null)
-				throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE UNSET!");
-			else
-				return pickupTalons[num];
-		}
-		else
-			throw new TKOException("Pickup talon " + (num) + "(array value) is null");
-	}
+//	public static synchronized CANTalon getPickupTalon(int num) throws TKOException
+//	{
+//		if (num >= Definitions.NUM_PICKUP_TALONS)
+//		{
+//			throw new TKOException("Pickup talon requested out of bounds");
+//		}
+//		if (pickupTalons[num] != null)
+//		{
+//			if (pickupTalons[num].getControlMode() == CANTalon.ControlMode.Follower)
+//				throw new TKOException("WARNING CANNOT ACCESS FOLLOWER TALON!");
+//			else if (talonModes[num] == null)
+//				throw new TKOException("ERROR TRYING TO ACCESS UNINITIALIZED TALON; MODE UNSET!");
+//			else
+//				return pickupTalons[num];
+//		}
+//		else
+//			throw new TKOException("Pickup talon " + (num) + "(array value) is null");
+//	}
 
 	public static synchronized CANTalon getDriveTalon(int num) throws TKOException
 	{
@@ -662,5 +674,14 @@ public class TKOHardware
 		if (pistonSolenoids == null)
 			throw new TKOException("NULL PISTON ARRAY");
 		return pistonSolenoids;
+	}
+	
+	public static synchronized void arduinoWrite(int sig) throws TKOException
+	{
+		if (arduino == null)
+			throw new TKOException("ARDUINO PWM CHANNEL NULL");
+		if (sig < 0 || sig > 255)
+			throw new TKOException("PWM SIGNAL OUT OF BOUNDS");
+		arduino.setRaw(sig);
 	}
 }

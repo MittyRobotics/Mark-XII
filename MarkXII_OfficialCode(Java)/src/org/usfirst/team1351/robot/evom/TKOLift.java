@@ -53,10 +53,10 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final double oneLevel = 5000; // TODO 4750 before; 4900 before
+	public static final double oneLevel = 4900; // TODO 4750 before; 4900 before; 5000 before
 	public static final byte minLevel = 0; // zero based
 	public static final byte maxLevel = 4; // 5th crate
-	public static final double bottomOffset = 2500;//2145;
+	public static final double bottomOffset = 2650;//2145; 2500; 2600
 	public static final double dropoffPerLevel = 0.2; // TODO CALCULATE
 	public static final double softBottomOffset = 0; // safety offset
 	public static final double softTopOffset = 100; // safety offset
@@ -64,13 +64,13 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static final long liftThreadSleep = 20; // used to be 20
 
 	//public static final double softTop = 23400 - softTopOffset;
-	public static final double softTop = 23000 - softTopOffset;
+	public static final double softTop = 23400 - softTopOffset;
 
 	public static final double softLevelTop = (-softTopOffset + softTop - bottomOffset) / oneLevel;
 	public static final double softLevelBot = (softBottomOffset - bottomOffset) / oneLevel;
 
 	public static final double trashcanPickupPosition = softLevelBot + 0.1;
-	public static final double trashcanMushDownLevel = (1800 - bottomOffset) / oneLevel;
+	public static final double trashcanMushDownLevel = (2000 - bottomOffset) / oneLevel; //1800
 	public static final double startLevel = trashcanPickupPosition;
 
 	public static final double fullOfCratesPosition = softLevelTop - 0.0001;
@@ -81,6 +81,9 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 	public static double liftP = Definitions.LIFT_P;
 	public static double liftI = Definitions.LIFT_I;
 	public static double liftD = Definitions.LIFT_D;
+	
+	public long timeOfStartAutoPickup = 0;
+	public boolean requestAutoPickup = false;
 
 	private boolean manualEnabled = true;
 
@@ -686,10 +689,12 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 					{
 						goToFullPosition();
 					}
-					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getTrigger())
+					else if (!requestAutoPickup && TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getTrigger())
 					{
-						if (TKOHardware.cratePresent())
-							goUp();
+						requestAutoPickup = true;
+						timeOfStartAutoPickup = System.currentTimeMillis();
+//						if (TKOHardware.cratePresent())
+//							goUp();
 					}
 					else if (TKOHardware.getJoystick(Definitions.LIFT_CONTROL_STICK).getRawButton(7))
 					{
@@ -736,6 +741,20 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 							}
 							goToLevel(tarLevel);
 						}
+					}
+				}
+				
+				if (requestAutoPickup)
+				{
+					if (!TKOHardware.cratePresent())
+					{
+						requestAutoPickup = false;
+						timeOfStartAutoPickup = 0;
+					}
+					else
+					{
+						if (System.currentTimeMillis() - timeOfStartAutoPickup > 50)
+							goUp();
 					}
 				}
 

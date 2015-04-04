@@ -18,7 +18,8 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 	 */
 	public TKOThread ledArduinoThread = null;
 	private static TKOLEDArduino m_Instance = null;
-//	private Random r = new Random();
+
+	// private Random r = new Random();
 
 	// Typical constructor made protected so that this class is only accessed statically, though that doesnt matter
 	protected TKOLEDArduino()
@@ -50,6 +51,7 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 	 * @category
 	 
 	 
+	 
 	 */
 	public void start()
 	{
@@ -76,39 +78,46 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 		}
 	}
 
-	public boolean colorForTrashcanOnLip()
+	public boolean color()
 	{
 		try
 		{
 			boolean inRange = false;
 			if (TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MAX
-					|| TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MIN)
+					&& TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MIN)
 				inRange = true;
 
 			if (inRange)
 			{
-				TKOHardware.arduinoWrite(.25);
+				//System.out.println("WITHIN RANGE");
+				TKOHardware.arduinoWrite(4.99);
+				return true;
+			} 
+			else if (TKOHardware.cratePresent())
+			{
+				TKOHardware.arduinoWrite(2.5);
 				return true;
 			}
 			else
-				TKOHardware.arduinoWrite(0.);
-		}
-		catch (TKOException e)
+			{
+				//System.out.println("Outside range");
+				TKOHardware.arduinoWrite(1.);
+			}
+		} catch (TKOException e)
 		{
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
 	public void colorBasedOnLevel()
 	{
 		try
 		{
 			double range = TKOLift.softLevelTop - TKOLift.softLevelBot;
 			TKOHardware.arduinoWrite(TKOLift.getInstance().getCurrentLevel() / range * 4. + 0.5);
-		
-		}
-		catch (TKOException e)
+
+		} catch (TKOException e)
 		{
 			e.printStackTrace();
 		}
@@ -127,13 +136,15 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 			{
 				synchronized (ledArduinoThread) // synchronized per the thread to make sure that we wait safely
 				{
-					if (!colorForTrashcanOnLip())
-						colorBasedOnLevel();
-					ledArduinoThread.wait(50); // the wait time that the thread sleeps, in milliseconds
+					// if (!colorForTrashcanOnLip())
+					// colorBasedOnLevel();
+					color();
+					// if(TKOHardware.getJoystick(0).getRawButton(3))
+					// TKOHardware.arduinoWrite(4.);
+					ledArduinoThread.wait(20); // the wait time that the thread sleeps, in milliseconds
 				}
 			}
-		}
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}

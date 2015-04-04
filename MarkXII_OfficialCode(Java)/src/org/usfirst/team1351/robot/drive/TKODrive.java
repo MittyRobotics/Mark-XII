@@ -209,20 +209,26 @@ public class TKODrive implements Runnable
 			TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
 			TKOHardware.getLeftDrive().enableBrakeMode(true);
 			TKOHardware.getRightDrive().enableBrakeMode(true);
-			while (TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MAX
-					|| TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MIN)
+			Timer t = new Timer();
+			t.start();
+			while ((TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MAX
+					|| TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MIN) && t.get() < 10 && TKOHardware.getJoystick(1).getRawButton(3))
 			{
 				if (TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MAX)
 				{
-					setLeftRightMotorOutputsPercentVBus(.2, .2);
+					System.out.println("TOO FAR");
+					setLeftRightMotorOutputsPercentVBus(-.1, -.1);
 				}
 				else if (TKOHardware.getCrateDistance() < Definitions.TRASHCAN_POSITIONING_MIN)
 				{
-					setLeftRightMotorOutputsPercentVBus(-.2, -.2);
+					System.out.println("TOO CLOSE");
+					setLeftRightMotorOutputsPercentVBus(.1, .1);
 				}
 			}
 			TKOHardware.getLeftDrive().set(0);
 			TKOHardware.getRightDrive().set(0);
+			t.stop();
+			t.reset();
 			Timer.delay(.25);
 			TKOHardware.getLeftDrive().enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[0]);
 			TKOHardware.getRightDrive().enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[2]);
@@ -250,7 +256,7 @@ public class TKODrive implements Runnable
 				// // calibRan = true;
 				// }
 				// tankDrive();
-				if (TKOHardware.getJoystick(2).getRawButton(3))
+				if (TKOHardware.getJoystick(1).getRawButton(3))
 					overTheLipPositioner();
 				arcadeDrive();
 				// currentModeTankDrive();

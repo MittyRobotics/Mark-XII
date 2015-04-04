@@ -15,6 +15,7 @@ import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.util.TKOException;
 import org.usfirst.team1351.robot.util.TKOHardware;
+import org.usfirst.team1351.robot.util.TKOLEDArduino;
 import org.usfirst.team1351.robot.util.TKOTalonSafety;
 
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -75,6 +76,7 @@ public class MarkXII extends SampleRobot
 		autonChooser.addObject("Drive, Turn", new Integer(4));
 		autonChooser.addObject("Auton Pickup, Drive", new Integer(5));
 		autonChooser.addObject("RC, Mush, Drive", new Integer(6));
+		autonChooser.addObject("RC, Turn, Drive, Turn (start from side)", new Integer(7));
 
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
@@ -132,7 +134,14 @@ public class MarkXII extends SampleRobot
 			molecule.add(new TrashcanGrabAndUp());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
-			molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
+			//molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
+		}
+		else if (autonChooser.getSelected().equals(7))
+		{
+			molecule.add(new TrashcanGrabAndUp());
+			molecule.add(new GyroTurnAtom(90));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(-angle));
 		} else if (autonChooser.getSelected().equals(1))
 		{
 			molecule.add(new TrashcanGrabAndUp());
@@ -199,7 +208,7 @@ public class MarkXII extends SampleRobot
 		// TKODataReporting.getInstance().start();
 		TKOTalonSafety.getInstance().start();
 		TKOLift.getInstance().start();
-		// TKOLEDArduino.getInstance().start();
+		TKOLEDArduino.getInstance().start();
 
 		while (isOperatorControl() && isEnabled())
 		{
@@ -219,8 +228,8 @@ public class MarkXII extends SampleRobot
 
 		try
 		{
-			// TKOLEDArduino.getInstance().stop();
-			// TKOLEDArduino.getInstance().ledArduinoThread.join();
+			TKOLEDArduino.getInstance().stop();
+			TKOLEDArduino.getInstance().ledArduinoThread.join();
 			TKOTalonSafety.getInstance().stop();
 			TKOTalonSafety.getInstance().safetyCheckerThread.join();
 			TKOLift.getInstance().stop();

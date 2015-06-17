@@ -1,8 +1,8 @@
-//Last edited by Adam Filiz
-//on 3/2/15
+//Last edited by Adam and Alex, but also Alex and Adam
+//on 3/17/15 HAPPY ST. PATTYS DAY NERDS!!1!!1!!!
 
-package org.usfirst.frc.team1351.robot.vision;
-
+package org.usfirst.frc.team1351.robot.vision; //importing everything that makes our code work
+												//these are given by First if you use the template, which you should use
 import org.usfirst.frc.team1351.robot.util.*;
 import org.usfirst.frc.team1351.robot.logger.*;
 import org.usfirst.frc.team1351.robot.main.*;
@@ -25,9 +25,9 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.vision.AxisCamera;
 
-public class TKOVision implements Runnable 
+public class TKOVision implements Runnable //vision function class beginning
 {
-	public TKOThread visionThread = null;
+	public TKOThread visionThread = null; //declares our variables, camera, and things for threading
 	private static TKOVision m_Instance = null; 
 	int session;
     Image frame, BinaryImage, MorphImage, CloseImage, FillImage;
@@ -35,14 +35,14 @@ public class TKOVision implements Runnable
    double distanceToTote, boundingWidthRight, boundingWidthLeft, trueBoundingWidth, midBoundingPoint, finalAngleValue, boundingWidth;
  
 	
-	protected TKOVision()
+	protected TKOVision() //initializes camera and camera frame 
 	{
 		System.out.println("Vision Activated!!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		camera = new AxisCamera("10.13.51.11");
 	}	
 	
-	public static synchronized TKOVision getInstance()
+	public static synchronized TKOVision getInstance() //creates new vision thread in threading for the stuff
 	{
 		if (TKOVision.m_Instance == null)
 		{
@@ -52,7 +52,7 @@ public class TKOVision implements Runnable
 		return m_Instance;
 	}
 	
-	public void start()
+	public void start() //initializes vision thread if it is dead or is already running
 	{
 		System.out.println("Starting vision task");
 		
@@ -65,7 +65,7 @@ public class TKOVision implements Runnable
 		System.out.println("Started vision task");
 	}
 
-	public void stop()
+	public void stop() //stops the vision thread if told to
 	{
 		System.out.println("Stopping vision task");
 		if (visionThread.isThreadRunning())
@@ -74,24 +74,25 @@ public class TKOVision implements Runnable
 		System.out.println("Stopped vision task");
 	}
 	
-    public void autonomousControl() {
-        NIVision.Rect rect = new NIVision.Rect(10, 10, 100, 100);
+    public void autonomousControl() { //main function. creates frame on computer, puts an image in the frame, returns distance in inches to target
+        NIVision.Rect rect/*um*/ = new NIVision.Rect(10, 10, 100, 100);
 
         while (DriverStation.getInstance().isAutonomous() && DriverStation.getInstance().isEnabled()) {
             camera.getImage(frame);
             CameraServer.getInstance().setImage(frame);
+            
             //TODO:acquire image, get values from image, do equation
+            
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
+    //sudo apt-get rekt
     
-    public double linearInterp(double pt1, double pt2, double t){
-    	return (pt2 * (1-t)) + (pt1 *(t));
-    	
+    public double linearInterp(double pt1, double pt2, double t){ //linear interpolation for data tables, not implemented but possible
+    	return (pt2 * (1-t)) + (pt1 *(t)); 	
     }
     
-    public Boolean processImage()
-    { 
+    public Boolean processImage(){ 
     	
     System.out.println("Actually starting processing now!!!"); //declare to start function
     
@@ -149,13 +150,12 @@ public class TKOVision implements Runnable
     
     	}
     return true;
-    
-   
+
     }
     
     public double distance(double width) {
-    	double dist = 4480/(width * .8696); //TODO: fix distance equation later. Change values and use average bounding box distance
-    
+    	double dist = 4480/(width * .8696); //TODO: fix distance equation later. Change values and use average bounding box distance 
+    										//TODO: possibly need to update camera angle number thing for different cameras
     	return dist; //TODO: Make the calculated boundingBox width the average of the two bounding boxes' widths 
    }
     

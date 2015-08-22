@@ -221,6 +221,11 @@ public class TKODrive implements Runnable {
 				// // calibRan = true;
 				// }
 				// tankDrive();
+				if (TKOHardware.getJoystick(3).getTrigger())
+				{
+					setLeftRightMotorOutputsPercentVBus(-0.25, -0.25);
+				}
+				
 				if (TKOHardware.getJoystick(1).getRawButton(3))
 					overTheLipPositioner();
 				tankDriveJoystick();
@@ -311,7 +316,7 @@ public class TKODrive implements Runnable {
 	public void tankDriveJoystick() { // Note: this copies the drive system I
 										// used on the chassis Bots 2015
 		double driveDeadzone = 0.07;
-		double powerMult = 0.8;
+		double powerMult = 1.0;
 		double motorLeft = 0.0;
 		double motorRight = 0.0;
 		try {
@@ -325,11 +330,12 @@ public class TKODrive implements Runnable {
 			// Above is just copied, might have to be messed with
 
 			double s1Y = Math.abs(TKOHardware.getJoystick(0).getY()) / TKOHardware.getJoystick(0).getY();
-			double s2Y = Math.abs(TKOHardware.getJoystick(0).getTwist()) / TKOHardware.getJoystick(0).getTwist();
+			double s2Y = Math.abs(TKOHardware.getJoystick(0).getRawAxis(3)) / TKOHardware.getJoystick(0).getRawAxis(3);
 			if (TKOHardware.getJoystick(0).getRawButton(7)) {
 				s1Y = s1Y * 0.6;
 				s2Y = s2Y * 0.6;
 			}
+			
 			if (TKOHardware.getJoystick(0).getRawButton(1))
 				TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
 
@@ -337,14 +343,69 @@ public class TKODrive implements Runnable {
 				TKOHardware.getPiston(0).set(Definitions.SHIFTER_HIGH);
 
 			if (Math.abs(TKOHardware.getJoystick(0).getY()) > driveDeadzone
-					|| Math.abs(TKOHardware.getJoystick(0).getTwist()) >= driveDeadzone) {
-				motorLeft = (s1Y * powerMult) * Math.sqrt(Math.abs(TKOHardware.getJoystick(0).getY()));
-				motorRight = (s2Y * -powerMult) * Math.sqrt(Math.abs(TKOHardware.getJoystick(0).getTwist()));
+					|| Math.abs(TKOHardware.getJoystick(0).getRawAxis(3)) >= driveDeadzone) {
+				motorLeft = (s1Y * powerMult) * Math.pow(Math.abs(TKOHardware.getJoystick(0).getY()), 2);
+				motorRight = (s2Y * powerMult) * Math.pow(Math.abs(TKOHardware.getJoystick(0).getRawAxis(3)), 2);
 			} else {
 				motorLeft = 0;
 				motorRight = 0;
 			}
 			setLeftRightMotorOutputsPercentVBus(motorLeft, motorRight);
+		} catch (TKOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void arcadeDriveJoystick() {
+		boolean squaredInputs = true;
+		try {
+			double moveValue = TKOHardware.getJoystick(0).getY();
+			if (TKOHardware.getJoystick(0).getTrigger())
+				moveValue = TKOHardware.getJoystick(0).getY() * 0.6;
+
+			double rotateValue = TKOHardware.getJoystick(0).getRawAxis(2) * 0.8;
+			if (TKOHardware.getJoystick(1).getTrigger())
+				rotateValue = TKOHardware.getJoystick(0).getRawAxis(2) * 0.6;
+
+			double leftMotorSpeed;
+			double rightMotorSpeed;
+
+			if (squaredInputs) {
+				// square the inputs (while preserving the sign) to increase
+				// fine control while permitting full power
+				if (moveValue >= 0.0) {
+					moveValue = (moveValue * moveValue);
+				} else {
+					moveValue = -(moveValue * moveValue);
+				}
+				if (rotateValue >= 0.0) {
+					rotateValue = (rotateValue * rotateValue);
+				} else {
+					rotateValue = -(rotateValue * rotateValue);
+				}
+			}
+
+			if (moveValue > 0.0) {
+				if (rotateValue > 0.0) {
+					leftMotorSpeed = moveValue - rotateValue;
+					rightMotorSpeed = Math.max(moveValue, rotateValue);
+				} else {
+					leftMotorSpeed = Math.max(moveValue, -rotateValue);
+					rightMotorSpeed = moveValue + rotateValue;
+				}
+			} else {
+				if (rotateValue > 0.0) {
+					leftMotorSpeed = -Math.max(-moveValue, rotateValue);
+					rightMotorSpeed = moveValue + rotateValue;
+				} else {
+					leftMotorSpeed = moveValue - rotateValue;
+					rightMotorSpeed = -Math.max(-moveValue, -rotateValue);
+				}
+			}
+			TKOHardware.changeTalonMode(TKOHardware.getLeftDrive(), CANTalon.ControlMode.PercentVbus,
+					Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D);
+			TKOHardware.changeTalonMode(TKOHardware.getRightDrive(), CANTalon.ControlMode.PercentVbus,
+					Definitions.DRIVE_P, Definitions.DRIVE_I, Definitions.DRIVE_D);
+			setLeftRightMotorOutputsPercentVBus(leftMotorSpeed, rightMotorSpeed);
 		} catch (TKOException e) {
 			e.printStackTrace();
 		}

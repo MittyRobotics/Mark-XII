@@ -134,7 +134,11 @@ public class TKOPneumatics implements Runnable
 	{
 		manualEnabled = false;
 	}
-
+	
+	public synchronized void setLastShiftTimeCurrent() { //New method, sets the shift time to current time, works as crappy override 
+		lastShiftTime = System.currentTimeMillis(); 
+	}
+	
 	public void autoShift()
 	{
 		try

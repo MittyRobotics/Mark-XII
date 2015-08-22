@@ -1,5 +1,6 @@
 package org.usfirst.team1351.robot.drive;
 
+import org.usfirst.team1351.robot.evom.TKOPneumatics;
 import org.usfirst.team1351.robot.logger.TKOLogger;
 import org.usfirst.team1351.robot.main.Definitions;
 import org.usfirst.team1351.robot.util.TKODataReporting;
@@ -315,6 +316,7 @@ public class TKODrive implements Runnable {
 
 	public void tankDriveJoystick() { // Note: this copies the drive system I
 										// used on the chassis Bots 2015
+										//CURRENT DEFAULT TODO 
 		double driveDeadzone = 0.07;
 		double powerMult = 1.0;
 		double motorLeft = 0.0;
@@ -336,12 +338,21 @@ public class TKODrive implements Runnable {
 				s2Y = s2Y * 0.6;
 			}
 			
-			if (TKOHardware.getJoystick(0).getRawButton(1))
+			if (TKOHardware.getJoystick(0).getRawButton(5)) {
 				TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
+				TKOPneumatics.getInstance().setLastShiftTimeCurrent(); 
+			}
 
-			if (TKOHardware.getJoystick(0).getRawButton(3))
+			if (TKOHardware.getJoystick(0).getRawButton(6)) {
 				TKOHardware.getPiston(0).set(Definitions.SHIFTER_HIGH);
-
+				TKOPneumatics.getInstance().setLastShiftTimeCurrent();  
+			}
+			
+			if(TKOHardware.getJoystick(0).getRawButton(7) || TKOHardware.getJoystick(0).getRawButton(8)) {
+				s1Y *= .36; 
+				s2Y *= .36; 
+			}
+			
 			if (Math.abs(TKOHardware.getJoystick(0).getY()) > driveDeadzone
 					|| Math.abs(TKOHardware.getJoystick(0).getRawAxis(3)) >= driveDeadzone) {
 				motorLeft = (s1Y * powerMult) * Math.pow(Math.abs(TKOHardware.getJoystick(0).getY()), 2);
@@ -355,6 +366,8 @@ public class TKODrive implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	
 	public void arcadeDriveJoystick() {
 		boolean squaredInputs = true;
 		try {

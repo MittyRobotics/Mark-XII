@@ -3,6 +3,8 @@ package org.usfirst.team1351.robot.util;
 import org.usfirst.team1351.robot.evom.TKOLift;
 import org.usfirst.team1351.robot.main.Definitions;
 
+import edu.wpi.first.wpilibj.Joystick.RumbleType;
+
 /**
  * This is an example of how to make a class that runs as a thread. The most important reason for making TKOThread was to make the thread
  * implementation thread-safe everywhere, meaning that if we happened to use two threads to do the same thing to an object, we would not
@@ -91,17 +93,27 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 			{
 				//System.out.println("WITHIN RANGE");
 				TKOHardware.arduinoWrite(4.99);
+				//THIS IS THE WORST IMPLEMENTATION EVARRR BUT WHATEVS AM I RITE? 
+				//THIS IS RUMBLE BRUHS!!!
+				TKOHardware.getJoystick(0).setRumble(RumbleType.kLeftRumble, 50);
+				TKOHardware.getJoystick(0).setRumble(RumbleType.kRightRumble, 50);
 				return true;
 			} 
 			else if (TKOHardware.cratePresent())
 			{
 				TKOHardware.arduinoWrite(2.5);
+				//THIS IS RUMBLE BRUHS!!!
+				TKOHardware.getJoystick(0).setRumble(RumbleType.kLeftRumble, 0);
+				TKOHardware.getJoystick(0).setRumble(RumbleType.kRightRumble, 0);
 				return true;
 			}
 			else
 			{
 				//System.out.println("Outside range");
 				TKOHardware.arduinoWrite(1.);
+				//THIS IS RUMBLE BRUHS!!!
+				TKOHardware.getJoystick(0).setRumble(RumbleType.kLeftRumble, 0);
+				TKOHardware.getJoystick(0).setRumble(RumbleType.kRightRumble, 0);
 			}
 		} catch (TKOException e)
 		{

@@ -53,15 +53,15 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 
 	private Operation operation = Operation.PID_CRATES;
 
-	public static final double oneLevel = 4925; // TODO 4750 before; 4900 before; 5000 before
+	public static final double oneLevel = 4960; // TODO 4750 before; 4900 before; 5000 before
 	public static final byte minLevel = 0; // zero based
 	public static final byte maxLevel = 4; // 5th crate
-	public static final double bottomOffset = 2700;//2145; 2500; 2600; 2650
+	public static final double bottomOffset = 2650;//2145; 2500; 2600; 2650
 	public static final double dropoffPerLevel = 0.2; // TODO CALCULATE
 	public static final double softBottomOffset = 0; // safety offset
 	public static final double softTopOffset = 100; // safety offset
 	public static final double encoderThreshold = 100;
-	public static final double minorAdjustmentSize = 500;
+	public static final double minorAdjustmentSize = 100;
 	public static final long liftThreadSleep = 20; // used to be 20
 
 	//public static final double softTop = 23400 - softTopOffset;

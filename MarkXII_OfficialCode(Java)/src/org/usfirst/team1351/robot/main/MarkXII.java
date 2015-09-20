@@ -77,6 +77,7 @@ public class MarkXII extends SampleRobot
 		autonChooser.addObject("Auton Pickup, Drive", new Integer(5));
 		autonChooser.addObject("RC, Mush, Drive", new Integer(6));
 		autonChooser.addObject("RC, Turn, Drive, Turn (start from side)", new Integer(7));
+		autonChooser.addObject("RC", new Integer(8));
 
 		SmartDashboard.putData("Auton mode chooser", autonChooser);
 		SmartDashboard.putNumber("Drive P: ", Definitions.AUTON_DRIVE_P);
@@ -129,19 +130,15 @@ public class MarkXII extends SampleRobot
 		double dist = SmartDashboard.getNumber("Drive atom distance: ");
 		double angle = SmartDashboard.getNumber("Turn atom angle: ");
 
-		if (autonChooser.getSelected().equals(0)) // default
+		if (autonChooser.getSelected().equals(0))
 		{
 			molecule.add(new TrashcanGrabAndUp());
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(angle));
-			//molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
-		}
-		else if (autonChooser.getSelected().equals(7))
+			// molecule.add(new DriveAtom(12 * Definitions.TICKS_PER_INCH));
+		} else if (autonChooser.getSelected().equals(8))
 		{
 			molecule.add(new TrashcanGrabAndUp());
-			molecule.add(new GyroTurnAtom(90));
-			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
-			molecule.add(new GyroTurnAtom(-angle));
 		} else if (autonChooser.getSelected().equals(1))
 		{
 			molecule.add(new TrashcanGrabAndUp());
@@ -162,11 +159,11 @@ public class MarkXII extends SampleRobot
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 		} else if (autonChooser.getSelected().equals(6)) // mush down in autonomous
 		{
-//			molecule.add(new TrashcanGrabAndUp());
-//			molecule.add(new GyroTurnAtom(-20));
-//			molecule.add(new MushDown());
-//			molecule.add(new GyroTurnAtom(20));
-//			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			// molecule.add(new TrashcanGrabAndUp());
+			// molecule.add(new GyroTurnAtom(-20));
+			// molecule.add(new MushDown());
+			// molecule.add(new GyroTurnAtom(20));
+			// molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
 			molecule.add(new GyroTurnAtom(45));
 			molecule.add(new GyroTurnAtom(-45));
 			molecule.add(new TrashcanGrabAndUp());
@@ -174,6 +171,12 @@ public class MarkXII extends SampleRobot
 			molecule.add(new MushDown());
 			molecule.add(new GyroTurnAtom(20));
 			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+		} else if (autonChooser.getSelected().equals(7))
+		{
+			molecule.add(new TrashcanGrabAndUp());
+			molecule.add(new GyroTurnAtom(90));
+			molecule.add(new DriveAtom(dist * Definitions.TICKS_PER_INCH));
+			molecule.add(new GyroTurnAtom(-angle));
 		} else
 		{
 			System.out.println("Molecule empty why this");

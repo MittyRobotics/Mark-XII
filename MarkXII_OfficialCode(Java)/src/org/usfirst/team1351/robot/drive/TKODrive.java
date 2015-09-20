@@ -256,6 +256,11 @@ public class TKODrive implements Runnable
 				// // calibRan = true;
 				// }
 				// tankDrive();
+				/*if (TKOHardware.getJoystick(3).getTrigger())
+				{
+					setLeftRightMotorOutputsPercentVBus(-0.3, -0.3);
+				}*/
+				
 				if (TKOHardware.getJoystick(1).getRawButton(3))
 					overTheLipPositioner();
 				arcadeDrive();

@@ -87,16 +87,14 @@ public class TKOLEDArduino implements Runnable // implements Runnable is importa
 					&& TKOHardware.getCrateDistance() > Definitions.TRASHCAN_POSITIONING_MIN)
 				inRange = true;
 
-			if (inRange)
+			if (TKOHardware.cratePresent())
 			{
-				//System.out.println("WITHIN RANGE");
 				TKOHardware.arduinoWrite(4.99);
 				return true;
-			} 
-			else if (TKOHardware.cratePresent())
+			}
+			else if (TKOHardware.getJoystick(1).getRawButton(2))
 			{
 				TKOHardware.arduinoWrite(2.5);
-				return true;
 			}
 			else
 			{

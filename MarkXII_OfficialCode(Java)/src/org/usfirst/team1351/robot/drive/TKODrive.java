@@ -202,6 +202,44 @@ public class TKODrive implements Runnable
 		TKODataReporting.getInstance().stopCollectingDriveData();
 	}
 
+	private void shimmy()
+	{
+		try
+		{
+			TKOHardware.getPiston(0).set(Definitions.SHIFTER_LOW);
+			TKOHardware.getLeftDrive().enableBrakeMode(true);
+			TKOHardware.getRightDrive().enableBrakeMode(true);
+			boolean b = true;
+			Timer t = new Timer();
+			while (TKOHardware.getJoystick(1).getRawButton(2))
+			{
+				t.start();
+				if (b)
+				{
+					while (t.get() < 0.25)
+						setLeftRightMotorOutputsPercentVBus(-.25, .25);
+				}
+				else
+				{
+					while (t.get() < 0.25)
+						setLeftRightMotorOutputsPercentVBus(.25, -.25);
+				}
+				b = !b;
+				t.stop();
+				t.reset();
+			}
+
+			TKOHardware.getLeftDrive().set(0);
+			TKOHardware.getRightDrive().set(0);
+			TKOHardware.getLeftDrive().enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[0]);
+			TKOHardware.getRightDrive().enableBrakeMode(Definitions.DRIVE_BRAKE_MODE[2]);
+		}
+		catch (TKOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	private void overTheLipPositioner()
 	{
 		try
@@ -261,8 +299,11 @@ public class TKODrive implements Runnable
 					setLeftRightMotorOutputsPercentVBus(-0.3, -0.3);
 				}*/
 				
-				if (TKOHardware.getJoystick(1).getRawButton(3))
-					overTheLipPositioner();
+				if (TKOHardware.getJoystick(1).getRawButton(2))
+				{
+					shimmy();
+					//overTheLipPositioner();
+				}
 				arcadeDrive();
 				// currentModeTankDrive();
 				synchronized (driveThread)

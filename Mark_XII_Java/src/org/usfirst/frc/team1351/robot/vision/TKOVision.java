@@ -1,5 +1,4 @@
-//Last edited by Adam and Alex, but also Alex and Adam
-//on 3/17/15 HAPPY ST. PATTYS DAY NERDS!!1!!1!!!
+//Last edited by Praks on 10/21/15
 
 package org.usfirst.frc.team1351.robot.vision; //importing everything that makes our code work
 												//these are given by First if you use the template, which you should use
@@ -32,18 +31,16 @@ public class TKOVision implements Runnable //vision function class beginning
 	int session;
     Image frame, BinaryImage, MorphImage, CloseImage, FillImage;
     AxisCamera camera;
-   double distanceToTote, boundingWidthRight, boundingWidthLeft, trueBoundingWidth, midBoundingPoint, finalAngleValue, boundingWidth;
+    double distanceToTote, boundingWidthRight, boundingWidthLeft, trueBoundingWidth, midBoundingPoint, finalAngleValue, boundingWidth;
  
 	
-	protected TKOVision() //initializes camera and camera frame 
-	{
+	protected TKOVision() { //initializes camera and camera frame 
 		System.out.println("Vision Activated!!!!!!!!!!");
 		frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		camera = new AxisCamera("10.13.51.11");
 	}	
 	
-	public static synchronized TKOVision getInstance() //creates new vision thread in threading for the stuff
-	{
+	public static synchronized TKOVision getInstance() { //creates new vision thread in threading for the stuff
 		if (TKOVision.m_Instance == null)
 		{
 			m_Instance = new TKOVision();
@@ -52,8 +49,7 @@ public class TKOVision implements Runnable //vision function class beginning
 		return m_Instance;
 	}
 	
-	public void start() //initializes vision thread if it is dead or is already running
-	{
+	public void start() {//initializes vision thread if it is dead or is already running
 		System.out.println("Starting vision task");
 		
 		if (!visionThread.isAlive() && m_Instance != null)
@@ -65,8 +61,7 @@ public class TKOVision implements Runnable //vision function class beginning
 		System.out.println("Started vision task");
 	}
 
-	public void stop() //stops the vision thread if told to
-	{
+	public void stop() { //stops the vision thread if told to
 		System.out.println("Stopping vision task");
 		if (visionThread.isThreadRunning())
 			visionThread.setThreadRunning(false);
@@ -75,7 +70,7 @@ public class TKOVision implements Runnable //vision function class beginning
 	}
 	
     public void autonomousControl() { //main function. creates frame on computer, puts an image in the frame, returns distance in inches to target
-        NIVision.Rect rect/*um*/ = new NIVision.Rect(10, 10, 100, 100);
+        NIVision.Rect rect /*um*/ = new NIVision.Rect(10, 10, 100, 100);
 
         while (DriverStation.getInstance().isAutonomous() && DriverStation.getInstance().isEnabled()) {
             camera.getImage(frame);
@@ -86,7 +81,7 @@ public class TKOVision implements Runnable //vision function class beginning
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
-    //sudo apt-get rekt
+    //sudo apt.get rekt
     
     public double linearInterp(double pt1, double pt2, double t){ //linear interpolation for data tables, not implemented but possible
     	return (pt2 * (1-t)) + (pt1 *(t)); 	

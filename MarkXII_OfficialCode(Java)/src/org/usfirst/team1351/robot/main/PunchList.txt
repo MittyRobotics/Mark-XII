@@ -8,6 +8,8 @@ LIFT
 	CONFIGURE CAMERAS
 	DOES ENCODER READ WHILE ROBOT DISABLED
 	Test crate sensor, pickup totes with crate sensor
+        Test hard stop on wheelie bar
+        Transport position for wheelie bar
 	Test trashcan sensor, pickup trashcan automatically with trashcan sensor
 	Pickup, dropoff of simple stacks
 	Picking up stack with a trashcan - what kind of routine is necessary

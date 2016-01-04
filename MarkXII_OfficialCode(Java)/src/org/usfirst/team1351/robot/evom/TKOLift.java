@@ -517,6 +517,11 @@ public class TKOLift implements Runnable // implements Runnable is important to 
 		return false;
 	}
 
+        public void PIDTune()
+        {
+
+        }
+
 	/**
 	 * TODO Lift autotuned using the Zeigler-Nichols method; Calculate Kc by testing max p with i and d = 0 where stable oscilation
 	 * Calculate max and min of oscilation and find the period between the max and min Kp = 0.6 Kc Ki = 2*Kp/Pc Kd = 0.125*Kp*Pc
